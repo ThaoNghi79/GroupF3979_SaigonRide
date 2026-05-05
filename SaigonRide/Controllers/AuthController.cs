@@ -31,7 +31,14 @@ namespace SaigonRide.Controllers
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserName", user.FullName);
             HttpContext.Session.SetString("UserRole", user.Role.ToString());
-            return RedirectToAction("Index", "Dashboard");
+            if ((int)user.Role == 2)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]
