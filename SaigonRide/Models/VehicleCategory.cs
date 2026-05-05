@@ -41,6 +41,11 @@ namespace SaigonRide.Models
 
         public int CurrentInventory { get; set; } = 0;
 
+        public string? Status { get; set; } = "Active";
+
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 
         public bool IsLowInventory()
