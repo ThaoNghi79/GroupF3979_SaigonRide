@@ -1,0 +1,78 @@
+@model IEnumerable<SaigonRide.Models.Vehicle>
+@using SaigonRide.Models
+@{
+    var stations = ViewBag.Stations as List<Station> ?? new List<Station>();
+    var selectedStation = ViewBag.SelectedStation as Station;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rent a Vehicle</title>
+    <link rel="stylesheet" href="~/css/saigonride-ui.css" />
+</head>
+<body>
+<div class="sr-app">
+    <div class="sr-page-label">Rent a vehicle</div>
+    <nav class="sr-topbar">
+        <a class="sr-brand" href="/Rental/Rent"><span>🚲</span> SaigonRide</a>
+        <div class="sr-nav">
+            <a class="active" href="/Rental/Rent">🚲 Rent a Vehicle</a>
+            <a href="/Dashboard/Map">🗺️ Station Map</a>
+            <a href="/Rental/MyTrip">🔗 My Trip</a>
+        </div>
+        <div class="sr-account"><span>💳 125,000 VND</span><span>🔔</span><span>AD&nbsp; Nhu Quynh⌄</span></div>
+    </nav>
+
+    <main class="sr-shell">
+        <section class="sr-hero">
+            <div><small>FLEET OVERVIEW</small><h1>Start Your Rental</h1><p>Choose a pick-up station and select a vehicle to start your journey</p></div>
+            <div class="sr-skyline">▂▃▅▆▇▆▃</div>
+        </section>
+
+        <form class="sr-filter" method="get" action="/Rental/Rent">
+            <label>📍 Pick-up Station</label>
+            <select name="stationId" onchange="this.form.submit()">
+                @foreach (var station in stations)
+                {
+                    <option value="@station.StationId" selected="@(selectedStation?.StationId == station.StationId)">@station.StationName</option>
+                }
+            </select>
+            <div class="sr-availability">⌄ @Model.Count() Vehicles available<br /><small>Update just now</small></div>
+            <button type="submit">↻</button>
+        </form>
+
+        <div class="sr-section-line">
+            <h2>Available Vehicles at @(selectedStation?.StationName ?? "Selected Station")</h2>
+            <div><button class="sr-chip">🚲 All Categories⌄</button><button class="sr-square active">▦</button><button class="sr-square">☰</button></div>
+        </div>
+
+        <section class="vehicle-grid">
+            @foreach (var vehicle in Model)
+            {
+                var available = vehicle.Status == VehicleStatus.Available;
+                var category = vehicle.Category?.CategoryName ?? "Vehicle";
+                <article class="vehicle-card">
+                    <div class="vehicle-image">
+                        <span class="vehicle-type">@(category.Contains("Scooter") ? "🛴 E-Scooter" : "🚲 Standard Bike")</span>
+                        <span class="heart">♡</span>
+                        <div class="vehicle-art">@(category.Contains("Scooter") ? "🛴" : "🚲")</div>
+                    </div>
+                    <h3>@vehicle.VehicleName</h3>
+                    <div class="meta-row"><span class="id-pill">ID: @vehicle.VehicleCode</span><span class="status-pill @(available ? "ok" : vehicle.Status == VehicleStatus.Maintenance ? "bad" : "warn")">● @vehicle.Status</span></div>
+                    <p class="rate">@(category.Contains("Scooter") ? "100" : "80") · @((vehicle.Category?.PricePerMinute ?? 0).ToString("N0")) VND/min</p>
+                    @if (available)
+                    {
+                        <a class="rent-btn" href="/Rental/Confirm/@vehicle.VehicleId">Rent This ⟶</a>
+                    }
+                    else
+                    {
+                        <button class="rent-btn disabled" disabled>Rent This ⊘</button>
+                    }
+                </article>
+            }
+        </section>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+@model SaigonRide.Models.Vehicle
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Rental</title>
+    <link rel="stylesheet" href="~/css/saigonride-ui.css" />
+</head>
+<body>
+<div class="modal-page">
+    <div class="sr-page-label">Rentals -Confirm Rental</div>
+    <nav class="sr-topbar faded"><a class="sr-brand">🚲 SaigonRide</a><div class="sr-nav"><a class="active">🚲 Rent a Vehicle</a><a>🗺️ Station Map</a><a>🔗 My Trip</a></div><div class="sr-account"><span>💳 125,000 VND</span><span>🔔</span><span>AD&nbsp; Nhu Quynh⌄</span></div></nav>
+    <div class="ghost-content"></div>
+    <div class="confirm-card">
+        <div class="question">?</div>
+        <h1>Confirm Rental</h1>
+        <p>Start rental for <b>@Model.VehicleName</b> at <b>@Model.Station?.StationName</b> ?</p>
+        <div class="confirm-vehicle">
+            <div class="confirm-art">@(Model.Category?.CategoryName.Contains("Scooter") == true ? "🛴" : "🚲")</div>
+            <div>
+                <h3>@Model.VehicleName</h3>
+                <span class="id-pill">ID: @Model.VehicleCode</span>
+                <div class="tiny-row"><span>🔋 100% Battery</span><span>🏷 @((Model.Category?.PricePerMinute ?? 0).ToString("N0")) VND/min</span></div>
+            </div>
+        </div>
+        <form method="post" action="/Rental/Start">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="vehicleId" value="@Model.VehicleId" />
+            <div class="confirm-actions"><a href="/Rental/Rent?stationId=@Model.StationId">Cancel</a><button type="submit">Confirm</button></div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

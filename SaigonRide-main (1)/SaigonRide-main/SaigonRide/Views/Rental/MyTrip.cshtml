@@ -1,0 +1,89 @@
+@model SaigonRide.Models.Rental?
+@using SaigonRide.Models
+@{
+    var stations = ViewBag.Stations as List<Station> ?? new List<Station>();
+    var selectedStation = ViewBag.SelectedStation as Station;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Trip</title>
+    <link rel="stylesheet" href="~/css/saigonride-ui.css" />
+</head>
+<body>
+<div class="sr-app">
+    <div class="sr-page-label">My trip</div>
+    <nav class="sr-topbar"><a class="sr-brand" href="/Rental/Rent">🚲 SaigonRide</a><div class="sr-nav"><a href="/Rental/Rent">🚲 Rent a Vehicle</a><a href="/Dashboard/Map">🗺️ Station Map</a><a class="active" href="/Rental/MyTrip">🔗 My Trip</a></div><div class="sr-account"><span>💳 125,000 VND</span><span>🔔</span><span>AD&nbsp; Nhu Quynh⌄</span></div></nav>
+
+    <main class="trip-layout">
+        @if (Model == null)
+        {
+            <section class="trip-card empty-trip"><h2>No active trip</h2><p>Please rent a vehicle to start your journey.</p><a class="primary-wide" href="/Rental/Rent">Rent a Vehicle</a></section>
+        }
+        else
+        {
+            <section class="trip-left">
+                <div class="trip-card">
+                    <h2 class="green-title">● Trip In Progress</h2>
+                    <div class="trip-summary">
+                        <div><small>Rental ID</small><b>#RIDE-@Model.RentalId.ToString("0000")</b></div>
+                        <div class="mini-vehicle">🛴</div>
+                        <div><small>Vehicle</small><b>@Model.Vehicle?.VehicleName</b></div>
+                        <div><small>Rate</small><b class="pink">@((Model.Vehicle?.Category?.PricePerMinute ?? 0).ToString("N0")) VND/min</b></div>
+                    </div>
+                    <div class="fare-grid"><div><small>◷ Live Duration</small><strong>00:23:45</strong><span>• Counting up...</span></div><div><small>▣ Estimated Fare So Far</small><strong>52,500</strong><span>• Updates every 60s</span></div></div>
+                </div>
+
+                <div class="trip-card progress-card"><h2>Trip Progress</h2><div class="progress-route"><span></span><i></i><span></span></div><div class="route-labels"><small>@Model.StartStation?.StationName<br /><b>Start at @Model.StartTime.ToString("HH:mm")</b></small><small>End destination<br /><b>End</b></small></div></div>
+
+                <div class="trip-card">
+                    <h2>Ready to return your vehicle?</h2>
+                    <form method="post" action="/Rental/Checkout">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="rentalId" value="@Model.RentalId" />
+                        <label>Destination Station</label>
+                        <select name="destinationStationId" onchange="location.href='/Rental/MyTrip?selectedStationId=' + this.value">
+                            <option value="">Select return station...</option>
+                            @foreach (var station in stations)
+                            {
+                                <option value="@station.StationId" selected="@(selectedStation?.StationId == station.StationId)">@station.StationName</option>
+                            }
+                        </select>
+                        <div class="discount-box">
+                            @if (selectedStation == null)
+                            { <span>💸 Select a station to see capacity and discount info</span><span>15% Discount available at Low Inventory stations</span> }
+                            else if (selectedStation.IsLowInventory())
+                            { <span>✅ 15% Rebalance Discount Applied</span><span>Save on final fare</span> }
+                            else
+                            { <span>ℹ️ No discount at this station</span><span>Choose a low-inventory station to save 15%</span> }
+                        </div>
+                        <button class="primary-wide" @(selectedStation == null ? "disabled" : "")>End Rental & Checkout</button>
+                    </form>
+                    <p class="tiny-note">🎁 Return a Low Inventory station to get 15% discount!</p>
+                </div>
+            </section>
+        }
+
+        <section class="trip-right">
+            <div class="return-panel">
+                <h1>Find Return Station</h1>
+                <p>Choose a Low Inventory Station to receive 15% fare discount</p>
+                <div class="orange-banner"><strong>🎯</strong><span>Return to a low-inventory station (&lt;20% capacity) to save on your fare!</span><b>Save 15%</b></div>
+                <button class="sr-chip">🚉 All Stations⌄</button>
+                @foreach (var station in stations.Take(3))
+                {
+                    var percent = station.Capacity > 0 ? Math.Round((decimal)station.CurrentInventory / station.Capacity * 100, 0) : 0;
+                    <div class="station-option @(selectedStation?.StationId == station.StationId ? "chosen" : "")">
+                        <div><h2>📍 @station.StationName</h2><p><b>@percent%</b> capacity · @station.CurrentInventory bikes available</p><span class="save-line">🎁 Return here → Save 15%</span></div>
+                        <div class="bar"><i style="width:@percent%"></i></div>
+                        <a href="/Rental/MyTrip?selectedStationId=@station.StationId">@(selectedStation?.StationId == station.StationId ? "✓" : "Select")</a>
+                    </div>
+                }
+                <div class="support-strip"><span>🎧 Need Help?<br /><small>Contact our support 24/7</small></span><span>🔒 Safe & Secure<br /><small>Your vehicle is secured</small></span></div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
