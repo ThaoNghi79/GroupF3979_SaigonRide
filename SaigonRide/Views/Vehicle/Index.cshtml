@@ -507,7 +507,7 @@
         </table>
     </div>
 
-    <!-- Bulk bar -->
+    <!-- Bulk bar — thêm Update Status -->
     <div class="sel-bar" id="bulkBar" style="display:none;">
         <span class="sel-info">
             <span id="bulkCount">0</span> Selected
@@ -515,19 +515,39 @@
         </span>
         <div class="sel-actions">
             <button class="btn-danger" onclick="bulkDelete()">🗑 Delete Selected</button>
+            <button class="btn-warn" onclick="openModal('bulkStatusModal')">✎ Update Status</button>
+            <button class="btn-outline" style="padding:7px 14px;" onclick="exportTableCSV()">⬇ Export CSV</button>
         </div>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination thật — JS tự render -->
     <div class="pag-bar">
-        <div class="pag-info">Total: <strong>@Model.Count()</strong> vehicles</div>
-        <div class="pag-btns">
-            <button class="pag-btn"><i class="fas fa-chevron-left" style="font-size:10px;"></i></button>
-            <button class="pag-btn active">1</button>
-            <button class="pag-btn">2</button>
-            <button class="pag-btn">3</button>
-            <span style="padding:0 4px;color:var(--text-muted);">…</span>
-            <button class="pag-btn"><i class="fas fa-chevron-right" style="font-size:10px;"></i></button>
+        <div class="pag-info" id="pagInfo">Page 1 of 1</div>
+        <div class="pag-btns" id="pagBtns"></div>
+    </div>
+</div>
+
+<!-- Bulk Update Status Modal -->
+<div class="modal-backdrop-custom" id="bulkStatusModal">
+    <div class="modal-box">
+        <div class="modal-header-custom">
+            <h4>✎ Update Status — <span id="bulkStatusCount">0</span> vehicles</h4>
+        </div>
+        <div class="modal-body-custom">
+            <label class="form-label-custom">New Status</label>
+            <select id="bulkStatusSelect" class="form-input-custom">
+                <option value="Available">Available</option>
+                <option value="InTransit">In-Transit</option>
+                <option value="Maintenance">Maintenance</option>
+            </select>
+        </div>
+        <div style="padding:0 24px 24px;">
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-cancel" onclick="closeModal('bulkStatusModal')">Cancel</button>
+                <button type="button" class="btn-save" onclick="bulkUpdateStatus()">
+                    <i class="fas fa-save" style="margin-right:5px;"></i> Apply
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -660,6 +680,7 @@
 
 @section Scripts {
     <script>
+        // ── Modal ────────────────────────────────────────────────
         function openModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
         document.querySelectorAll('.modal-backdrop-custom').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
@@ -677,42 +698,114 @@
             openModal('editModal');
         }
 
+        // ── Pagination thật ──────────────────────────────────────
+        const PAGE_SIZE = 7;
+        let currentPage = 1;
+        let allRows = [];
+
+        function initPagination() {
+            allRows = [...document.querySelectorAll('#vehicleBody tr')];
+            allRows.forEach(r => r.dataset.filtered = 'true');
+            goToPage(1);
+        }
+
+        function getFiltered() { return allRows.filter(r => r.dataset.filtered !== 'false'); }
+
+        function goToPage(page) {
+            const rows = getFiltered();
+            const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+            currentPage = Math.min(Math.max(1, page), totalPages);
+            allRows.forEach(r => r.style.display = 'none');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            rows.slice(start, start + PAGE_SIZE).forEach(r => r.style.display = '');
+            const showing = Math.min(PAGE_SIZE, rows.length - start);
+            document.getElementById('pagInfo').textContent = `Page ${currentPage} of ${totalPages} — ${rows.length} vehicles`;
+            document.getElementById('showingCount').textContent = `Showing ${showing} of ${rows.length} vehicles`;
+            renderPagBtns(currentPage, totalPages);
+        }
+
+        function renderPagBtns(cur, total) {
+            const c = document.getElementById('pagBtns');
+            c.innerHTML = '';
+            const mkBtn = (html, page, active) => {
+                const b = document.createElement('button');
+                b.className = 'pag-btn' + (active ? ' active' : '');
+                b.innerHTML = html;
+                if (page && page >= 1 && page <= total) b.onclick = () => goToPage(page);
+                else b.disabled = true;
+                return b;
+            };
+            c.appendChild(mkBtn('<i class="fas fa-chevron-left" style="font-size:10px;"></i>', cur - 1));
+            const pages = new Set([1, total]);
+            for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++) pages.add(i);
+            let prev = 0;
+            [...pages].sort((a, b) => a - b).forEach(p => {
+                if (p - prev > 1) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; c.appendChild(sp); }
+                c.appendChild(mkBtn(p, p, p === cur));
+                prev = p;
+            });
+            c.appendChild(mkBtn('<i class="fas fa-chevron-right" style="font-size:10px;"></i>', cur + 1));
+        }
+
+        // ── Filter ───────────────────────────────────────────────
         function applyFilter() {
             const cat = document.getElementById('filterCategory').value;
             const status = document.getElementById('filterStatus').value.toLowerCase();
             const station = document.getElementById('filterStation').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
-            let vis = 0;
-            document.querySelectorAll('#vehicleBody tr').forEach(row => {
-                const rCat = (row.dataset.category || '');
-                const rSt = (row.dataset.status || '').toLowerCase();
-                const rStn = (row.dataset.station || '');
-                const rN = (row.dataset.name || '');
-                const show = (!cat || rCat === cat) && (!status || rSt === status) && (!station || rStn === station) && (!search || rN.includes(search));
-                row.style.display = show ? '' : 'none';
-                if (show) vis++;
+            allRows.forEach(row => {
+                const match =
+                    (!cat || row.dataset.category === cat) &&
+                    (!status || (row.dataset.status || '').toLowerCase() === status) &&
+                    (!station || row.dataset.station === station) &&
+                    (!search || (row.dataset.name || '').includes(search));
+                row.dataset.filtered = match ? 'true' : 'false';
             });
-            document.getElementById('showingCount').textContent = `Showing ${vis} vehicles`;
+            goToPage(1);
         }
 
-        function toggleAll(cb) { document.querySelectorAll('.row-check').forEach(c => { if (c.closest('tr').style.display !== 'none') c.checked = cb.checked; }); updateBulkBar(); }
+        // ── Selection ────────────────────────────────────────────
+        function toggleAll(cb) {
+            document.querySelectorAll('#vehicleBody tr').forEach(r => {
+                if (r.style.display !== 'none') r.querySelector('.row-check').checked = cb.checked;
+            });
+            updateBulkBar();
+        }
         function updateBulkBar() {
             const n = document.querySelectorAll('.row-check:checked').length;
             document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
             document.getElementById('bulkCount').textContent = n;
+            document.getElementById('bulkStatusCount').textContent = n;
         }
         function clearSelection() { document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); updateBulkBar(); }
+
+        // ── Bulk Delete ──────────────────────────────────────────
         function bulkDelete() {
             const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
             if (!ids.length) return;
             if (!confirm(`Delete ${ids.length} vehicle(s)?`)) return;
             const tok = document.querySelector('input[name="__RequestVerificationToken"]').value;
-            Promise.all(ids.map(id => fetch(`/Vehicle/Delete/${id}`, { method: 'POST', headers: { 'RequestVerificationToken': tok } }))).then(() => location.reload());
+            Promise.all(ids.map(id => fetch(`/Vehicle/Delete/${id}`, { method: 'POST', headers: { 'RequestVerificationToken': tok } })))
+                .then(() => location.reload());
         }
+
+        // ── Bulk Update Status ───────────────────────────────────
+        function bulkUpdateStatus() {
+            const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
+            const newStatus = document.getElementById('bulkStatusSelect').value;
+            if (!ids.length) return;
+            const tok = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            Promise.all(ids.map(id => fetch(`/Vehicle/UpdateStatus/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': tok },
+                body: JSON.stringify({ status: newStatus })
+            }))).then(() => { closeModal('bulkStatusModal'); location.reload(); });
+        }
+
+        // ── Export CSV ───────────────────────────────────────────
         function exportTableCSV() {
             const rows = [['Code', 'Name', 'Category', 'Fare', 'Status', 'Station']];
-            document.querySelectorAll('#vehicleBody tr').forEach(row => {
-                if (row.style.display === 'none') return;
+            getFiltered().forEach(row => {
                 const c = row.querySelectorAll('td');
                 if (c.length < 7) return;
                 rows.push([c[1], c[2], c[3], c[4], c[5], c[6]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
@@ -722,5 +815,7 @@
             a.download = `vehicles_${new Date().toISOString().slice(0, 10)}.csv`;
             a.click();
         }
+
+        document.addEventListener('DOMContentLoaded', initPagination);
     </script>
 }
