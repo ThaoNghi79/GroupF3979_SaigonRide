@@ -126,15 +126,24 @@ namespace SaigonRide.Migrations
                     b.Property<int>("CurrentInventory")
                         .HasColumnType("int");
 
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
                     b.Property<string>("StationName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StationId");
 
@@ -147,7 +156,8 @@ namespace SaigonRide.Migrations
                             Capacity = 50,
                             CurrentInventory = 25,
                             Location = "District 1",
-                            StationName = "Ben Thanh Market"
+                            StationName = "Ben Thanh Market",
+                            Status = "Active"
                         },
                         new
                         {
@@ -155,7 +165,8 @@ namespace SaigonRide.Migrations
                             Capacity = 45,
                             CurrentInventory = 11,
                             Location = "District 1",
-                            StationName = "Nguyen Hue Walking St"
+                            StationName = "Nguyen Hue Walking St",
+                            Status = "Active"
                         },
                         new
                         {
@@ -163,7 +174,8 @@ namespace SaigonRide.Migrations
                             Capacity = 25,
                             CurrentInventory = 1,
                             Location = "Binh Thanh District",
-                            StationName = "Landmark 81"
+                            StationName = "Landmark 81",
+                            Status = "Active"
                         },
                         new
                         {
@@ -171,7 +183,8 @@ namespace SaigonRide.Migrations
                             Capacity = 40,
                             CurrentInventory = 7,
                             Location = "District 7",
-                            StationName = "Tan Hung"
+                            StationName = "Tan Hung",
+                            Status = "Active"
                         },
                         new
                         {
@@ -179,7 +192,8 @@ namespace SaigonRide.Migrations
                             Capacity = 30,
                             CurrentInventory = 2,
                             Location = "Phu Nhuan District",
-                            StationName = "Phu Nhuan Station"
+                            StationName = "Phu Nhuan Station",
+                            Status = "Active"
                         },
                         new
                         {
@@ -187,7 +201,8 @@ namespace SaigonRide.Migrations
                             Capacity = 50,
                             CurrentInventory = 48,
                             Location = "Thu Duc City",
-                            StationName = "Thu Duc Station"
+                            StationName = "Thu Duc Station",
+                            Status = "Active"
                         },
                         new
                         {
@@ -195,7 +210,8 @@ namespace SaigonRide.Migrations
                             Capacity = 20,
                             CurrentInventory = 10,
                             Location = "District 1",
-                            StationName = "Bui Vien Street"
+                            StationName = "Bui Vien Street",
+                            Status = "Active"
                         },
                         new
                         {
@@ -203,7 +219,8 @@ namespace SaigonRide.Migrations
                             Capacity = 35,
                             CurrentInventory = 20,
                             Location = "District 3",
-                            StationName = "Notre-Dame Cathedral"
+                            StationName = "Notre-Dame Cathedral",
+                            Status = "Active"
                         });
                 });
 
@@ -253,7 +270,7 @@ namespace SaigonRide.Migrations
                             Email = "admin@saigonride.vn",
                             FullName = "Thao Nghi Admin",
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$byhMstsucbqn4uHhCWkkgOBfWPzYNBG9wpcDbDLsMQ3E6RMg8mQuK",
+                            PasswordHash = "$2a$11$vA8oUo.hP36376FYrWBcSe2Pe6/Lh/KLXLUPEDIOgtpvS7ErgfQgC",
                             Role = 2,
                             WalletBalance = 0m
                         },
@@ -263,7 +280,7 @@ namespace SaigonRide.Migrations
                             Email = "local@saigonride.vn",
                             FullName = "Nguyen Van A",
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$zqcBA6S2CKLxgk9izzeh1uRTlbC36ed9OKuJiJKqlv3/7Cmy6Xggi",
+                            PasswordHash = "$2a$11$kcXB79TmzsSLsyPaSoKteeLAax2w1OdcOHsmvpXo5plVrKR9W4ycG",
                             Role = 0,
                             WalletBalance = 500000m
                         },
@@ -274,7 +291,7 @@ namespace SaigonRide.Migrations
                             FullName = "Chris Evans",
                             IsPassportVerified = true,
                             PassportNumber = "US123456",
-                            PasswordHash = "$2a$11$gZ5fBrgt4VLU6ZHPgk3wVuqvr.3raRzuxHrOKMFFe0/M/3c.pMKUO",
+                            PasswordHash = "$2a$11$gBZWcMkRztGQm...KPZohu/Nw4BvubfHEp2GdQS.7upepKxZfwHM6",
                             Role = 1,
                             WalletBalance = 1000000m
                         });
