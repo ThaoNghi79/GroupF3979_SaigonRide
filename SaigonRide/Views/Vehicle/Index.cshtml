@@ -1,0 +1,726 @@
+﻿@model IEnumerable<SaigonRide.Models.Vehicle>
+@{
+    ViewData["Title"] = "Vehicle Management";
+    ViewData["Page"] = "vehicles";
+    var categories = ViewBag.Categories as List<SaigonRide.Models.VehicleCategory>;
+    var stations = ViewBag.Stations as List<SaigonRide.Models.Station>;
+}
+
+@section Styles {
+    <style>
+        .page-banner-plain {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+            .page-banner-plain h1 {
+                font-size: 22px;
+                font-weight: 800;
+                color: var(--text-main);
+            }
+
+            .page-banner-plain .sub {
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-top: 3px;
+                font-weight: 500;
+            }
+
+        .banner-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 17px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+            .btn-outline:hover {
+                border-color: var(--primary);
+            }
+
+        .btn-filled {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 17px;
+            border-radius: 10px;
+            background: #2D2640;
+            color: white;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+            .btn-filled:hover {
+                background: #3d3557;
+            }
+
+        /* Filter bar */
+        .filter-bar-plain {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .flabel {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .fdrop {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+        }
+
+            .fdrop:hover {
+                border-color: var(--primary);
+            }
+
+        .fsearch {
+            flex: 1;
+            position: relative;
+        }
+
+            .fsearch input {
+                width: 100%;
+                padding: 8px 14px 8px 34px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                font-size: 13px;
+                font-family: inherit;
+                outline: none;
+            }
+
+                .fsearch input:focus {
+                    border-color: var(--primary);
+                }
+
+            .fsearch .si {
+                position: absolute;
+                left: 11px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-muted);
+                font-size: 12px;
+            }
+
+        /* Table card */
+        .vtable-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .vtable-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .vtable-head h3 {
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--text-main);
+            }
+
+        .vtable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .vtable th {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--text-muted);
+                padding: 10px 16px;
+                border-bottom: 1px solid var(--border);
+                text-align: left;
+            }
+
+            .vtable td {
+                padding: 11px 16px;
+                border-bottom: 1px solid var(--border);
+                font-size: 13px;
+                vertical-align: middle;
+            }
+
+            .vtable tr:last-child td {
+                border-bottom: none;
+            }
+
+            .vtable tr:hover td {
+                background: #faf8ff;
+            }
+
+            .vtable tr.selected-row td {
+                background: rgba(201,184,245,0.08);
+            }
+
+        .id-chip {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: #ede9fa;
+            color: var(--primary-text);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .cat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #ede9fa;
+            color: var(--primary-text);
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+            .cat-pill.warm {
+                background: rgba(255,212,163,0.35);
+                color: #b86d2a;
+            }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .sp-available {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .sp-intransit {
+            background: #ede9fa;
+            color: var(--primary-text);
+        }
+
+        .sp-maintenance {
+            background: var(--accent-warm);
+            color: #7a4000;
+        }
+
+        .act-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.15s;
+        }
+
+            .act-btn.edit {
+                color: var(--primary-text);
+            }
+
+                .act-btn.edit:hover {
+                    background: #ede9fa;
+                }
+
+            .act-btn.del {
+                color: var(--danger);
+            }
+
+                .act-btn.del:hover {
+                    background: #fdd8d8;
+                }
+
+        /* Selection bar */
+        .sel-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            background: var(--body-bg);
+            font-size: 13px;
+        }
+
+        .sel-info {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .clear-sel {
+            color: var(--primary-text);
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+
+        .sel-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-danger {
+            background: #fdd8d8;
+            color: var(--danger);
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn-warn {
+            background: var(--accent-warm);
+            color: #7a4000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .pag-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .pag-info {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .pag-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .pag-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+            .pag-btn.active {
+                background: var(--gradient);
+                color: var(--text-main);
+                border-color: transparent;
+                font-weight: 700;
+            }
+    </style>
+}
+
+<!-- PAGE HEADER -->
+<div class="page-banner-plain">
+    <div>
+        <h1 data-i18n="Vehicle Management">Vehicle Management</h1>
+        <div class="sub" data-i18n="Manage your fleet inventory — bikes and e-scooters across all stations">
+            Manage your fleet inventory — bikes and e-scooters across all stations
+        </div>
+    </div>
+    <div class="banner-btns">
+        <button class="btn-outline" onclick="exportTableCSV()">
+            <i class="fas fa-download"></i>
+            <span data-i18n="Export CSV">Export CSV</span>
+        </button>
+        <button class="btn-filled" onclick="openModal('addModal')">
+            <i class="fas fa-plus"></i>
+            <span data-i18n="Add New Vehicle">Add New Vehicle</span>
+        </button>
+    </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar-plain">
+    <span class="flabel" data-i18n="Filter by:">Filter by:</span>
+    <select class="fdrop" id="filterCategory" onchange="applyFilter()"
+            style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
+        <option value="">🚲 All Categories</option>
+        <option value="Standard Bike">Standard Bike</option>
+        <option value="E-Scooter">E-Scooter</option>
+    </select>
+    <select class="fdrop" id="filterStatus" onchange="applyFilter()"
+            style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
+        <option value="">🔄 All Statuses</option>
+        <option value="Available">Available</option>
+        <option value="InTransit">In-Transit</option>
+        <option value="Maintenance">Maintenance</option>
+    </select>
+    <select class="fdrop" id="filterStation" onchange="applyFilter()"
+            style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
+        <option value="">📍 All Stations</option>
+        @if (stations != null)
+        {
+            foreach (var s in stations)
+            {
+                <option value="@s.StationId">@s.StationName</option>
+            }
+        }
+    </select>
+    <div class="fsearch">
+        <i class="fas fa-search si"></i>
+        <input type="text" id="searchInput"
+               data-i18n-placeholder="Search vehicle name or ID..."
+               placeholder="Search vehicle name or ID..."
+               oninput="applyFilter()" />
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="vtable-card">
+    <div class="vtable-head">
+        <h3 data-i18n="All Vehicles">All Vehicles</h3>
+        <span style="font-size:12.5px;color:var(--text-muted);" id="showingCount">
+            Showing @Model.Count() vehicles
+        </span>
+    </div>
+
+    <div style="overflow-x:auto;">
+        <table class="vtable" id="vehicleTable">
+            <thead>
+                <tr>
+                    <th style="width:36px;"><input type="checkbox" id="selectAll" onchange="toggleAll(this)" /></th>
+                    <th>ID</th>
+                    <th data-i18n="Vehicle Name">Vehicle Name</th>
+                    <th data-i18n="Category">Category</th>
+                    <th data-i18n="Fare (VND/min)">Fare (VND/min)</th>
+                    <th data-i18n="STATUS">Status</th>
+                    <th data-i18n="Station">Station</th>
+                    <th style="text-align:center;" data-i18n="Actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="vehicleBody">
+                @foreach (var v in Model)
+                {
+                    <tr data-category="@v.Category?.CategoryName"
+                        data-status="@v.Status.ToString()"
+                        data-station="@v.StationId"
+                        data-name="@v.VehicleName.ToLower() @v.VehicleCode.ToLower()">
+                        <td><input type="checkbox" class="row-check" value="@v.VehicleId" onchange="updateBulkBar()" /></td>
+                        <td><span class="id-chip">@v.VehicleCode</span></td>
+                        <td style="font-weight:600;">@v.VehicleName</td>
+                        <td>
+                            @if (v.Category?.CategoryName == "Standard Bike")
+                            {
+                                <span class="cat-pill warm">🚲 Standard Bike</span>
+                            }
+                            else
+                            {
+                                <span class="cat-pill">🛴 E-Scooter</span>
+                            }
+                        </td>
+                        <td style="font-weight:700;color:var(--primary-text);">
+                            ₫ @v.Category?.PricePerMinute.ToString("N0")/min
+                        </td>
+                        <td>
+                            @switch (v.Status)
+                            {
+                                case SaigonRide.Models.VehicleStatus.Available:
+                                    <span class="status-pill sp-available">Available</span>
+                                    break;
+                                case SaigonRide.Models.VehicleStatus.InTransit:
+                                    <span class="status-pill sp-intransit">In-Transit</span>
+                                    break;
+                                case SaigonRide.Models.VehicleStatus.Maintenance:
+                                    <span class="status-pill sp-maintenance">Maintenance</span>
+                                    break;
+                            }
+                        </td>
+                        <td style="color:var(--text-muted);">
+                            📍 @v.Station?.StationName
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="act-btn edit" title="Edit"
+                                    onclick="openEditModal(@v.VehicleId,'@Html.Raw(v.VehicleCode)','@Html.Raw(v.VehicleName)',@v.CategoryId,@v.StationId,'@v.Status')">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <form method="post" action="/Vehicle/Delete/@v.VehicleId" style="display:inline;"
+                                  onsubmit="return confirm('Delete @Html.Raw(v.VehicleName)?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="act-btn del" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bulk bar -->
+    <div class="sel-bar" id="bulkBar" style="display:none;">
+        <span class="sel-info">
+            <span id="bulkCount">0</span> Selected
+            <span class="clear-sel" onclick="clearSelection()">Clear selection</span>
+        </span>
+        <div class="sel-actions">
+            <button class="btn-danger" onclick="bulkDelete()">🗑 Delete Selected</button>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pag-bar">
+        <div class="pag-info">Total: <strong>@Model.Count()</strong> vehicles</div>
+        <div class="pag-btns">
+            <button class="pag-btn"><i class="fas fa-chevron-left" style="font-size:10px;"></i></button>
+            <button class="pag-btn active">1</button>
+            <button class="pag-btn">2</button>
+            <button class="pag-btn">3</button>
+            <span style="padding:0 4px;color:var(--text-muted);">…</span>
+            <button class="pag-btn"><i class="fas fa-chevron-right" style="font-size:10px;"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-backdrop-custom" id="addModal">
+    <div class="modal-box">
+        <div class="modal-header-custom">
+            <h4>
+                <i class="fas fa-plus-circle" style="margin-right:8px;"></i>
+                <span data-i18n="Add New Vehicle">Add New Vehicle</span>
+            </h4>
+        </div>
+        <form method="post" action="/Vehicle/Create">
+            @Html.AntiForgeryToken()
+            <div class="modal-body-custom">
+                <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
+                <input name="VehicleCode" class="form-input-custom" placeholder="e.g. SB-V3-0017" required maxlength="20" />
+                <label class="form-label-custom" data-i18n="Vehicle Name">Vehicle Name</label>
+                <input name="VehicleName" class="form-input-custom" placeholder="e.g. Bike VN-01" required maxlength="100" />
+                <label class="form-label-custom" data-i18n="Category">Category</label>
+                <select name="CategoryId" class="form-input-custom" required>
+                    <option value="">— Select Category —</option>
+                    @if (categories != null)
+                    {
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.CategoryId">@c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)</option>
+                        }
+                    }
+                </select>
+                <label class="form-label-custom" data-i18n="Assign to Station">Assign to Station</label>
+                <select name="StationId" class="form-input-custom" required>
+                    <option value="">— Select Station —</option>
+                    @if (stations != null)
+                    {
+                        foreach (var s in stations)
+                        {
+                            var slots = s.Capacity - s.CurrentInventory;
+                            if (slots <= 0)
+                            {
+                                <option value="@s.StationId" disabled>
+                                    @s.StationName (@s.CurrentInventory/@s.Capacity) — FULL
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@s.StationId">
+                                    @s.StationName (@s.CurrentInventory/@s.Capacity)
+                                </option>
+                            }
+                        }
+                    }
+                </select>
+                <label class="form-label-custom" data-i18n="Initial Status">Initial Status</label>
+                <select name="Status" class="form-input-custom">
+                    <option value="Available">Available</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div style="padding:0 24px 24px;">
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addModal')" data-i18n="Cancel">Cancel</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save" style="margin-right:5px;"></i>
+                        <span data-i18n="Save Vehicle">Save Vehicle</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-backdrop-custom" id="editModal">
+    <div class="modal-box">
+        <div class="modal-header-custom">
+            <h4>
+                <i class="fas fa-pen" style="margin-right:8px;"></i>
+                <span data-i18n="Edit Vehicle">Edit Vehicle</span> — <span id="editModalTitle"></span>
+            </h4>
+        </div>
+        <form method="post" id="editForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="VehicleId" id="editVehicleId" />
+            <div class="modal-body-custom">
+                <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
+                <input name="VehicleCode" id="editVehicleCode" class="form-input-custom" required maxlength="20" />
+                <label class="form-label-custom" data-i18n="Vehicle Name">Vehicle Name</label>
+                <input name="VehicleName" id="editVehicleName" class="form-input-custom" required maxlength="100" />
+                <label class="form-label-custom" data-i18n="Category">Category</label>
+                <select name="CategoryId" id="editCategoryId" class="form-input-custom" required>
+                    @if (categories != null)
+                    {
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.CategoryId">@c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)</option>
+                        }
+                    }
+                </select>
+                <label class="form-label-custom" data-i18n="Station">Station</label>
+                <select name="StationId" id="editStationId" class="form-input-custom" required>
+                    @if (stations != null)
+                    {
+                        foreach (var s in stations)
+                        {
+                            <option value="@s.StationId">@s.StationName (@s.CurrentInventory/@s.Capacity)</option>
+                        }
+                    }
+                </select>
+                <label class="form-label-custom" data-i18n="STATUS">Status</label>
+                <select name="Status" id="editStatus" class="form-input-custom">
+                    <option value="Available">Available</option>
+                    <option value="InTransit">In-Transit</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div style="padding:0 24px 24px;">
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editModal')" data-i18n="Cancel">Cancel</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save" style="margin-right:5px;"></i>
+                        <span data-i18n="Save Changes">Save Changes</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
+        document.querySelectorAll('.modal-backdrop-custom').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop-custom.show').forEach(m => closeModal(m.id)); });
+
+        function openEditModal(id, code, name, catId, stationId, status) {
+            document.getElementById('editVehicleId').value = id;
+            document.getElementById('editVehicleCode').value = code;
+            document.getElementById('editVehicleName').value = name;
+            document.getElementById('editCategoryId').value = catId;
+            document.getElementById('editStationId').value = stationId;
+            document.getElementById('editStatus').value = status;
+            document.getElementById('editModalTitle').textContent = code;
+            document.getElementById('editForm').action = `/Vehicle/Edit/${id}`;
+            openModal('editModal');
+        }
+
+        function applyFilter() {
+            const cat = document.getElementById('filterCategory').value;
+            const status = document.getElementById('filterStatus').value.toLowerCase();
+            const station = document.getElementById('filterStation').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let vis = 0;
+            document.querySelectorAll('#vehicleBody tr').forEach(row => {
+                const rCat = (row.dataset.category || '');
+                const rSt = (row.dataset.status || '').toLowerCase();
+                const rStn = (row.dataset.station || '');
+                const rN = (row.dataset.name || '');
+                const show = (!cat || rCat === cat) && (!status || rSt === status) && (!station || rStn === station) && (!search || rN.includes(search));
+                row.style.display = show ? '' : 'none';
+                if (show) vis++;
+            });
+            document.getElementById('showingCount').textContent = `Showing ${vis} vehicles`;
+        }
+
+        function toggleAll(cb) { document.querySelectorAll('.row-check').forEach(c => { if (c.closest('tr').style.display !== 'none') c.checked = cb.checked; }); updateBulkBar(); }
+        function updateBulkBar() {
+            const n = document.querySelectorAll('.row-check:checked').length;
+            document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
+            document.getElementById('bulkCount').textContent = n;
+        }
+        function clearSelection() { document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); updateBulkBar(); }
+        function bulkDelete() {
+            const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
+            if (!ids.length) return;
+            if (!confirm(`Delete ${ids.length} vehicle(s)?`)) return;
+            const tok = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            Promise.all(ids.map(id => fetch(`/Vehicle/Delete/${id}`, { method: 'POST', headers: { 'RequestVerificationToken': tok } }))).then(() => location.reload());
+        }
+        function exportTableCSV() {
+            const rows = [['Code', 'Name', 'Category', 'Fare', 'Status', 'Station']];
+            document.querySelectorAll('#vehicleBody tr').forEach(row => {
+                if (row.style.display === 'none') return;
+                const c = row.querySelectorAll('td');
+                if (c.length < 7) return;
+                rows.push([c[1], c[2], c[3], c[4], c[5], c[6]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
+            });
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
+            a.download = `vehicles_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+        }
+    </script>
+}
