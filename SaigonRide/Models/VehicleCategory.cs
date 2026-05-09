@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SaigonRide.Models
 {
-    // ─── ENUMS ───────────────────────────────────────────────
+
     public enum VehicleStatus { Available, InTransit, Maintenance }
     public enum UserRole { LocalCommuter, ForeignTourist, Admin }
     public enum RentalStatus { Active, PendingPayment, Completed, Cancelled }
     public enum PaymentStatus { Pending, Paid, Failed, Cancelled }
     public enum PaymentMethod { MoMo, VNPay, Cash, ApplePay, PayPal }
 
-    // ─── VEHICLE CATEGORY ────────────────────────────────────
+
     public class VehicleCategory
     {
         [Key]
@@ -25,7 +25,6 @@ namespace SaigonRide.Models
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 
-    // ─── STATION ─────────────────────────────────────────────
     public class Station
     {
         public int StationId { get; set; }
@@ -59,7 +58,7 @@ namespace SaigonRide.Models
             Capacity > 0 ? Math.Round((double)CurrentInventory / Capacity * 100, 1) : 0;
     }
 
-    // ─── VEHICLE ─────────────────────────────────────────────
+
     public class Vehicle
     {
         public int VehicleId { get; set; }
@@ -72,7 +71,7 @@ namespace SaigonRide.Models
 
         public VehicleStatus Status { get; set; } = VehicleStatus.Available;
 
-        // FK
+
         public int CategoryId { get; set; }
         public VehicleCategory? Category { get; set; }
 
@@ -82,7 +81,6 @@ namespace SaigonRide.Models
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
     }
 
-    // ─── USER ────────────────────────────────────────────────
     public class User
     {
         public int UserId { get; set; }
@@ -98,7 +96,7 @@ namespace SaigonRide.Models
 
         public UserRole Role { get; set; } = UserRole.LocalCommuter;
 
-        // Foreign Tourist only
+
         [MaxLength(20)]
         public string? PassportNumber { get; set; }
         public bool IsPassportVerified { get; set; } = false;
@@ -107,9 +105,13 @@ namespace SaigonRide.Models
         public decimal WalletBalance { get; set; } = 0;
 
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
+
+        public string? AvatarUrl { get; set; }
+        public bool AlertStationOverload { get; set; } = false;
+        public bool AlertVehicleMaintenance { get; set; } = false;
+        public bool AlertStationInventory { get; set; } = false;
     }
 
-    // ─── RENTAL ──────────────────────────────────────────────
     public class Rental
     {
         public int RentalId { get; set; }
@@ -144,7 +146,7 @@ namespace SaigonRide.Models
         public Payment? Payment { get; set; }
     }
 
-    // ─── PAYMENT ─────────────────────────────────────────────
+
     public class Payment
     {
         public int PaymentId { get; set; }
