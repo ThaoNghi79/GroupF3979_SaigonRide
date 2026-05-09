@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaigonRide.Data;
 
@@ -11,9 +12,11 @@ using SaigonRide.Data;
 namespace SaigonRide.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260505161748_AddStationStatusAndMap")]
+    partial class AddStationStatusAndMap
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,18 +235,6 @@ namespace SaigonRide.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<bool>("AlertStationInventory")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AlertStationOverload")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AlertVehicleMaintenance")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -279,40 +270,31 @@ namespace SaigonRide.Migrations
                         new
                         {
                             UserId = 1,
-                            AlertStationInventory = false,
-                            AlertStationOverload = false,
-                            AlertVehicleMaintenance = false,
                             Email = "admin@saigonride.vn",
                             FullName = "Thao Nghi Admin",
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$.39DfCvM2Wc42.OkNKiHxu9Z2Mb/cDtXUnLKUbJ9D8945Ejtl0djW",
+                            PasswordHash = "$2a$11$vA8oUo.hP36376FYrWBcSe2Pe6/Lh/KLXLUPEDIOgtpvS7ErgfQgC",
                             Role = 2,
                             WalletBalance = 0m
                         },
                         new
                         {
                             UserId = 2,
-                            AlertStationInventory = false,
-                            AlertStationOverload = false,
-                            AlertVehicleMaintenance = false,
                             Email = "local@saigonride.vn",
                             FullName = "Nguyen Van A",
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$ku1H6/aecpK6MKiCmI9ZI.p3I5xg3w3ZTskl5HQw3KanzDQu04k2m",
+                            PasswordHash = "$2a$11$kcXB79TmzsSLsyPaSoKteeLAax2w1OdcOHsmvpXo5plVrKR9W4ycG",
                             Role = 0,
                             WalletBalance = 500000m
                         },
                         new
                         {
                             UserId = 3,
-                            AlertStationInventory = false,
-                            AlertStationOverload = false,
-                            AlertVehicleMaintenance = false,
                             Email = "tourist@saigonride.vn",
                             FullName = "Chris Evans",
                             IsPassportVerified = true,
                             PassportNumber = "US123456",
-                            PasswordHash = "$2a$11$wTIBukldxOYQy4rR.gjMiuZAJJj17WPiu67WrLY.t5BbaQAyGe9fq",
+                            PasswordHash = "$2a$11$gBZWcMkRztGQm...KPZohu/Nw4BvubfHEp2GdQS.7upepKxZfwHM6",
                             Role = 1,
                             WalletBalance = 1000000m
                         });
