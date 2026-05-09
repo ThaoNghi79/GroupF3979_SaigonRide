@@ -7,15 +7,11 @@ using SaigonRide.Services;
 
 namespace SaigonRide.Controllers
 {
-    // ═══════════════════════════════════════════════════
-    //  DASHBOARD CONTROLLER
-    // ═══════════════════════════════════════════════════
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _db;
         public DashboardController(ApplicationDbContext db) => _db = db;
 
-        // Helper: kiểm tra đăng nhập
         private bool IsLoggedIn() => HttpContext.Session.GetInt32("UserId") != null;
 
         public IActionResult Index()
@@ -39,6 +35,7 @@ namespace SaigonRide.Controllers
                 .Take(5)
                 .ToList();
 
+            ViewBag.StationMapData = _db.Stations.ToList();
             return View(recentRentals);
         }
 
@@ -57,11 +54,43 @@ namespace SaigonRide.Controllers
                 .OrderByDescending(r => r.StartTime).Take(20).ToList();
             return View();
         }
+
+        [HttpGet]
+        public IActionResult Search(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 1)
+                return Json(new { vehicles = Array.Empty<object>(), stations = Array.Empty<object>() });
+
+            var keyword = q.Trim().ToLower();
+
+            var vehicles = _db.Vehicles
+                .Include(v => v.Category)
+                .Where(v => v.VehicleName.ToLower().Contains(keyword)
+                         || v.VehicleCode.ToLower().Contains(keyword))
+                .Select(v => new {
+                    v.VehicleId,
+                    v.VehicleName,
+                    v.VehicleCode,
+                    CategoryName = v.Category != null ? v.Category.CategoryName : ""
+                })
+                .Take(5)
+                .ToList();
+
+            var stations = _db.Stations
+                .Where(s => s.StationName.ToLower().Contains(keyword)
+                         || s.Location.ToLower().Contains(keyword))
+                .Select(s => new {
+                    s.StationId,
+                    s.StationName,
+                    s.Location
+                })
+                .Take(5)
+                .ToList();
+
+            return Json(new { vehicles, stations });
+        }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  VEHICLE CONTROLLER  (UC1)
-    // ═══════════════════════════════════════════════════
     public class VehicleController : Controller
     {
         private readonly IVehicleService _vehicleSvc;
@@ -70,7 +99,6 @@ namespace SaigonRide.Controllers
         public VehicleController(IVehicleService vehicleSvc, ApplicationDbContext db)
         { _vehicleSvc = vehicleSvc; _db = db; }
 
-        // READ — List với filter
         public IActionResult Index(string? category, string? status, int? stationId)
         {
             var vehicles = _vehicleSvc.GetVehicles(category, status, stationId);
@@ -80,7 +108,6 @@ namespace SaigonRide.Controllers
             return View(vehicles);
         }
 
-        // CREATE — POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Vehicle vehicle)
@@ -103,7 +130,6 @@ namespace SaigonRide.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // EDIT — GET
         public IActionResult Edit(int id)
         {
             var vehicle = _vehicleSvc.GetById(id);
@@ -114,7 +140,6 @@ namespace SaigonRide.Controllers
             return View(vehicle);
         }
 
-        // EDIT — POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Vehicle vehicle)
@@ -138,7 +163,6 @@ namespace SaigonRide.Controllers
             }
         }
 
-        // DELETE — POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -155,7 +179,6 @@ namespace SaigonRide.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ── Helpers ──
         private void LoadDropdowns()
         {
             ViewBag.Categories = _db.VehicleCategories.ToList();
@@ -175,26 +198,39 @@ namespace SaigonRide.Controllers
             );
         }
 
-        // POST /Vehicle/UpdateStatus/{id} — bulk update status
         [HttpPost]
         public IActionResult UpdateStatus(int id, [FromBody] StatusUpdateRequest req)
         {
             var v = _db.Vehicles.Find(id);
             if (v == null) return NotFound();
+
             if (Enum.TryParse<VehicleStatus>(req.Status, out var s))
             {
                 v.Status = s;
                 _db.SaveChanges();
+
+                if (s == VehicleStatus.Maintenance)
+                {
+                    var adminEmail = HttpContext.Session.GetString("UserEmail");
+                    var alertOn = HttpContext.Session.GetInt32("AlertMaint") == 1;
+
+                    if (alertOn && !string.IsNullOrEmpty(adminEmail))
+                    {
+                        new EmailService().Send(
+                            adminEmail,
+                            "[SaigonRide] Vehicle Maintenance Alert",
+                            $"Vehicle {v.VehicleName} ({v.VehicleCode}) has been set to Maintenance status."
+                        );
+                    }
+                }
             }
+
             return Ok();
         }
     }
 
     public class StatusUpdateRequest { public string Status { get; set; } = ""; }
 
-    // ═══════════════════════════════════════════════════
-    //  STATION CONTROLLER  (UC1)
-    // ═══════════════════════════════════════════════════
     public class StationController : Controller
     {
         private readonly IStationService _stationSvc;
@@ -206,15 +242,17 @@ namespace SaigonRide.Controllers
             _db = db;
         }
 
-        // READ
         public IActionResult Index()
         {
             ViewBag.VehicleCount = _db.Vehicles.Count();
             ViewBag.StationCount = _db.Stations.Count();
-            return View(_stationSvc.GetAll());
+            var stations = _db.Stations
+                .Include(s => s.Vehicles)
+                    .ThenInclude(v => v.Category)
+                .ToList();
+            return View(stations);
         }
 
-        // CREATE — POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Station station)
@@ -226,7 +264,6 @@ namespace SaigonRide.Controllers
             }
             try
             {
-                // Gán Status mặc định nếu chưa có
                 if (string.IsNullOrEmpty(station.Status))
                 {
                     station.Status = "Active";
@@ -242,7 +279,6 @@ namespace SaigonRide.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // EDIT — GET
         public IActionResult Edit(int id)
         {
             var station = _stationSvc.GetById(id);
@@ -252,7 +288,6 @@ namespace SaigonRide.Controllers
             return View(station);
         }
 
-        // EDIT — POST (ĐÃ FIX BẰNG TIẾNG ANH & SỬA LỖI IENUMERABLE)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Station obj)
@@ -264,12 +299,10 @@ namespace SaigonRide.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Update các trường cơ bản
             stationFromDb.StationName = obj.StationName;
             stationFromDb.Location = obj.Location;
             stationFromDb.Capacity = obj.Capacity;
 
-            // Update 3 trường mới cho UI/UX
             stationFromDb.Status = obj.Status;
             if (obj.Latitude != null) stationFromDb.Latitude = obj.Latitude;
             if (obj.Longitude != null) stationFromDb.Longitude = obj.Longitude;
@@ -277,11 +310,47 @@ namespace SaigonRide.Controllers
             _db.Stations.Update(stationFromDb);
             _db.SaveChanges();
 
+            var adminEmail = HttpContext.Session.GetString("UserEmail");
+
+            if (!string.IsNullOrEmpty(adminEmail))
+            {
+                try
+                {
+                    var emailSvc = new EmailService();
+
+                    if (HttpContext.Session.GetInt32("AlertStation") == 1)
+                    {
+                        if (stationFromDb.CurrentInventory == 0)
+                        {
+                            emailSvc.Send(adminEmail,
+                                "[SaigonRide] Station Empty Alert",
+                                $"Station '{stationFromDb.StationName}' is now empty (0 vehicles).");
+                        }
+                        else if (stationFromDb.Capacity > 0 && (double)stationFromDb.CurrentInventory / stationFromDb.Capacity >= 0.80)
+                        {
+                            emailSvc.Send(adminEmail,
+                                "[SaigonRide] Station Overload Alert",
+                                $"Station '{stationFromDb.StationName}' is at {(int)((double)stationFromDb.CurrentInventory / stationFromDb.Capacity * 100)}% capacity.");
+                        }
+                    }
+
+                    if (HttpContext.Session.GetInt32("AlertInventory") == 1 && stationFromDb.IsLowInventory())
+                    {
+                        emailSvc.Send(adminEmail,
+                            "[SaigonRide] Low Inventory Alert",
+                            $"Station '{stationFromDb.StationName}' is below 20% capacity ({stationFromDb.CurrentInventory}/{stationFromDb.Capacity}).");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = $"Email error: {ex.Message}";
+                }
+            }
+
             TempData["Success"] = $"Station '{obj.StationName}' updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
-        // BULK UPDATE STATUS (ĐÃ FIX BẰNG TIẾNG ANH)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult BulkUpdateStatus(List<int> stationIds, string NewStatus)
@@ -305,7 +374,6 @@ namespace SaigonRide.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // DELETE — POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -323,10 +391,7 @@ namespace SaigonRide.Controllers
         }
     }
 
-// ═══════════════════════════════════════════════════
-//  REPORT CONTROLLER
-// ═══════════════════════════════════════════════════
-public class ReportController : Controller
+    public class ReportController : Controller
     {
         private readonly IReportService _reportSvc;
         private readonly IRevenueReportService _revenueSvc;
@@ -337,7 +402,6 @@ public class ReportController : Controller
                                 ApplicationDbContext db)
         { _reportSvc = reportSvc; _revenueSvc = revenueSvc; _db = db; }
 
-        // UC1 — Station Inventory Report (Thao Nghi)
         public IActionResult StationInventory()
         {
             ViewBag.VehicleCount = _db.Vehicles.Count();
@@ -345,7 +409,6 @@ public class ReportController : Controller
             return View(_reportSvc.GetStationInventoryReport());
         }
 
-        // UC2 — Revenue Report (Nhu Quynh)
         public IActionResult Revenue(DateTime? from, DateTime? to)
         {
             ViewBag.VehicleCount = _db.Vehicles.Count();
