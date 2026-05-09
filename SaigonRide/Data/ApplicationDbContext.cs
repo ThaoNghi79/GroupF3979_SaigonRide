@@ -24,43 +24,40 @@ namespace SaigonRide.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Rental → StartStation (no cascade)
+
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.StartStation)
                 .WithMany()
                 .HasForeignKey(r => r.StartStationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Rental → DestinationStation (no cascade)
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.DestinationStation)
                 .WithMany()
                 .HasForeignKey(r => r.DestinationStationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Rental → Vehicle (no cascade)
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.Vehicle)
                 .WithMany(v => v.Rentals)
                 .HasForeignKey(r => r.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Payment → Rental (one-to-one)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Rental)
                 .WithOne(r => r.Payment)
                 .HasForeignKey<Payment>(p => p.RentalId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ─── SEED DATA ───────────────────────────────────
 
-            // Vehicle Categories
+
+
             modelBuilder.Entity<VehicleCategory>().HasData(
                 new VehicleCategory { CategoryId = 1, CategoryName = "Standard Bike", PricePerMinute = 500 },
                 new VehicleCategory { CategoryId = 2, CategoryName = "E-Scooter", PricePerMinute = 1500 }
             );
 
-            // Stations
+
             modelBuilder.Entity<Station>().HasData(
                 new Station { StationId = 1, StationName = "Ben Thanh Market", Location = "District 1", Capacity = 50, CurrentInventory = 25 },
                 new Station { StationId = 2, StationName = "Nguyen Hue Walking St", Location = "District 1", Capacity = 45, CurrentInventory = 11 },
@@ -72,7 +69,7 @@ namespace SaigonRide.Data
                 new Station { StationId = 8, StationName = "Notre-Dame Cathedral", Location = "District 3", Capacity = 35, CurrentInventory = 20 }
             );
 
-            // Vehicles
+
             modelBuilder.Entity<Vehicle>().HasData(
                 new Vehicle { VehicleId = 1, VehicleCode = "SB-V3-0017", VehicleName = "Bike VN-01", Status = VehicleStatus.Available, CategoryId = 1, StationId = 1 },
                 new Vehicle { VehicleId = 2, VehicleCode = "ES-F4-0042", VehicleName = "E-Scooter CT-01", Status = VehicleStatus.InTransit, CategoryId = 2, StationId = 4 },
@@ -86,7 +83,6 @@ namespace SaigonRide.Data
                 new Vehicle { VehicleId = 10, VehicleCode = "ES-L3-0088", VehicleName = "E-Scooter ND-01", Status = VehicleStatus.Available, CategoryId = 2, StationId = 8 }
             );
 
-            // Admin user (password: Admin@123)
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
