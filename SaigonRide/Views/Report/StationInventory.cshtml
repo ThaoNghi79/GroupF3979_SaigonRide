@@ -13,7 +13,6 @@
 
 @section Styles {
     <style>
-        /* Page title row — no banner */
         .page-title-row {
             display: flex;
             align-items: flex-start;
@@ -21,18 +20,18 @@
             margin-bottom: 18px;
         }
 
-            .page-title-row h1 {
-                font-size: 22px;
-                font-weight: 800;
-                color: var(--text-main);
-            }
+        .page-title-row h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
 
-            .page-title-row .sub {
-                font-size: 13px;
-                color: var(--text-muted);
-                margin-top: 3px;
-                font-weight: 500;
-            }
+        .page-title-row .sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 500;
+        }
 
         .title-actions {
             display: flex;
@@ -55,9 +54,9 @@
             transition: all 0.15s;
         }
 
-            .btn-outline:hover {
-                border-color: var(--primary);
-            }
+        .btn-outline:hover {
+            border-color: var(--primary);
+        }
 
         .btn-outline-red {
             display: inline-flex;
@@ -75,14 +74,13 @@
             transition: all 0.15s;
         }
 
-            .btn-outline-red:hover {
-                background: #fde8f0;
-            }
+        .btn-outline-red:hover {
+            background: #fde8f0;
+        }
 
-        /* KPI cards — 4 columns, equal height, all info aligned */
         .kpi-row {
             display: grid;
-            grid-template-columns: repeat(4,1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 14px;
             margin-bottom: 16px;
         }
@@ -98,25 +96,25 @@
             min-height: 120px;
         }
 
-            .kpi-card.kpi-purple {
-                background: linear-gradient(135deg,rgba(201,184,245,0.18),rgba(201,184,245,0.06));
-                border-color: rgba(201,184,245,0.45);
-            }
+        .kpi-card.kpi-purple {
+            background: linear-gradient(135deg, rgba(201,184,245,0.18), rgba(201,184,245,0.06));
+            border-color: rgba(201,184,245,0.45);
+        }
 
-            .kpi-card.kpi-green {
-                background: linear-gradient(135deg,rgba(52,199,123,0.12),rgba(52,199,123,0.04));
-                border-color: rgba(52,199,123,0.35);
-            }
+        .kpi-card.kpi-green {
+            background: linear-gradient(135deg, rgba(52,199,123,0.12), rgba(52,199,123,0.04));
+            border-color: rgba(52,199,123,0.35);
+        }
 
-            .kpi-card.kpi-orange {
-                background: linear-gradient(135deg,rgba(243,156,90,0.14),rgba(243,156,90,0.05));
-                border-color: rgba(243,156,90,0.4);
-            }
+        .kpi-card.kpi-orange {
+            background: linear-gradient(135deg, rgba(243,156,90,0.14), rgba(243,156,90,0.05));
+            border-color: rgba(243,156,90,0.4);
+        }
 
-            .kpi-card.kpi-red {
-                background: linear-gradient(135deg,rgba(229,90,126,0.12),rgba(229,90,126,0.04));
-                border-color: rgba(229,90,126,0.35);
-            }
+        .kpi-card.kpi-red {
+            background: linear-gradient(135deg, rgba(229,90,126,0.12), rgba(229,90,126,0.04));
+            border-color: rgba(229,90,126,0.35);
+        }
 
         .kpi-icon-wrap {
             width: 52px;
@@ -212,7 +210,6 @@
             height: 100%;
         }
 
-        /* Chart + filter row */
         .chart-row {
             display: grid;
             grid-template-columns: 1.85fr 1fr;
@@ -240,7 +237,6 @@
             font-weight: 500;
         }
 
-        /* Custom bar chart — đậm màu hơn */
         .chart-area {
             display: grid;
             grid-template-columns: 28px 1fr 110px;
@@ -270,51 +266,61 @@
             height: 200px;
             border-bottom: 1px solid rgba(201,184,245,0.3);
         }
-            /* Dashed threshold lines */
-            .chart-bars::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                right: 0;
-                height: 1px;
-                top: 20%;
-                background-image: repeating-linear-gradient(to right,rgba(229,90,126,0.7) 0 5px,transparent 5px 10px);
-            }
 
-            .chart-bars::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                right: 0;
-                height: 1px;
-                top: 80%;
-                background-image: repeating-linear-gradient(to right,rgba(243,156,90,0.7) 0 5px,transparent 5px 10px);
-            }
+        .chart-bars::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            top: 20%;
+            background-image: repeating-linear-gradient(to right, rgba(229,90,126,0.7) 0 5px, transparent 5px 10px);
+        }
+
+        .chart-bars::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            top: 80%;
+            background-image: repeating-linear-gradient(to right, rgba(243,156,90,0.7) 0 5px, transparent 5px 10px);
+        }
 
         .bars-grid {
             display: grid;
-            grid-template-columns: repeat(10,1fr);
+            grid-template-columns: repeat(10, 1fr);
             gap: 5px;
             height: 100%;
             align-items: end;
             padding: 0 4px;
+            transition: all 0.3s ease;
         }
-        /* Thanh đỏ đậm hơn */
+
         .bar-red {
             border-radius: 4px 4px 0 0;
-            background: linear-gradient(180deg,#E55A7E,#c73a5e);
+            background: linear-gradient(180deg, #E55A7E, #c73a5e);
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Thanh cam đậm hơn */
+
         .bar-amber {
             border-radius: 4px 4px 0 0;
-            background: linear-gradient(180deg,#F39C5A,#d4783a);
+            background: linear-gradient(180deg, #F39C5A, #d4783a);
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bar-green {
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(180deg, #34C77B, #276749);
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .x-axis {
             display: grid;
-            grid-template-columns: repeat(10,1fr);
+            grid-template-columns: repeat(10, 1fr);
             gap: 5px;
             margin-top: 6px;
             padding: 0 4px;
@@ -323,10 +329,10 @@
             text-align: center;
         }
 
-            .x-axis div {
-                line-height: 1.2;
-                word-wrap: break-word;
-            }
+        .x-axis div {
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
 
         .legend {
             display: flex;
@@ -353,7 +359,6 @@
             margin-top: 1px;
         }
 
-        /* Filter card */
         .filter-card {
             background: white;
             border: 1px solid rgba(201,184,245,0.22);
@@ -361,12 +366,12 @@
             padding: 18px 20px;
         }
 
-            .filter-card h4 {
-                font-size: 14px;
-                font-weight: 800;
-                color: var(--text-main);
-                margin-bottom: 14px;
-            }
+        .filter-card h4 {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
 
         .fg-label {
             font-size: 11.5px;
@@ -396,11 +401,10 @@
             background-size: 10px;
         }
 
-            .fg-select:focus {
-                border-color: var(--primary);
-            }
+        .fg-select:focus {
+            border-color: var(--primary);
+        }
 
-        /* Table */
         .vtable-card {
             background: white;
             border: 1px solid var(--border);
@@ -417,42 +421,46 @@
             border-bottom: 1px solid var(--border);
         }
 
-            .vtable-head h3 {
-                font-size: 14px;
-                font-weight: 700;
-                color: var(--text-main);
-            }
+        .vtable-head h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
         .vtable {
             width: 100%;
             border-collapse: collapse;
         }
 
-            .vtable th {
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-muted);
-                padding: 10px 16px;
-                border-bottom: 1px solid var(--border);
-                text-align: left;
-            }
+        .vtable th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
 
-            .vtable td {
-                padding: 11px 16px;
-                border-bottom: 1px solid var(--border);
-                font-size: 13px;
-                vertical-align: middle;
-            }
+        .vtable td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
 
-            .vtable tr:last-child td {
-                border-bottom: none;
-            }
+        .vtable tr:last-child td {
+            border-bottom: none;
+        }
 
-            .vtable tr:hover td {
-                background: #faf8ff;
-            }
+        .vtable tr:hover td {
+            background: #faf8ff;
+        }
+
+        .vtable tr.selected-row td {
+            background: rgba(201,184,245,0.08);
+        }
 
         .sp-overload {
             background: #fdd8d8;
@@ -527,9 +535,9 @@
             transition: all 0.15s;
         }
 
-            .btn-relocate:hover {
-                background: #fde8f0;
-            }
+        .btn-relocate:hover {
+            background: #fde8f0;
+        }
 
         .pag-bar {
             display: flex;
@@ -564,16 +572,15 @@
             transition: all 0.15s;
         }
 
-            .pag-btn.active {
-                background: var(--gradient);
-                color: var(--text-main);
-                border-color: transparent;
-                font-weight: 700;
-            }
+        .pag-btn.active {
+            background: var(--gradient);
+            color: var(--text-main);
+            border-color: transparent;
+            font-weight: 700;
+        }
     </style>
 }
 
-<!-- PAGE TITLE ROW — không có banner tím như Figma -->
 <div class="page-title-row">
     <div>
         <h1 data-i18n="Station Inventory & Capacity">Station Inventory &amp; Capacity</h1>
@@ -593,39 +600,35 @@
     </div>
 </div>
 
-<!-- KPI CARDS — 4 cột cân đối -->
 <div class="kpi-row">
-
-    <!-- Total Stations -->
     <div class="kpi-card kpi-purple">
         <div class="kpi-icon-wrap">🚉</div>
         <div class="kpi-body">
             <div class="kpi-label" data-i18n="Total Stations">Total Stations</div>
             <div class="kpi-value">@total</div>
-            <div class="kpi-sub" data-i18n="Across all district">Across all district</div>
+            <div class="kpi-sub" data-i18n="Across all districts">Across all districts</div>
             <div class="kpi-trend">
-                <span class="trend-up">▲ +8</span>
-                <span style="color:var(--text-muted);">This month</span>
-                <div class="kpi-bar-wrap"><div class="kpi-bar-fill" style="width:60%;background:#B89DF0;"></div></div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar-fill" style="width:100%;background:#B89DF0;"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Balanced -->
     <div class="kpi-card kpi-green">
         <div class="kpi-icon-wrap">✅</div>
         <div class="kpi-body">
             <div class="kpi-label" data-i18n="Balanced (20-90%)">Balanced (20-90%)</div>
             <div class="kpi-value">@balanced</div>
-            <div class="kpi-sub">@(total > 0 ? Math.Round((double)balanced / total * 100, 2) : 0)% of total</div>
+            <div class="kpi-sub">@(total > 0 ? Math.Round((double)balanced / total * 100, 1) : 0)% <span data-i18n="of total">of total</span></div>
             <div class="kpi-trend">
-                <span class="trend-up">▲ +8 %</span>
-                <div class="kpi-bar-wrap"><div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)balanced / total * 100) : 0)%;background:#34C77B;"></div></div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)balanced / total * 100) : 0)%;background:#34C77B;"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Low Inventory -->
     <div class="kpi-card kpi-orange">
         <div class="kpi-icon-wrap">
             <svg viewBox="0 0 56 56" width="44" height="44" fill="none">
@@ -635,63 +638,57 @@
             </svg>
         </div>
         <div class="kpi-body">
-            <div class="kpi-label" data-i18n="Low Inventory (&lt;20%)">Low Inventory (&lt;20%)</div>
+            <div class="kpi-label" data-i18n="Low Inventory (<20%)">Low Inventory (&lt;20%)</div>
             <div class="kpi-value">@lowInv</div>
             <div class="kpi-sub" style="color:#b86d2a;">
-                @(total > 0 ? Math.Round((double)lowInv / total * 100, 2) : 0)%
-                <span style="color:var(--text-muted);font-weight:500;"> of total</span>
+                @(total > 0 ? Math.Round((double)lowInv / total * 100, 1) : 0)%
+                <span style="color:var(--text-muted);font-weight:500;" data-i18n="of total"> of total</span>
             </div>
             <div class="kpi-discount" data-i18n="15% DISCOUNT applies here!">
                 15% DISCOUNT for users returning vehicles to these stations
             </div>
             <div class="kpi-trend" style="margin-top:4px;">
-                <span class="trend-up">▲ +8 %</span>
-                <div class="kpi-bar-wrap"><div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)lowInv / total * 100) : 0)%;background:#F39C5A;"></div></div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)lowInv / total * 100) : 0)%;background:#F39C5A;"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Overloaded -->
     <div class="kpi-card kpi-red">
         <div class="kpi-icon-wrap">🔴</div>
         <div class="kpi-body">
-            <div class="kpi-label" data-i18n="Full/Overloaded (&gt;90%)">Full/Overloaded (&gt;90%)</div>
+            <div class="kpi-label" data-i18n="Full/Overloaded (>90%)">Full/Overloaded (&gt;90%)</div>
             <div class="kpi-value">@overloaded</div>
-            <div class="kpi-sub">@(total > 0 ? Math.Round((double)overloaded / total * 100, 2) : 0)% of total</div>
+            <div class="kpi-sub">@(total > 0 ? Math.Round((double)overloaded / total * 100, 1) : 0)% <span data-i18n="of total">of total</span></div>
             <div class="kpi-trend">
-                <span class="trend-dn">▼ Reduce 8%</span>
-                <div class="kpi-bar-wrap"><div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)overloaded / total * 100) : 0)%;background:#E55A7E;"></div></div>
+                <div class="kpi-bar-wrap">
+                    <div class="kpi-bar-fill" style="width:@(total > 0 ? (int)((double)overloaded / total * 100) : 0)%;background:#E55A7E;"></div>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- CHART + FILTER -->
 <div class="chart-row">
-
-    <!-- Bar Chart — màu đậm hơn, đúng Figma -->
     <div class="chart-card">
         <div class="chart-title" data-i18n="Capacity vs. Utilization by Station">Capacity vs. Utilization by Station</div>
-        <div class="chart-sub">Displaying Top 10 critical stations (sorted by utilization %, ties broken by capacity)</div>
+        <div class="chart-sub" id="chartSubTitle" data-i18n="Displaying Top 10 critical stations">Displaying Top 10 critical stations (sorted by utilization %, ties broken by capacity)</div>
         <div class="chart-area">
-            <!-- Y axis -->
             <div class="y-axis">
                 <div>100</div><div>80</div><div>60</div><div>40</div><div>20</div><div>0</div>
             </div>
-            <!-- Bars -->
             <div class="chart-inner">
                 <div class="chart-bars">
-                    <div class="bars-grid">
+                    <div class="bars-grid" id="chartBarsGrid">
                         @{
                             var top10 = list.OrderByDescending(x => x.UtilizationPercent).Take(10).ToList();
                             foreach (var s in top10)
                             {
-                                string barClass = s.IsLowInventory ? "bar-amber" : "bar-red";
+                                string barClass = s.IsOverloaded ? "bar-red" : (s.IsLowInventory ? "bar-amber" : "bar-green");
                                 int h = (int)Math.Min(s.UtilizationPercent, 100);
                                 <div class="@barClass" style="height:@h%;"></div>
                             }
-                            // Pad if less than 10
                             for (int i = top10.Count; i < 10; i++)
                             {
                                 <div class="bar-red" style="height:5%;opacity:0.2;"></div>
@@ -699,7 +696,8 @@
                         }
                     </div>
                 </div>
-                <div class="x-axis">
+
+                <div class="x-axis" id="chartXAxis">
                     @foreach (var s in top10)
                     {
                         string shortName = s.StationName.Length > 9 ? s.StationName.Substring(0, 9) + "…" : s.StationName;
@@ -711,53 +709,45 @@
                     }
                 </div>
             </div>
-            <!-- Legend -->
             <div class="legend">
                 <div class="leg-item">
                     <span class="leg-sw" style="background:#E55A7E;"></span>
-                    <span>Low Inventory<br />(&gt;90%)</span>
+                    <span data-i18n="Overload / Full (>90%)">Overload / Full<br />(&gt;90%)</span>
                 </div>
-                <div class="leg-item" style="margin-top:50px;">
+                <div class="leg-item" style="margin-top:10px;">
+                    <span class="leg-sw" style="background:#34C77B;"></span>
+                    <span data-i18n="Balanced (20% - 90%)">Balanced<br />(20% - 90%)</span>
+                </div>
+                <div class="leg-item" style="margin-top:10px;">
                     <span class="leg-sw" style="background:#F39C5A;"></span>
-                    <span>Low Inventory<br />(&lt;20%)</span>
+                    <span data-i18n="Low Inventory (<20%)">Low Inventory<br />(&lt;20%)</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Panel — 3 dropdown đúng Figma -->
     <div class="filter-card">
         <h4 data-i18n="Filter">Filter</h4>
 
-        <label class="fg-label">District / Area</label>
+        <label class="fg-label" data-i18n="District / Area">District / Area</label>
         <select class="fg-select" id="filterDistrict" onchange="applyFilter()">
-            <option value="">All Districts</option>
+            <option value="" data-i18n="All Districts">All Districts</option>
             @foreach (var d in districts)
             {
                 <option value="@d.ToLower()">@d</option>
             }
         </select>
 
-        <label class="fg-label">Status</label>
+        <label class="fg-label" data-i18n="Utilization Status">Status</label>
         <select class="fg-select" id="filterStatus" onchange="applyFilter()">
-            <option value="">All Status</option>
-            <option value="balanced">Balanced</option>
-            <option value="lowinventory">Low Inventory</option>
-            <option value="overload">Overload</option>
-        </select>
-
-        <label class="fg-label">Utilization Range</label>
-        <select class="fg-select" id="filterRange" onchange="applyFilter()" style="background-color:rgba(201,184,245,0.08);">
-            <option value="">All Range</option>
-            <option value="low">0% – 20% (Low)</option>
-            <option value="mid">20% – 90% (Balanced)</option>
-            <option value="high">90%+ (Overload)</option>
+            <option value="" data-i18n="All Status">All Status</option>
+            <option value="balanced" data-i18n="Balanced">Balanced</option>
+            <option value="lowinventory" data-i18n="Low Inventory">Low Inventory</option>
+            <option value="overload" data-i18n="Overload">Overload</option>
         </select>
     </div>
-
 </div>
 
-<!-- DETAIL TABLE -->
 <div class="vtable-card">
     <div class="vtable-head">
         <h3 data-i18n="Station Inventory Details">Station Inventory Details</h3>
@@ -771,8 +761,8 @@
             <thead>
                 <tr>
                     <th data-i18n="Station Name">Station Name</th>
-                    <th style="text-align:center;">Current Bike</th>
-                    <th style="text-align:center;">Current E-Scooter</th>
+                    <th style="text-align:center;" data-i18n="Current Bike">Current Bike</th>
+                    <th style="text-align:center;" data-i18n="Current E-Scooter">Current E-Scooter</th>
                     <th style="text-align:center;" data-i18n="Capacity">Total Capacity</th>
                     <th style="text-align:center;" data-i18n="Available Slots">Available Slots</th>
                     <th data-i18n="Utilization %">Utilization %</th>
@@ -808,7 +798,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td><span class="@bParts[0]">@bParts[1]</span></td>
+                        <td><span class="@bParts[0]" data-i18n="@bParts[1]">@bParts[1]</span></td>
                         <td style="text-align:center;">
                             <button class="btn-relocate">
                                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M9 4l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -820,8 +810,6 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Pagination thật -->
     <div class="pag-bar">
         <div class="pag-info" id="pagInfo">Page 1 of 1</div>
         <div class="pag-btns" id="pagBtns"></div>
@@ -834,47 +822,138 @@
         let currentPage = 1;
         let allRows = [];
 
+        const stationData = [
+            @foreach (var s in list)
+            {
+                string statusKey = s.IsOverloaded ? "overload" : s.IsLowInventory ? "lowinventory" : "balanced";
+                string rangeKey = s.IsOverloaded ? "high" : s.IsLowInventory ? "low" : "mid";
+                <text>{
+                    name: "@Html.Raw(s.StationName)",
+                    district: "@s.Location.ToLower()",
+                    status: "@statusKey",
+                    range: "@rangeKey",
+                    util: @Math.Min(s.UtilizationPercent, 100)
+                }, </text>
+            }
+        ];
+
         function initPagination() {
             allRows = [...document.querySelectorAll('#reportBody tr')];
             allRows.forEach(r => r.dataset.filtered = 'true');
             goToPage(1);
         }
-        function getFiltered() { return allRows.filter(r => r.dataset.filtered !== 'false'); }
+
+        function getFiltered() { 
+            return allRows.filter(r => r.dataset.filtered !== 'false'); 
+        }
+
         function goToPage(page) {
             const rows = getFiltered();
             const total = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
             currentPage = Math.min(Math.max(1, page), total);
+            
             allRows.forEach(r => r.style.display = 'none');
             const start = (currentPage - 1) * PAGE_SIZE;
             rows.slice(start, start + PAGE_SIZE).forEach(r => r.style.display = '');
-            document.getElementById('pagInfo').textContent = `Page ${currentPage} of ${total} — ${rows.length} stations`;
-            document.getElementById('showingCount').textContent = `Showing ${Math.min(PAGE_SIZE, rows.length - start)} of ${rows.length} stations`;
+            
             renderPagBtns(currentPage, total);
+            const isVi = (localStorage.getItem('sr_lang') || 'en') === 'vi';
+            document.getElementById('pagInfo').textContent = isVi
+                ? `Trang ${currentPage} / ${total} — ${rows.length} trạm`
+                : `Page ${currentPage} of ${total} — ${rows.length} stations`;
+            document.getElementById('showingCount').textContent = isVi
+                ? `Hiển thị ${Math.min(PAGE_SIZE, rows.length - start)} / ${rows.length} trạm`
+                : `Showing ${Math.min(PAGE_SIZE, rows.length - start)} of ${rows.length} stations`;
         }
+
         function renderPagBtns(cur, total) {
-            const c = document.getElementById('pagBtns'); c.innerHTML = '';
-            const b = (label, page, active) => { const btn = document.createElement('button'); btn.className = 'pag-btn' + (active ? ' active' : ''); btn.innerHTML = label; if (page) btn.onclick = () => goToPage(page); else btn.disabled = true; return btn; };
+            const c = document.getElementById('pagBtns'); 
+            c.innerHTML = '';
+            
+            const b = (label, page, active) => { 
+                const btn = document.createElement('button'); 
+                btn.className = 'pag-btn' + (active ? ' active' : ''); 
+                btn.innerHTML = label; 
+                if (page) btn.onclick = () => goToPage(page); 
+                else btn.disabled = true; 
+                return btn; 
+            };
+            
             c.appendChild(b('<i class="fas fa-chevron-left" style="font-size:10px;"></i>', cur - 1));
-            let pages = new Set([1, total]); for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++)pages.add(i);
-            let prev = 0;[...pages].sort((a, b) => a - b).forEach(p => { if (p - prev > 1) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; c.appendChild(sp); } c.appendChild(b(p, p, p === cur)); prev = p; });
+            
+            let pages = new Set([1, total]); 
+            for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++) {
+                pages.add(i);
+            }
+            
+            let prev = 0;
+            [...pages].sort((a, b) => a - b).forEach(p => { 
+                if (p - prev > 1) { 
+                    const sp = document.createElement('span'); 
+                    sp.textContent = '…'; 
+                    sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; 
+                    c.appendChild(sp); 
+                } 
+                c.appendChild(b(p, p, p === cur)); 
+                prev = p; 
+            });
+            
             c.appendChild(b('<i class="fas fa-chevron-right" style="font-size:10px;"></i>', cur + 1));
         }
 
-        // Filter — rebuild pagination sau khi lọc
         function applyFilter() {
             const dist = document.getElementById('filterDistrict').value.toLowerCase();
             const status = document.getElementById('filterStatus').value;
-            const range = document.getElementById('filterRange').value;
+
+            const subTitle = document.getElementById('chartSubTitle');
+            if (dist || status) {
+                subTitle.style.display = 'none';
+            } else {
+                subTitle.style.display = 'block';
+            }
+
             allRows.forEach(row => {
-                const match = (!dist || (row.dataset.district || '').includes(dist)) && (!status || row.dataset.status === status) && (!range || row.dataset.range === range);
+                const match = (!dist || (row.dataset.district || '').includes(dist)) && (!status || row.dataset.status === status);
                 row.dataset.filtered = match ? 'true' : 'false';
             });
             goToPage(1);
+
+            const filteredData = stationData.filter(s => {
+                return (!dist || s.district.includes(dist)) && (!status || s.status === status);
+            });
+
+            filteredData.sort((a, b) => b.util - a.util);
+            const top10 = filteredData.slice(0, 10);
+
+            const chartBars = document.getElementById('chartBarsGrid');
+            const chartLabels = document.getElementById('chartXAxis');
+
+            let barsHtml = '';
+            let labelsHtml = '';
+            top10.forEach(s => {
+                let barClass = s.status === 'overload' ? "bar-red" : (s.status === 'lowinventory' ? "bar-amber" : "bar-green");
+                barsHtml += `<div class="${barClass}" style="height:${s.util}%;"></div>`;
+                let shortName = s.name.length > 9 ? s.name.substring(0, 9) + "…" : s.name;
+                labelsHtml += `<div>${shortName}</div>`;
+            });
+
+            for (let i = top10.length; i < 10; i++) {
+                barsHtml += `<div class="bar-red" style="height:5%;opacity:0.2;"></div>`;
+                labelsHtml += `<div></div>`;
+            }
+
+            chartBars.innerHTML = barsHtml;
+            chartLabels.innerHTML = labelsHtml;
         }
 
         function exportCSV() {
             const rows = [['Station', 'Bike', 'Scooter', 'Capacity', 'Available', 'Utilization%', 'Status']];
-            getFiltered().forEach(row => { const c = row.querySelectorAll('td'); if (c.length < 7) return; rows.push([...c].slice(0, 7).map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`)); });
+            getFiltered().forEach(row => { 
+                const c = row.querySelectorAll('td'); 
+                if (c.length < 7) return; 
+                rows.push([...c].slice(0, 7).map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`)); 
+            });
+            
             const a = document.createElement('a');
             a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
             a.download = `station_inventory_${new Date().toISOString().slice(0, 10)}.csv`;
