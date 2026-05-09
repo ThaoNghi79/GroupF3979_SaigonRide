@@ -5,8 +5,9 @@
 }
 
 @section Styles {
-    <!-- Thêm thư viện Leaflet để ghim bản đồ -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.1/assets/css/leaflet.css" />
+
     <style>
         .page-banner-plain {
             display: flex;
@@ -15,18 +16,18 @@
             margin-bottom: 18px;
         }
 
-            .page-banner-plain h1 {
-                font-size: 22px;
-                font-weight: 800;
-                color: var(--text-main);
-            }
+        .page-banner-plain h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
 
-            .page-banner-plain .sub {
-                font-size: 13px;
-                color: var(--text-muted);
-                margin-top: 3px;
-                font-weight: 500;
-            }
+        .page-banner-plain .sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 500;
+        }
 
         .banner-btns {
             display: flex;
@@ -49,9 +50,9 @@
             transition: all 0.15s;
         }
 
-            .btn-outline:hover {
-                border-color: var(--primary);
-            }
+        .btn-outline:hover {
+            border-color: var(--primary);
+        }
 
         .btn-filled {
             display: inline-flex;
@@ -69,9 +70,9 @@
             transition: all 0.15s;
         }
 
-            .btn-filled:hover {
-                background: #3d3557;
-            }
+        .btn-filled:hover {
+            background: #3d3557;
+        }
 
         .filter-bar-plain {
             display: flex;
@@ -112,28 +113,28 @@
             position: relative;
         }
 
-            .fsearch input {
-                width: 100%;
-                padding: 8px 14px 8px 34px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                font-size: 13px;
-                font-family: inherit;
-                outline: none;
-            }
+        .fsearch input {
+            width: 100%;
+            padding: 8px 14px 8px 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
 
-                .fsearch input:focus {
-                    border-color: var(--primary);
-                }
+        .fsearch input:focus {
+            border-color: var(--primary);
+        }
 
-            .fsearch .si {
-                position: absolute;
-                left: 11px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--text-muted);
-                font-size: 12px;
-            }
+        .fsearch .si {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 12px;
+        }
 
         .vtable-card {
             background: white;
@@ -151,46 +152,46 @@
             border-bottom: 1px solid var(--border);
         }
 
-            .vtable-head h3 {
-                font-size: 14px;
-                font-weight: 700;
-                color: var(--text-main);
-            }
+        .vtable-head h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
         .vtable {
             width: 100%;
             border-collapse: collapse;
         }
 
-            .vtable th {
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-muted);
-                padding: 10px 16px;
-                border-bottom: 1px solid var(--border);
-                text-align: left;
-            }
+        .vtable th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
 
-            .vtable td {
-                padding: 11px 16px;
-                border-bottom: 1px solid var(--border);
-                font-size: 13px;
-                vertical-align: middle;
-            }
+        .vtable td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
 
-            .vtable tr:last-child td {
-                border-bottom: none;
-            }
+        .vtable tr:last-child td {
+            border-bottom: none;
+        }
 
-            .vtable tr:hover td {
-                background: #faf8ff;
-            }
+        .vtable tr:hover td {
+            background: #faf8ff;
+        }
 
-            .vtable tr.selected-row td {
-                background: rgba(201,184,245,0.08);
-            }
+        .vtable tr.selected-row td {
+            background: rgba(201,184,245,0.08);
+        }
 
         .id-chip {
             display: inline-block;
@@ -279,21 +280,21 @@
             transition: all 0.15s;
         }
 
-            .act-btn.edit {
-                color: var(--primary-text);
-            }
+        .act-btn.edit {
+            color: var(--primary-text);
+        }
 
-                .act-btn.edit:hover {
-                    background: #ede9fa;
-                }
+        .act-btn.edit:hover {
+            background: #ede9fa;
+        }
 
-            .act-btn.del {
-                color: var(--danger);
-            }
+        .act-btn.del {
+            color: var(--danger);
+        }
 
-                .act-btn.del:hover {
-                    background: #fdd8d8;
-                }
+        .act-btn.del:hover {
+            background: #fdd8d8;
+        }
 
         .sel-bar {
             display: flex;
@@ -368,26 +369,51 @@
             transition: all 0.15s;
         }
 
-            .pag-btn.active {
-                background: var(--gradient);
-                color: var(--text-main);
-                border-color: transparent;
-                font-weight: 700;
-            }
+        .pag-btn.active {
+            background: var(--gradient);
+            color: var(--text-main);
+            border-color: transparent;
+            font-weight: 700;
+        }
 
-        /* Bản đồ Leaflet Fix */
         .map-picker {
-            height: 180px;
+            height: 220px; 
             width: 100%;
             border-radius: 10px;
             border: 1px solid var(--border);
             margin-bottom: 16px;
-            z-index: 1; /* Để khỏi đè lên dropdown */
+            z-index: 1;
+        }
+
+        .modal-box {
+            max-height: 90vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            overscroll-behavior: contain;
+        }
+
+        .modal-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .leaflet-geosearch-bar {
+            margin-top: 10px !important;
+            margin-right: 10px !important;
+            margin-left: auto !important; 
+            max-width: 300px !important; 
         }
     </style>
 }
 
-<!-- PAGE HEADER -->
 <div class="page-banner-plain">
     <div>
         <h1 data-i18n="Stations Management">Stations Management</h1>
@@ -405,23 +431,21 @@
     </div>
 </div>
 
-<!-- FILTER BAR -->
 <div class="filter-bar-plain">
     <span class="flabel" data-i18n="Filter by:">Filter by:</span>
     <select class="fdrop" id="filterDistrict" onchange="applyFilter()">
-        <option value="">📍 All Districts</option>
+        <option value="" data-i18n="All Districts" data-i18n-prefix="📍 ">All Districts</option>
         @foreach (var d in Model.Select(s => s.Location).Distinct().OrderBy(x => x))
         {
             <option value="@d">@d</option>
         }
     </select>
 
-    <!-- FIX: Chức năng lọc Status -->
     <select class="fdrop" id="filterStatus" onchange="applyFilter()">
-        <option value="">🔄 All Statuses</option>
-        <option value="active">Active</option>
-        <option value="maintenance">Maintenance</option>
-        <option value="offline">Offline</option>
+        <option value="" data-i18n="All Statuses" data-i18n-prefix="🔄 ">All Statuses</option>
+        <option value="active" data-i18n="Active">Active</option>
+        <option value="maintenance" data-i18n="Maintenance">Maintenance</option>
+        <option value="offline" data-i18n="Offline">Offline</option>
     </select>
 
     <div class="fsearch">
@@ -433,7 +457,6 @@
     </div>
 </div>
 
-<!-- TABLE -->
 <div class="vtable-card">
     <div class="vtable-head">
         <h3 data-i18n="All Stations">All Stations</h3>
@@ -467,7 +490,6 @@
                         int availSlots = s.Capacity - s.CurrentInventory;
                         string utilColor = util >= 90 ? "#E55A7E" : util < 20 ? "#F39C5A" : "#34C77B";
 
-                        // FIX: Lấy Status trực tiếp từ Database (trả quyền cho Admin), không tính tự động nữa
                         string currentStatus = s.Status != null ? s.Status.ToString() : "Active";
                         string statusKey = currentStatus.ToLower();
                         string badgeClass = statusKey == "active" ? "sp-active" : statusKey == "maintenance" ? "sp-maint" : "sp-offline";
@@ -481,9 +503,13 @@
                             <td style="font-weight:600;">@s.StationName</td>
                             <td style="color:var(--text-muted);font-size:12.5px;">@s.Location</td>
                             <td>
-                                <span class="inv-chip">🚲 @(s.CurrentInventory / 2)</span>
+                                @{
+                                    var bikeCount = s.Vehicles?.Count(v => v.Category?.CategoryName == "Standard Bike") ?? 0;
+                                    var scooterCount = s.Vehicles?.Count(v => v.Category?.CategoryName == "E-Scooter") ?? 0;
+                                }
+                                <span class="inv-chip">🚲 @bikeCount</span>
                                 <span class="inv-div">|</span>
-                                <span class="inv-chip">🛴 @(s.CurrentInventory - s.CurrentInventory / 2)</span>
+                                <span class="inv-chip">🛴 @scooterCount</span>
                             </td>
                             <td style="font-weight:600;text-align:center;">@s.Capacity</td>
                             <td style="text-align:center;font-weight:700;
@@ -498,9 +524,8 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="status-pill @badgeClass">@badgeTxt</span></td>
+                            <td><span class="status-pill @badgeClass" data-i18n="@badgeTxt">@badgeTxt</span></td>
                             <td style="text-align:center;">
-                                <!-- Trừ hao trường hợp null Lat/Lng để gán 0 -->
                                 <button class="act-btn edit" title="Edit"
                                         onclick="openEditModal(@s.StationId,'@Html.Raw(s.StationName)','@Html.Raw(s.Location)',@s.Capacity,@s.CurrentInventory, '@statusKey', @(s.Latitude ?? 10.7769), @(s.Longitude ?? 106.7009))">
                                     <i class="fas fa-pen"></i>
@@ -521,30 +546,27 @@
         </table>
     </div>
 
-    <!-- FIX: Bulk bar đã chèn lại nút Update Status -->
     <div class="sel-bar" id="bulkBar" style="display:none;">
         <span class="sel-info">
-            <span id="bulkCount">0</span> Selected
-            <span class="clear-sel" onclick="clearSelection()">Clear selection</span>
+            <span id="bulkCount">0</span> <span data-i18n="Selected">Selected</span>
+            <span class="clear-sel" onclick="clearSelection()" data-i18n="Clear selection">Clear selection</span>
         </span>
         <div class="sel-actions">
             <button class="btn-filled" style="background:#34C77B; border:none; padding:7px 14px; border-radius:8px; font-size:12.5px; margin-right:5px;" onclick="openModal('bulkUpdateModal', 'none')">
-                <i class="fas fa-sync-alt" style="margin-right:4px;"></i> Update Status
+                <i class="fas fa-sync-alt" style="margin-right:4px;"></i><span data-i18n="Update Status">Update Status</span>
             </button>
             <button class="btn-danger" onclick="bulkDeleteStations()">
-                <i class="fas fa-trash" style="margin-right:4px;"></i> Delete Selected
+                <i class="fas fa-trash" style="margin-right:4px;"></i> <span data-i18n="Delete Selected">Delete Selected</span>
             </button>
         </div>
     </div>
 
-    <!-- Pagination thật — JS tự render -->
     <div class="pag-bar">
         <div class="pag-info" id="pagInfo">Page 1 of 1</div>
         <div class="pag-btns" id="pagBtns"></div>
     </div>
 </div>
 
-<!-- ADD STATION MODAL -->
 <div class="modal-backdrop-custom" id="addModal">
     <div class="modal-box">
         <div class="modal-header-custom">
@@ -562,16 +584,14 @@
                 <label class="form-label-custom" data-i18n="Location / Address">Location / Address</label>
                 <input name="Location" class="form-input-custom" placeholder="e.g. District 1, Ho Chi Minh City" required maxlength="200" />
 
-                <!-- FIX: Thêm dropdown Status -->
-                <label class="form-label-custom">Station Status</label>
+                <label class="form-label-custom" data-i18n="Station Status">Station Status</label>
                 <select name="Status" class="form-input-custom" style="margin-bottom:16px;">
-                    <option value="Active">Active</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Offline">Offline</option>
+                    <option value="Active" data-i18n="Active">Active</option>
+                    <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
+                    <option value="Offline" data-i18n="Offline">Offline</option>
                 </select>
 
-                <!-- FIX: Bản đồ ghim vị trí thật -->
-                <label class="form-label-custom">Pin Location (Click on map)</label>
+                <label class="form-label-custom" data-i18n="Pin Location">Pin Location (Type above map to search)</label>
                 <div id="addMap" class="map-picker"></div>
                 <input type="hidden" name="Latitude" id="addLat" value="10.7769" />
                 <input type="hidden" name="Longitude" id="addLng" value="106.7009" />
@@ -592,60 +612,6 @@
     </div>
 </div>
 
-<!-- EDIT STATION MODAL -->
-<div class="modal-backdrop-custom" id="editModal">
-    <div class="modal-box">
-        <div class="modal-header-custom">
-            <h4>
-                <i class="fas fa-pen" style="margin-right:8px;"></i>
-                <span data-i18n="Edit Station">Edit Station</span> — <span id="editModalTitle"></span>
-            </h4>
-        </div>
-        <form method="post" id="editForm">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="StationId" id="editStationId" />
-            <div class="modal-body-custom">
-                <label class="form-label-custom" data-i18n="Station Name">Station Name</label>
-                <input name="StationName" id="editStationName" class="form-input-custom" required maxlength="100" />
-
-                <label class="form-label-custom" data-i18n="Location / Address">Location / Address</label>
-                <input name="Location" id="editLocation" class="form-input-custom" required maxlength="200" />
-
-                <!-- FIX: Thêm dropdown Status -->
-                <label class="form-label-custom">Station Status</label>
-                <select name="Status" id="editStatus" class="form-input-custom" style="margin-bottom:16px;">
-                    <option value="Active">Active</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Offline">Offline</option>
-                </select>
-
-                <!-- FIX: Bản đồ ghim vị trí thật -->
-                <label class="form-label-custom">Pin Location (Click on map)</label>
-                <div id="editMap" class="map-picker"></div>
-                <input type="hidden" name="Latitude" id="editLat" />
-                <input type="hidden" name="Longitude" id="editLng" />
-
-                <label class="form-label-custom" data-i18n="Max Capacity">Max Capacity</label>
-                <input name="Capacity" id="editCapacity" type="number" min="1" max="500" class="form-input-custom" required />
-                <div style="background:var(--body-bg);border-radius:10px;padding:12px 16px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-size:13px;color:var(--text-muted);" data-i18n="Current Inventory">Current Inventory</span>
-                    <span id="editInventoryInfo" style="font-weight:700;color:var(--primary-text);font-size:14px;">—</span>
-                </div>
-            </div>
-            <div style="padding:0 24px 24px;">
-                <div class="modal-footer-custom">
-                    <button type="button" class="btn-cancel" onclick="closeModal('editModal')" data-i18n="Cancel">Cancel</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save" style="margin-right:5px;"></i>
-                        <span data-i18n="Save Changes">Save Changes</span>
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- FIX: BULK UPDATE MODAL -->
 <div class="modal-backdrop-custom" id="bulkUpdateModal">
     <div class="modal-box" style="max-width: 400px;">
         <div class="modal-header-custom">
@@ -656,15 +622,14 @@
         </div>
         <form method="post" action="/Station/BulkUpdateStatus" id="bulkUpdateForm">
             @Html.AntiForgeryToken()
-            <!-- Chứa mảng ID xe đang chọn -->
             <div id="bulkUpdateInputs"></div>
 
             <div class="modal-body-custom">
                 <label class="form-label-custom">Select New Status</label>
                 <select name="NewStatus" class="form-input-custom" required>
-                    <option value="Active">Active</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Offline">Offline</option>
+                    <option value="Active" data-i18n="Active">Active</option>
+                    <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
+                    <option value="Offline" data-i18n="Offline">Offline</option>
                 </select>
             </div>
             <div style="padding:0 24px 24px;">
@@ -678,207 +643,255 @@
         </form>
     </div>
 </div>
-
+@await Html.PartialAsync("Edit")
 
 @section Scripts {
-    <!-- Thêm JS Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.11.1/dist/geosearch.umd.js"></script>
+
     <script>
-        // ── Bản đồ ghim (Leaflet) ────────────────────────────────
         let mapAdd, mapEdit;
         let markerAdd, markerEdit;
 
         function initMaps() {
-        // Map cho Add
-        mapAdd = L.map('addMap').setView([10.7769, 106.7009], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapAdd);
-        markerAdd = L.marker([10.7769, 106.7009]).addTo(mapAdd);
-        mapAdd.on('click', function (e) {
-        markerAdd.setLatLng(e.latlng);
-        document.getElementById('addLat').value = e.latlng.lat;
-        document.getElementById('addLng').value = e.latlng.lng;
-        });
+            mapAdd = L.map('addMap').setView([10.7769, 106.7009], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapAdd);
+            markerAdd = L.marker([10.7769, 106.7009]).addTo(mapAdd);
 
-        // Map cho Edit
-        mapEdit = L.map('editMap').setView([10.7769, 106.7009], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapEdit);
-        mapEdit.on('click', function (e) {
-        if (!markerEdit) { markerEdit = L.marker(e.latlng).addTo(mapEdit); }
-        else { markerEdit.setLatLng(e.latlng); }
-        document.getElementById('editLat').value = e.latlng.lat;
-        document.getElementById('editLng').value = e.latlng.lng;
-        });
+            const providerAdd = new window.GeoSearch.OpenStreetMapProvider();
+            const searchControlAdd = new window.GeoSearch.GeoSearchControl({
+                provider: providerAdd,
+                style: 'bar',
+                showMarker: false,
+                showPopup: false,
+                autoClose: true,
+                retainZoomLevel: false,
+                animateZoom: true,
+                searchLabel: 'Nhập địa chỉ (VD: Chợ Bến Thành)'
+            });
+            mapAdd.addControl(searchControlAdd);
+
+            mapAdd.on('geosearch/showlocation', function (e) {
+                let latlng = { lat: e.location.y, lng: e.location.x };
+                markerAdd.setLatLng(latlng);
+                document.getElementById('addLat').value = latlng.lat;
+                document.getElementById('addLng').value = latlng.lng;
+                document.querySelector('input[name="Location"]').value = e.location.label;
+            });
+
+            mapAdd.on('click', function (e) {
+                markerAdd.setLatLng(e.latlng);
+                document.getElementById('addLat').value = e.latlng.lat;
+                document.getElementById('addLng').value = e.latlng.lng;
+            });
+
+            mapEdit = L.map('editMap').setView([10.7769, 106.7009], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapEdit);
+
+            const providerEdit = new window.GeoSearch.OpenStreetMapProvider();
+            const searchControlEdit = new window.GeoSearch.GeoSearchControl({
+                provider: providerEdit,
+                style: 'bar',
+                showMarker: false,
+                showPopup: false,
+                autoClose: true,
+                retainZoomLevel: false,
+                animateZoom: true,
+                searchLabel: 'Nhập địa chỉ (VD: Chợ Bến Thành)'
+            });
+            mapEdit.addControl(searchControlEdit);
+
+            mapEdit.on('geosearch/showlocation', function (e) {
+                let latlng = { lat: e.location.y, lng: e.location.x };
+                if (!markerEdit) { markerEdit = L.marker(latlng).addTo(mapEdit); }
+                else { markerEdit.setLatLng(latlng); }
+                document.getElementById('editLat').value = latlng.lat;
+                document.getElementById('editLng').value = latlng.lng;
+                document.getElementById('editLocation').value = e.location.label;
+            });
+
+            mapEdit.on('click', function (e) {
+                if (!markerEdit) { markerEdit = L.marker(e.latlng).addTo(mapEdit); }
+                else { markerEdit.setLatLng(e.latlng); }
+                document.getElementById('editLat').value = e.latlng.lat;
+                document.getElementById('editLng').value = e.latlng.lng;
+            });
         }
 
-        // ── Modal ────────────────────────────────────────────────
         function openModal(id, mapType) {
-        document.getElementById(id).classList.add('show');
-        document.body.style.overflow = 'hidden';
+            document.getElementById(id).classList.add('show');
+            document.body.style.overflow = 'hidden';
 
-        // Sửa lỗi Leaflet không load hết gạch (tiles) khi bị giấu trong display:none
-        setTimeout(() => {
-        if (mapType === 'add' && mapAdd) mapAdd.invalidateSize();
-        if (mapType === 'edit' && mapEdit) mapEdit.invalidateSize();
-        }, 100);
+            setTimeout(() => {
+                if (mapType === 'add' && mapAdd) mapAdd.invalidateSize();
+                if (mapType === 'edit' && mapEdit) mapEdit.invalidateSize();
+            }, 100);
 
-        if (id === 'bulkUpdateModal') {
-        document.getElementById('bulkUpdateCountTitle').textContent = document.querySelectorAll('.row-check:checked').length;
+            if (id === 'bulkUpdateModal') {
+                document.getElementById('bulkUpdateCountTitle').textContent = document.querySelectorAll('.row-check:checked').length;
+            }
         }
-        }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
-
-        document.querySelectorAll('.modal-backdrop-custom').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop-custom.show').forEach(m => closeModal(m.id)); });
-
-        function openEditModal(id, name, location, cap, inv, status, lat, lng) {
-        document.getElementById('editStationId').value = id;
-        document.getElementById('editStationName').value = name;
-        document.getElementById('editLocation').value = location;
-        document.getElementById('editCapacity').value = cap;
-
-        // Chọn đúng Status
-        const statusDrop = document.getElementById('editStatus');
-        for (let i = 0; i < statusDrop.options.length; i++) {
-        if (statusDrop.options[i].value.toLowerCase() === status) { statusDrop.selectedIndex = i; break; }
+        
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('show'); 
+            document.body.style.overflow = ''; 
         }
 
-        document.getElementById('editModalTitle').textContent = name;
-        document.getElementById('editInventoryInfo').textContent = `${inv} / ${cap} vehicles`;
-        document.getElementById('editForm').action = `/Station/Edit/${id}`;
+        document.querySelectorAll('.modal-backdrop-custom').forEach(m => {
+            let mouseDownTarget = null;
+            m.addEventListener('mousedown', e => { mouseDownTarget = e.target; });
+            m.addEventListener('click', e => {
+                if (e.target === m && mouseDownTarget === m) closeModal(m.id);
+            });
+        });
+        
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop-custom.show').forEach(m => closeModal(m.id)); 
+        });
 
-        // Xử lý cắm cờ bản đồ edit
-        document.getElementById('editLat').value = lat;
-        document.getElementById('editLng').value = lng;
-        setTimeout(() => {
-        mapEdit.setView([lat, lng], 15);
-        if (markerEdit) mapEdit.removeLayer(markerEdit);
-        markerEdit = L.marker([lat, lng]).addTo(mapEdit);
-        }, 100);
-
-        openModal('editModal', 'edit');
-        }
-
-        // ── Pagination thật ──────────────────────────────────────
         const PAGE_SIZE = 7;
         let currentPage = 1;
         let allRows = [];
 
         function initPagination() {
-        allRows = [...document.querySelectorAll('#stationBody tr')];
-        allRows.forEach(r => r.dataset.filtered = 'true');
-        goToPage(1);
+            allRows = [...document.querySelectorAll('#stationBody tr')];
+            allRows.forEach(r => r.dataset.filtered = 'true');
+            goToPage(1);
         }
 
-        function getFiltered() { return allRows.filter(r => r.dataset.filtered !== 'false'); }
+        function getFiltered() { 
+            return allRows.filter(r => r.dataset.filtered !== 'false'); 
+        }
 
         function goToPage(page) {
-        const rows = getFiltered();
-        const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-        currentPage = Math.min(Math.max(1, page), totalPages);
-        allRows.forEach(r => r.style.display = 'none');
-        const start = (currentPage - 1) * PAGE_SIZE;
-        rows.slice(start, start + PAGE_SIZE).forEach(r => r.style.display = '');
-        const showing = Math.min(PAGE_SIZE, rows.length - start);
-        document.getElementById('pagInfo').textContent = `Page ${currentPage} of ${totalPages} — ${rows.length} stations total`;
-        document.getElementById('showingCount').textContent = `Showing ${showing} of ${rows.length} stations`;
-        renderPagBtns(currentPage, totalPages);
+            const rows = getFiltered();
+            const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+            currentPage = Math.min(Math.max(1, page), totalPages);
+            allRows.forEach(r => r.style.display = 'none');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            rows.slice(start, start + PAGE_SIZE).forEach(r => r.style.display = '');
+            const showing = Math.min(PAGE_SIZE, rows.length - start);
+            
+            document.getElementById('pagInfo').textContent = `Page ${currentPage} of ${totalPages} — ${rows.length} stations total`;
+            document.getElementById('showingCount').textContent = `Showing ${showing} of ${rows.length} stations`;
+            renderPagBtns(currentPage, totalPages);
+            
+            const isVi = (localStorage.getItem('sr_lang') || 'en') === 'vi';
+            document.getElementById('pagInfo').textContent = isVi
+                ? `Trang ${currentPage} / ${totalPages} — ${rows.length} trạm`
+                : `Page ${currentPage} of ${totalPages} — ${rows.length} stations total`;
+            document.getElementById('showingCount').textContent = isVi
+                ? `Hiển thị ${showing} / ${rows.length} trạm`
+                : `Showing ${showing} of ${rows.length} stations`;
         }
 
         function renderPagBtns(cur, total) {
-        const c = document.getElementById('pagBtns');
-        c.innerHTML = '';
-        const mkBtn = (html, page, active) => {
-        const b = document.createElement('button');
-        b.className = 'pag-btn' + (active ? ' active' : '');
-        b.innerHTML = html;
-        if (page && page >= 1 && page <= total) b.onclick = () => goToPage(page);
-        else b.disabled = true;
-        return b;
-        };
-        c.appendChild(mkBtn('<i class="fas fa-chevron-left" style="font-size:10px;"></i>', cur - 1));
-        const pages = new Set([1, total]);
-        for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++) pages.add(i);
-        let prev = 0;
-        [...pages].sort((a, b) => a - b).forEach(p => {
-        if (p - prev > 1) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; c.appendChild(sp); }
-        c.appendChild(mkBtn(p, p, p === cur));
-        prev = p;
-        });
-        c.appendChild(mkBtn('<i class="fas fa-chevron-right" style="font-size:10px;"></i>', cur + 1));
+            const c = document.getElementById('pagBtns');
+            c.innerHTML = '';
+            
+            const mkBtn = (html, page, active) => {
+                const b = document.createElement('button');
+                b.className = 'pag-btn' + (active ? ' active' : '');
+                b.innerHTML = html;
+                if (page && page >= 1 && page <= total) b.onclick = () => goToPage(page);
+                else b.disabled = true;
+                return b;
+            };
+            
+            c.appendChild(mkBtn('<i class="fas fa-chevron-left" style="font-size:10px;"></i>', cur - 1));
+            const pages = new Set([1, total]);
+            for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++) pages.add(i);
+            
+            let prev = 0;
+            [...pages].sort((a, b) => a - b).forEach(p => {
+                if (p - prev > 1) { 
+                    const sp = document.createElement('span'); 
+                    sp.textContent = '…'; 
+                    sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; 
+                    c.appendChild(sp); 
+                }
+                c.appendChild(mkBtn(p, p, p === cur));
+                prev = p;
+            });
+            c.appendChild(mkBtn('<i class="fas fa-chevron-right" style="font-size:10px;"></i>', cur + 1));
         }
 
-        // ── Filter (ĐÃ FIX LỖI STATUS) ───────────────────────────
         function applyFilter() {
-        const dist = document.getElementById('filterDistrict').value.toLowerCase();
-        const status = document.getElementById('filterStatus').value.toLowerCase(); // Bắt giá trị status
-        const search = document.getElementById('searchInput').value.toLowerCase();
+            const dist = document.getElementById('filterDistrict').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value.toLowerCase();
+            const search = document.getElementById('searchInput').value.toLowerCase();
 
-        allRows.forEach(row => {
-        const match =
-        (!dist || (row.dataset.district || '').includes(dist)) &&
-        (!status || (row.dataset.status || '').includes(status)) && // Kiểm tra status
-        (!search || (row.dataset.name || '').includes(search));
-        row.dataset.filtered = match ? 'true' : 'false';
-        });
-        goToPage(1);
+            allRows.forEach(row => {
+                const match =
+                    (!dist || (row.dataset.district || '').includes(dist)) &&
+                    (!status || (row.dataset.status || '').includes(status)) &&
+                    (!search || (row.dataset.name || '').includes(search));
+                row.dataset.filtered = match ? 'true' : 'false';
+            });
+            goToPage(1);
         }
 
-        // ── Selection & Bulk ─────────────────────────────────────
         function toggleAll(cb) {
-        document.querySelectorAll('#stationBody tr').forEach(r => {
-        if (r.style.display !== 'none') r.querySelector('.row-check').checked = cb.checked;
-        });
-        updateBulkBar();
+            document.querySelectorAll('#stationBody tr').forEach(r => {
+                if (r.style.display !== 'none') r.querySelector('.row-check').checked = cb.checked;
+            });
+            updateBulkBar();
         }
+
         function updateBulkBar() {
-        const n = document.querySelectorAll('.row-check:checked').length;
-        document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
-        document.getElementById('bulkCount').textContent = n;
+            const n = document.querySelectorAll('.row-check:checked').length;
+            document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
+            document.getElementById('bulkCount').textContent = n;
         }
-        function clearSelection() { document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); updateBulkBar(); }
+
+        function clearSelection() { 
+            document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); 
+            updateBulkBar(); 
+        }
 
         function bulkDeleteStations() {
-        const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
-        if (!ids.length) return;
-        if (!confirm(`Delete ${ids.length} station(s)?`)) return;
-        const tok = document.querySelector('input[name="__RequestVerificationToken"]').value;
-        Promise.all(ids.map(id => fetch(`/Station/Delete/${id}`, { method: 'POST', headers: { 'RequestVerificationToken': tok } })))
-        .then(() => location.reload());
+            const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
+            if (!ids.length) return;
+            if (!confirm(`Delete ${ids.length} station(s)?`)) return;
+            
+            const tok = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            Promise.all(ids.map(id => fetch(`/Station/Delete/${id}`, { method: 'POST', headers: { 'RequestVerificationToken': tok } })))
+                .then(() => location.reload());
         }
 
         function submitBulkUpdate() {
-        const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
-        if (!ids.length) return;
-        const container = document.getElementById('bulkUpdateInputs');
-        container.innerHTML = '';
-        // Nhét các ID đã chọn vào form ẩn để gửi về Backend
-        ids.forEach(id => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'stationIds'; // Tên biến mảng List<int> bên C# Controller
-        input.value = id;
-        container.appendChild(input);
-        });
-        document.getElementById('bulkUpdateForm').submit();
+            const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
+            if (!ids.length) return;
+            
+            const container = document.getElementById('bulkUpdateInputs');
+            container.innerHTML = '';
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'stationIds';
+                input.value = id;
+                container.appendChild(input);
+            });
+            document.getElementById('bulkUpdateForm').submit();
         }
 
-        // ── Export CSV ───────────────────────────────────────────
         function exportTableCSV() {
-        const rows = [['Station', 'Location', 'Capacity', 'Available', 'Utilization', 'Status']];
-        getFiltered().forEach(row => {
-        const c = row.querySelectorAll('td');
-        if (c.length < 8) return;
-        rows.push([c[2], c[3], c[5], c[6], c[7], c[8]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
-        });
-        const a = document.createElement('a');
-        a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
-        a.download = `stations_${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
+            const rows = [['Station', 'Location', 'Capacity', 'Available', 'Utilization', 'Status']];
+            getFiltered().forEach(row => {
+                const c = row.querySelectorAll('td');
+                if (c.length < 8) return;
+                rows.push([c[2], c[3], c[5], c[6], c[7], c[8]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
+            });
+            
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
+            a.download = `stations_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-        initMaps();
-        initPagination();
+            initMaps();
+            initPagination();
         });
     </script>
 }
