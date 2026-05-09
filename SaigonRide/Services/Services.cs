@@ -4,9 +4,7 @@ using SaigonRide.Models;
 
 namespace SaigonRide.Services
 {
-    // ═══════════════════════════════════════════════════
-    //  INVENTORY SERVICE
-    // ═══════════════════════════════════════════════════
+
     public interface IInventoryService
     {
         (int current, int max) GetStationInventory(int stationId);
@@ -33,9 +31,7 @@ namespace SaigonRide.Services
         }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  VEHICLE SERVICE  (UC1 — owned by Thao Nghi)
-    // ═══════════════════════════════════════════════════
+
     public interface IVehicleService
     {
         IEnumerable<Vehicle> GetVehicles(string? category, string? status, int? stationId);
@@ -88,7 +84,7 @@ namespace SaigonRide.Services
             existing.VehicleName = data.VehicleName;
             existing.CategoryId = data.CategoryId;
 
-            // Station changed → update inventory
+
             if (data.StationId != oldStation)
             {
                 var (cur, max) = _inv.GetStationInventory(data.StationId);
@@ -115,9 +111,6 @@ namespace SaigonRide.Services
         }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  STATION SERVICE  (UC1 — owned by Thao Nghi)
-    // ═══════════════════════════════════════════════════
     public interface IStationService
     {
         IEnumerable<Station> GetAll();
@@ -166,9 +159,6 @@ namespace SaigonRide.Services
         }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  REPORT SERVICE  (UC1 — Station Inventory Report)
-    // ═══════════════════════════════════════════════════
     public interface IReportService
     {
         IEnumerable<StationInventoryReportItem> GetStationInventoryReport();
@@ -199,7 +189,6 @@ namespace SaigonRide.Services
         }
     }
 
-    // ViewModel for Station Inventory Report
     public class StationInventoryReportItem
     {
         public int StationId { get; set; }
@@ -216,9 +205,6 @@ namespace SaigonRide.Services
         public bool IsBalanced => !IsLowInventory && !IsOverloaded;
     }
 
-    // ═══════════════════════════════════════════════════
-    //  REVENUE REPORT SERVICE (UC2 — Nhu Quynh)
-    // ═══════════════════════════════════════════════════
     public interface IRevenueReportService
     {
         RevenueReportData GetRevenueReport(DateTime? from = null, DateTime? to = null);
@@ -242,7 +228,7 @@ namespace SaigonRide.Services
 
             var rentals = query.ToList();
 
-            // Revenue by category
+
             var byCategory = rentals
                 .GroupBy(r => r.Vehicle?.Category?.CategoryName ?? "Unknown")
                 .Select(g => new RevenueByCategoryItem
@@ -256,7 +242,7 @@ namespace SaigonRide.Services
                 .OrderByDescending(x => x.TotalRevenue)
                 .ToList();
 
-            // Revenue by day (last 7 days)
+
             var byDay = rentals
                 .GroupBy(r => r.StartTime.Date)
                 .Select(g => new RevenueByDayItem
@@ -282,7 +268,6 @@ namespace SaigonRide.Services
         }
     }
 
-    // ViewModels for Revenue Report
     public class RevenueReportData
     {
         public decimal TotalRevenue { get; set; }
