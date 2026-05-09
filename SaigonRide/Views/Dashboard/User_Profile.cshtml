@@ -1,0 +1,767 @@
+﻿@model SaigonRide.Models.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    var isTourist = Model.Role == SaigonRide.Models.Enums.UserRole.ForeignTourist;
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+    :root {
+        --primary-text: #9B7FE8;
+        --primary-dark: #7c5cbf;
+        --primary-soft: rgba(201,184,245,0.15);
+        --primary: #C9B8F5;
+        --secondary: #F5B8D0;
+        --text: #2D2640;
+        --muted: #8A7FAA;
+        --border: rgba(201,184,245,0.45);
+        --bg: #FAF8FF;
+        --white: #ffffff;
+        --success: #34C77B;
+        --warning: #F39C5A;
+        --radius: 16px;
+        --radius-sm: 12px;
+        --shadow: 0 4px 18px rgba(201,184,245,0.15);
+        --shadow-lg: 0 8px 32px rgba(201,184,245,0.25);
+    }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+    }
+
+    .profile-page {
+        padding: 2rem 0 4rem;
+    }
+
+    .breadcrumb {
+        font-size: .8rem;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-text);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--muted);
+    }
+
+    .sr-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        animation: fadeUp .4s ease both;
+    }
+
+    .sr-card:nth-child(1) { animation-delay: .05s; }
+    .sr-card:nth-child(2) { animation-delay: .12s; }
+    .sr-card:nth-child(3) { animation-delay: .20s; }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .sr-card-header {
+        padding: 1.1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: .95rem;
+        color: var(--text);
+    }
+
+    .sr-card-header .header-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--primary-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: var(--primary-text);
+        flex-shrink: 0;
+    }
+
+    .sr-card-body {
+        padding: 1.5rem;
+    }
+
+    .avatar-wrap {
+        position: relative;
+        width: 96px;
+        height: 96px;
+    }
+
+    .avatar-img {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--white);
+        box-shadow: 0 0 0 3px var(--primary);
+    }
+
+    .avatar-placeholder {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-text) 0%, var(--secondary) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Syne', sans-serif;
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #fff;
+        border: 3px solid var(--white);
+        box-shadow: 0 0 0 3px var(--primary);
+    }
+
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--primary-text);
+        border: 2px solid var(--white);
+        color: #fff;
+        font-size: .7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .2s;
+        box-shadow: 0 2px 6px rgba(155, 127, 232, 0.4);
+    }
+
+    .avatar-edit-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    #avatarInput {
+        display: none;
+    }
+
+    .sr-label {
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: .35rem;
+    }
+
+    .sr-input {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: .6rem .9rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: .92rem;
+        color: var(--text);
+        transition: border-color .2s, box-shadow .2s;
+        background: var(--white);
+    }
+
+    .sr-input:focus {
+        border-color: var(--primary-text);
+        box-shadow: 0 0 0 3px rgba(155, 127, 232, 0.12);
+        outline: none;
+    }
+
+    .sr-input.readonly-field {
+        background: var(--bg);
+        color: var(--muted);
+        cursor: not-allowed;
+    }
+
+    .sr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .35rem .85rem;
+        border-radius: 99px;
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: 'Syne', sans-serif;
+    }
+
+    .sr-badge-tourist {
+        background: #ede9fa;
+        color: var(--primary-text);
+    }
+
+    .sr-badge-commuter {
+        background: #d4f5e2;
+        color: #276749;
+    }
+
+    .wallet-display {
+        background: linear-gradient(135deg, var(--primary-text) 0%, var(--secondary) 100%);
+        border-radius: var(--radius);
+        padding: 1.25rem 1.5rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .wallet-display .wallet-icon {
+        font-size: 2rem;
+        opacity: .9;
+    }
+
+    .wallet-display .wallet-label {
+        font-size: .78rem;
+        opacity: .8;
+        font-weight: 500;
+    }
+
+    .wallet-display .wallet-amount {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .wallet-display .wallet-currency {
+        font-size: .85rem;
+        opacity: .75;
+        font-weight: 400;
+    }
+
+    .verified-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: .2rem .65rem;
+        border-radius: 99px;
+    }
+
+    .verified-pill.yes {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .verified-pill.no {
+        background: #fef9c3;
+        color: #854d0e;
+    }
+
+    .sr-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 1.25rem 0;
+    }
+
+    .btn-sr {
+        background: var(--primary-text);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: .6rem 1.5rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: .88rem;
+        transition: background .2s, transform .15s, box-shadow .2s;
+        box-shadow: 0 2px 8px rgba(155, 127, 232, 0.3);
+    }
+
+    .btn-sr:hover {
+        background: var(--primary-dark);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(155, 127, 232, 0.35);
+    }
+
+    .btn-sr:active {
+        transform: translateY(0);
+    }
+
+    .btn-sr-outline {
+        background: transparent;
+        color: var(--primary-text);
+        border: 1.5px solid var(--primary-text);
+        border-radius: var(--radius-sm);
+        padding: .55rem 1.4rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: .88rem;
+        transition: all .2s;
+    }
+
+    .btn-sr-outline:hover {
+        background: var(--primary-soft);
+        color: var(--primary-text);
+    }
+
+    .strength-track {
+        height: 4px;
+        border-radius: 99px;
+        background: var(--border);
+        overflow: hidden;
+        margin-top: .5rem;
+    }
+
+    .strength-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .3s, background .3s;
+    }
+
+    .strength-fill.weak {
+        width: 30%;
+        background: #ef4444;
+    }
+
+    .strength-fill.medium {
+        width: 65%;
+        background: #f59e0b;
+    }
+
+    .strength-fill.strong {
+        width: 100%;
+        background: #22c55e;
+    }
+
+    .page-title {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--text);
+    }
+
+    .input-group .sr-input {
+        border-right: none;
+    }
+
+    .input-group .toggle-eye {
+        border: 1.5px solid var(--border);
+        border-left: none;
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        background: var(--white);
+        color: var(--muted);
+        padding: 0 .9rem;
+        cursor: pointer;
+        transition: color .2s;
+    }
+
+    .input-group .toggle-eye:hover {
+        color: var(--primary-text);
+    }
+
+    .input-group:focus-within .sr-input,
+    .input-group:focus-within .toggle-eye {
+        border-color: var(--primary-text);
+        box-shadow: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(155, 127, 232, 0.12);
+        border-radius: var(--radius-sm);
+    }
+
+    .field-error {
+        font-size: .78rem;
+        color: #dc2626;
+        margin-top: .25rem;
+    }
+
+    .field-hint {
+        font-size: .78rem;
+        color: var(--muted);
+        margin-top: .25rem;
+    }
+
+    .sr-alert {
+        border-radius: var(--radius-sm);
+        padding: .85rem 1.1rem;
+        font-size: .88rem;
+        display: flex;
+        align-items: flex-start;
+        gap: .65rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .sr-alert.success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+    }
+
+    .sr-alert.error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+    }
+
+    .sr-alert.info {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container" style="max-width:780px;">
+
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Home</a></li>
+                <li class="breadcrumb-item active">My Profile</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <h1 class="page-title mb-0">My Profile</h1>
+            @if (isTourist)
+            {
+                <span class="sr-badge sr-badge-tourist"><i class="bi bi-airplane-fill"></i> Foreign Tourist</span>
+            }
+            else
+            {
+                <span class="sr-badge sr-badge-commuter"><i class="bi bi-person-fill"></i> Local Commuter</span>
+            }
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="sr-alert success">
+                <i class="bi bi-check-circle-fill mt-1"></i>
+                <span>@TempData["SuccessMessage"]</span>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="sr-alert error">
+                <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+                <span>@TempData["ErrorMessage"]</span>
+            </div>
+        }
+
+        <div class="sr-card">
+            <div class="sr-card-header">
+                <div class="header-icon"><i class="bi bi-person-fill"></i></div>
+                Personal Information
+            </div>
+            <div class="sr-card-body">
+                <form asp-action="UpdateProfile" asp-controller="User" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="d-flex align-items-center gap-4 mb-4">
+                        <div class="avatar-wrap">
+                            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                            {
+                                <img id="avatarPreview" src="@Model.AvatarUrl" alt="Avatar" class="avatar-img" />
+                            }
+                            else
+                            {
+                                <div class="avatar-placeholder" id="avatarPreview">
+                                    @(Model.FullName?.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "U")
+                                </div>
+                            }
+                            <label class="avatar-edit-btn" for="avatarInput" title="Change photo">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+                            <input type="file" id="avatarInput" name="AvatarFile" accept="image/png,image/jpeg,image/webp" />
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold" style="font-size:.92rem;">Profile Photo</p>
+                            <p class="field-hint mb-1">JPG, PNG or WebP — max 2 MB</p>
+                            <label for="avatarInput" class="btn-sr-outline" style="font-size:.78rem;padding:.3rem .9rem;cursor:pointer;">
+                                Upload Photo
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="sr-divider"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="sr-label">Full Name <span class="text-danger">*</span></label>
+                            <input asp-for="FullName" class="form-control sr-input w-100" placeholder="Enter your full name" />
+                            <span asp-validation-for="FullName" class="field-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="sr-label">Email Address <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control sr-input" placeholder="your@email.com" />
+                            <span asp-validation-for="Email" class="field-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="sr-label">Phone Number</label>
+                            <input asp-for="PhoneNumber" type="tel" class="form-control sr-input" placeholder="e.g. 0901 234 567" />
+                            <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                            <p class="field-hint">Used to contact you in case of incidents.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn-sr">
+                            <i class="bi bi-check-lg me-1"></i>Save Changes
+                        </button>
+                        <a href="@Url.Action("Index","Home")" class="btn-sr-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="sr-card">
+            <div class="sr-card-header">
+                <div class="header-icon"><i class="bi bi-id-card-fill"></i></div>
+                Account Details
+            </div>
+            <div class="sr-card-body">
+
+                <div class="mb-3">
+                    <label class="sr-label">Account Type</label>
+                    <div class="sr-input readonly-field d-flex align-items-center gap-2" style="cursor:default;">
+                        @if (isTourist)
+                        {
+                            <i class="bi bi-airplane-fill text-info"></i>
+                            <span>Foreign Tourist</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-person-fill text-success"></i>
+                            <span>Local Commuter</span>
+                        }
+                    </div>
+                    <p class="field-hint">Account type is assigned at registration and cannot be changed.</p>
+                </div>
+
+                <div class="mb-3">
+                    @if (isTourist)
+                    {
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <label class="sr-label mb-0">Passport Number</label>
+                            @if (Model.IsPassVerified)
+                            {
+                                <span class="verified-pill yes">
+                                    <i class="bi bi-patch-check-fill"></i> Verified
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="verified-pill no">
+                                    <i class="bi bi-clock-fill"></i> Pending Verification
+                                </span>
+                            }
+                        </div>
+                        <form asp-action="UpdatePassport" asp-controller="User" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="UserId" />
+                            <div class="d-flex gap-2">
+                                @if (Model.IsPassVerified)
+                                {
+                                    <input asp-for="PassportNumber" class="form-control sr-input flex-grow-1" placeholder="e.g. B12345678" readonly />
+                                }
+                                else
+                                {
+                                    <input asp-for="PassportNumber" class="form-control sr-input flex-grow-1" placeholder="e.g. B12345678" />
+                                    <button type="submit" class="btn-sr" style="white-space:nowrap;">
+                                        <i class="bi bi-send me-1"></i>Submit
+                                    </button>
+                                }
+                            </div>
+                            <span asp-validation-for="PassportNumber" class="field-error"></span>
+                            @if (Model.IsPassVerified)
+                            {
+                                <p class="field-hint"><i class="bi bi-lock-fill me-1"></i>Locked after verification. Contact Admin to update.</p>
+                            }
+                            else
+                            {
+                                <p class="field-hint"><i class="bi bi-info-circle me-1"></i>You must submit a passport number to unlock vehicle rental.</p>
+                            }
+                        </form>
+                    }
+                    else
+                    {
+                        <label class="sr-label">CCCD / National ID</label>
+                        <input value="@Model.NationalId" class="form-control sr-input readonly-field" readonly />
+                        <p class="field-hint">Registered at sign-up. Contact Admin to update.</p>
+                    }
+                </div>
+
+                <div class="sr-divider"></div>
+
+                <label class="sr-label mb-2">Wallet Balance</label>
+                <div class="wallet-display mb-3">
+                    <i class="bi bi-wallet2 wallet-icon"></i>
+                    <div>
+                        <div class="wallet-label">Available Balance</div>
+                        <div class="wallet-amount">
+                            @Model.WalletBalance.ToString("N0")
+                            <span class="wallet-currency">VND</span>
+                        </div>
+                    </div>
+                    <div class="ms-auto">
+                        <a href="@Url.Action("TopUp","Wallet")" style="background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:8px;padding:.45rem 1rem;font-size:.82rem;font-family:'Syne',sans-serif;font-weight:700;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.35)'" onmouseout="this.style.background='rgba(255,255,255,.2)'">
+                            <i class="bi bi-plus-lg me-1"></i>Top Up
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="sr-card">
+            <div class="sr-card-header">
+                <div class="header-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                Security
+            </div>
+            <div class="sr-card-body">
+                <div class="sr-alert info">
+                    <i class="bi bi-info-circle-fill mt-1" style="flex-shrink:0;"></i>
+                    <span>Your password is hashed with <strong>bcrypt / SHA-256</strong>. We never store plain text passwords.</span>
+                </div>
+
+                <form asp-action="ChangePassword" asp-controller="User" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="sr-label">Current Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="CurrentPassword" type="password" id="pw_current" class="form-control sr-input" placeholder="Enter current password" />
+                                <button type="button" class="toggle-eye" data-target="pw_current">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="CurrentPassword" class="field-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="sr-label">New Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="NewPassword" type="password" id="pw_new" class="form-control sr-input" placeholder="Min. 6 characters" />
+                                <button type="button" class="toggle-eye" data-target="pw_new">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="strength-track"><div class="strength-fill" id="strengthFill"></div></div>
+                            <small id="strengthLabel" class="field-hint"></small>
+                            <span asp-validation-for="NewPassword" class="field-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="sr-label">Confirm New Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="ConfirmNewPassword" type="password" id="pw_confirm" class="form-control sr-input" placeholder="Repeat new password" />
+                                <button type="button" class="toggle-eye" data-target="pw_confirm">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="ConfirmNewPassword" class="field-error"></span>
+                            <small id="matchHint" class="field-hint"></small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn-sr">
+                            <i class="bi bi-lock-fill me-1"></i>Save Security Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('avatarInput').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const preview = document.getElementById('avatarPreview');
+                if (preview.tagName === 'DIV') {
+                    const img = document.createElement('img');
+                    img.id = 'avatarPreview';
+                    img.className = 'avatar-img';
+                    img.alt = 'Avatar';
+                    preview.replaceWith(img);
+                }
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.querySelectorAll('.toggle-eye').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const input = document.getElementById(this.dataset.target);
+                const icon  = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('bi-eye', 'bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('bi-eye-slash', 'bi-eye');
+                }
+            });
+        });
+
+        const pwNew     = document.getElementById('pw_new');
+        const fill      = document.getElementById('strengthFill');
+        const fillLabel = document.getElementById('strengthLabel');
+        pwNew?.addEventListener('input', function () {
+            const v = this.value;
+            let score = 0;
+            if (v.length >= 6)  score++;
+            if (v.length >= 10) score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+
+            fill.className = 'strength-fill';
+            if (score <= 2) {
+                fill.classList.add('weak');
+                fillLabel.textContent = 'Weak — add uppercase, numbers or symbols';
+            } else if (score <= 3) {
+                fill.classList.add('medium');
+                fillLabel.textContent = 'Medium — getting better!';
+            } else {
+                fill.classList.add('strong');
+                fillLabel.textContent = 'Strong password ✓';
+            }
+        });
+
+        const pwConfirm = document.getElementById('pw_confirm');
+        const matchHint = document.getElementById('matchHint');
+
+        pwConfirm?.addEventListener('input', function () {
+            if (!pwNew.value) return;
+            if (this.value === pwNew.value) {
+                matchHint.textContent = '✓ Passwords match';
+                matchHint.style.color = '#16a34a';
+            } else {
+                matchHint.textContent = '✗ Passwords do not match';
+                matchHint.style.color = '#dc2626';
+            }
+        });
+    </script>
+}

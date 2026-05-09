@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Live Map";
     ViewData["Page"] = "dashboard";
+    ViewData["HideSidebar"] = true;
 }
 
 @section Styles {
@@ -8,42 +9,49 @@
     <style>
         .map-layout {
             display: flex;
-            height: calc(100vh - 58px - 48px);
-            gap: 0;
+            height: calc(100vh - 56px);
             margin: -24px;
             overflow: hidden;
+            position: relative;
         }
 
-        /* ── SIDEBAR ── */
         .map-sidebar {
-            width: 200px;
+            width: 240px;
             flex-shrink: 0;
             background: white;
             border-right: 1px solid var(--border);
-            padding: 16px 14px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
             overflow-y: auto;
+            z-index: 10;
         }
 
-        .map-sidebar-title {
-            font-size: 11px;
+        .sidebar-block {
+            padding: 16px 14px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-block:last-child {
+            border-bottom: none;
+        }
+
+        .block-title {
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 10px;
         }
 
         .filter-pills {
             display: flex;
-            gap: 6px;
             flex-wrap: wrap;
+            gap: 6px;
         }
 
         .pill {
-            padding: 5px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
@@ -55,101 +63,74 @@
             font-family: inherit;
         }
 
-            .pill.active {
-                background: var(--gradient);
-                color: var(--text-main);
-                border-color: transparent;
-            }
+        .pill.active {
+            background: var(--gradient);
+            color: var(--text-main);
+            border-color: transparent;
+        }
 
         .toggle-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            margin-bottom: 9px;
+        }
+
+        .toggle-row:last-child {
+            margin-bottom: 0;
         }
 
         .toggle-label {
             display: flex;
             align-items: center;
             gap: 7px;
-            font-size: 12px;
-            color: var(--text-main);
+            font-size: 12.5px;
             font-weight: 500;
+            color: var(--text-main);
         }
 
-            .toggle-label .icon {
-                font-size: 14px;
-            }
-
-        .toggle {
-            width: 36px;
-            height: 20px;
-            border-radius: 10px;
-            background: #ddd;
-            position: relative;
+        .toggle-chip {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-muted);
             cursor: pointer;
-            flex-shrink: 0;
-            transition: background 0.2s;
-            border: none;
+            transition: all 0.15s;
+            font-family: inherit;
         }
 
-            .toggle.on {
-                background: var(--gradient);
-            }
-
-            .toggle::after {
-                content: '';
-                position: absolute;
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
-                background: white;
-                top: 3px;
-                left: 3px;
-                transition: left 0.2s;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            }
-
-            .toggle.on::after {
-                left: 19px;
-            }
+        .toggle-chip.on {
+            background: var(--gradient);
+            color: var(--text-main);
+            border-color: transparent;
+        }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
             font-size: 12px;
             color: var(--text-main);
-            padding: 3px 0;
+            margin-bottom: 7px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
         }
 
         .legend-dot {
-            width: 12px;
-            height: 12px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             flex-shrink: 0;
-        }
-
-        .quick-stats {
-            background: var(--body-bg);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .quick-stats-title {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
         }
 
         .qs-row {
             display: flex;
             justify-content: space-around;
-            gap: 8px;
         }
 
         .qs-item {
@@ -157,7 +138,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 2px;
         }
 
         .qs-icon {
@@ -170,19 +151,105 @@
         }
 
         .qs-label {
-            font-size: 10px;
+            font-size: 10.5px;
             font-weight: 500;
         }
 
-        /* ── MAP CONTAINER ── */
         #mapContainer {
             flex: 1;
             position: relative;
+            min-height: 0;
         }
 
         #map {
             width: 100%;
             height: 100%;
+            min-height: 0;
+        }
+
+        .route-toggle-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 14px;
+            padding: 10px 20px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .route-toggle-bar button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+
+        .route-toggle-bar button.active-btn {
+            background: var(--gradient);
+            color: var(--text-main);
+        }
+
+        .route-toggle-bar button.inactive-btn {
+            color: var(--text-muted);
+        }
+
+        .user-popup {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 1px solid var(--border);
+            min-width: 180px;
+            z-index: 500;
+            display: none;
+        }
+
+        .user-popup.show {
+            display: block;
+        }
+
+        .user-popup-close {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .up-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .up-row {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .up-row span {
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .leaflet-popup-content-wrapper {
@@ -211,14 +278,14 @@
             margin-bottom: 4px;
         }
 
-            .popup-row span:first-child {
-                color: var(--text-muted);
-            }
+        .popup-row span:first-child {
+            color: var(--text-muted);
+        }
 
-            .popup-row span:last-child {
-                font-weight: 600;
-                color: var(--text-main);
-            }
+        .popup-row span:last-child {
+            font-weight: 600;
+            color: var(--text-main);
+        }
 
         .popup-badge {
             display: inline-block;
@@ -228,162 +295,84 @@
             font-weight: 700;
             margin-top: 6px;
         }
-
-        .user-popup {
-            position: absolute;
-            bottom: 85px;
-            right: 24px;
-            background: white;
-            border-radius: 14px;
-            padding: 14px 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            border: 1px solid var(--border);
-            min-width: 180px;
-            z-index: 500;
-            display: none;
-        }
-
-            .user-popup.show {
-                display: block;
-            }
-
-        .user-popup-close {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .up-title {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .up-row {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-            .up-row span {
-                color: var(--text-muted);
-                font-weight: 500;
-            }
-
-        /* BẢNG ĐIỀU HƯỚNG ROUTE - ĐÃ LÀM BỰ CHẢNG */
-        .route-toggle-bar {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            background: white;
-            border-radius: 16px;
-            padding: 16px 24px; /* Tăng padding rất to */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            z-index: 1000; /* Nổi lên trên cùng */
-        }
-
-            .route-toggle-bar button {
-                border: none;
-                background: none;
-                cursor: pointer;
-                font-size: 15px !important; /* Chữ bự dễ bấm */
-                font-family: inherit;
-            }
     </style>
 }
 
 <div class="map-layout">
-    <!-- ── LEFT SIDEBAR ── -->
     <div class="map-sidebar">
-        <div>
-            <div class="map-sidebar-title">FILTER</div>
-            <div class="filter-pills" style="margin-top:6px;">
-                <button class="pill active" onclick="filterVehicle('all', this)">All</button>
-                <button class="pill" onclick="filterVehicle('scooter', this)">Scooter</button>
-                <button class="pill" onclick="filterVehicle('bike', this)">Bike</button>
+        <div class="sidebar-block">
+            <div class="block-title" data-i18n="Filter">Filter</div>
+            <div class="filter-pills">
+                <button class="pill active" onclick="filterVehicle('all', this)" data-i18n="All">All</button>
+                <button class="pill" onclick="filterVehicle('scooter', this)" data-i18n="Scooter">Scooter</button>
+                <button class="pill" onclick="filterVehicle('bike', this)" data-i18n="Bike">Bike</button>
             </div>
         </div>
 
-        <!-- Toggles -->
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="sidebar-block">
+            <div class="block-title" data-i18n="Layers">Layers</div>
             <div class="toggle-row">
-                <div class="toggle-label">
-                    <span class="icon">⚠️</span>
-                    <span style="font-size:11.5px;">Low Inventory</span><br />
-                    <span style="font-size:10px;color:var(--text-muted);">stations</span>
-                </div>
-                <button class="toggle on" onclick="toggleLayer('low', this)"></button>
+                <div class="toggle-label"><span>⚠️</span> <span data-i18n="Low Inventory">Low Inventory</span></div>
+                <button class="toggle-chip on" id="toggle-low" onclick="toggleLayer('low', this)" data-i18n="On">On</button>
             </div>
             <div class="toggle-row">
-                <div class="toggle-label">
-                    <span class="icon">🛵</span>
-                    <span style="font-size:11.5px;">Active rentals</span><br />
-                    <span style="font-size:10px;color:var(--text-muted);">(moving)</span>
-                </div>
-                <button class="toggle on" onclick="toggleLayer('active', this)"></button>
+                <div class="toggle-label"><span>🛵</span> <span data-i18n="Active Rentals">Active Rentals</span></div>
+                <button class="toggle-chip on" id="toggle-active" onclick="toggleLayer('active', this)" data-i18n="On">On</button>
             </div>
             <div class="toggle-row">
-                <div class="toggle-label">
-                    <span class="icon">🌡️</span>
-                    <span style="font-size:11.5px;">Heat maps</span><br />
-                    <span style="font-size:10px;color:var(--text-muted);">(high demand)</span>
-                </div>
-                <button class="toggle on" onclick="toggleLayer('heat', this)"></button>
+                <div class="toggle-label"><span>🌡️</span> <span data-i18n="Heatmap">Heatmap</span></div>
+                <button class="toggle-chip on" id="toggle-heat" onclick="toggleLayer('heat', this)" data-i18n="On">On</button>
             </div>
         </div>
 
-        <!-- Legend -->
-        <div>
-            <div class="map-sidebar-title">LEGEND</div>
-            <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
-                <div class="legend-item"><div class="legend-dot" style="background:#C9B8F5;border:2px solid #9B7FE8;"></div><span style="font-size:11.5px;">Available station</span></div>
-                <div class="legend-item"><div class="legend-dot" style="background:#FFF3B0;border:2px solid #f2994a;"></div><span style="font-size:11.5px;">Low Inventory (&lt;20%)</span></div>
-                <div class="legend-item"><div class="legend-dot" style="background:#fdd8d8;border:2px solid #eb5757;"></div><span style="font-size:11.5px;">Full/ Overflowing</span></div>
-                <div class="legend-item"><span style="font-size:16px;">🛴</span><span style="font-size:11.5px;">Active Rental (E-Scooter)</span></div>
-                <div class="legend-item"><span style="font-size:16px;">🚲</span><span style="font-size:11.5px;">Active Rental (Bike)</span></div>
-                <div class="legend-item"><div class="legend-dot" style="background:rgba(245,184,208,0.4);border:1px solid #F5B8D0;border-radius:3px;"></div><span style="font-size:11.5px;">High demand (Heatmap)</span></div>
-            </div>
+        <div class="sidebar-block">
+            <div class="block-title" data-i18n="Legend">Legend</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#C9B8F5;border:2px solid #9B7FE8;"></div><span data-i18n="Available station">Available station</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#FFF3B0;border:2px solid #f2994a;"></div><span data-i18n="Low Inventory (<20%)">Low Inventory (&lt;20%)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#fdd8d8;border:2px solid #eb5757;"></div><span data-i18n="Full / Overflowing">Full / Overflowing</span></div>
+            <div class="legend-item"><span style="font-size:15px;">🛴</span><span data-i18n="Active (E-Scooter)">Active (E-Scooter)</span></div>
+            <div class="legend-item"><span style="font-size:15px;">🚲</span><span data-i18n="Active (Bike)">Active (Bike)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(245,184,208,0.4);border:1px solid #F5B8D0;border-radius:3px;"></div><span data-i18n="High demand">High demand</span></div>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="quick-stats">
-            <div class="quick-stats-title">QUICK STATS</div>
+        <div class="sidebar-block">
+            <div class="block-title" data-i18n="Quick Stats">Quick Stats</div>
             <div class="qs-row">
-                <div class="qs-item"><span class="qs-icon">🚉</span><span class="qs-num" style="color:var(--primary-text);">@(ViewBag.StationCount ?? 0)</span><span class="qs-label" style="color:var(--text-muted);">Total</span></div>
-                <div class="qs-item"><span class="qs-icon">⚠️</span><span class="qs-num" style="color:#f2994a;">@(ViewBag.LowInventoryStations ?? 0)</span><span class="qs-label" style="color:#f2994a;">Low</span></div>
-                <div class="qs-item"><span class="qs-icon">🔴</span><span class="qs-num" style="color:#eb5757;">@(ViewBag.OverloadedStations ?? 0)</span><span class="qs-label" style="color:#eb5757;">Full</span></div>
+                <div class="qs-item">
+                    <span class="qs-icon">🚉</span>
+                    <span class="qs-num" style="color:var(--primary-text);">@(ViewBag.StationCount ?? 0)</span>
+                    <span class="qs-label" style="color:var(--text-muted);" data-i18n="Total">Total</span>
+                </div>
+                <div class="qs-item">
+                    <span class="qs-icon">⚠️</span>
+                    <span class="qs-num" style="color:#f2994a;">@(ViewBag.LowInventoryStations ?? 0)</span>
+                    <span class="qs-label" style="color:#f2994a;" data-i18n="Low">Low</span>
+                </div>
+                <div class="qs-item">
+                    <span class="qs-icon">🔴</span>
+                    <span class="qs-num" style="color:#eb5757;">@(ViewBag.OverloadedStations ?? 0)</span>
+                    <span class="qs-label" style="color:#eb5757;" data-i18n="Full">Full</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ── MAP ── -->
     <div id="mapContainer">
         <div id="map"></div>
 
         <div class="user-popup" id="userPopup">
             <button class="user-popup-close" onclick="document.getElementById('userPopup').classList.remove('show')">✕</button>
-            <div class="up-title">Active Rental</div>
-            <div class="up-row">User: <span id="popupUser">...</span></div>
-            <div class="up-row">Vehicle: <span id="popupVeh">...</span></div>
-            <div class="up-row">Duration: <span id="popupDur">...</span></div>
+            <div class="up-title" data-i18n="Active Rental">Active Rental</div>
+            <div class="up-row"><span data-i18n="User">User</span>: <span id="popupUser">...</span></div>
+            <div class="up-row"><span data-i18n="Vehicle">Vehicle</span>: <span id="popupVeh">...</span></div>
+            <div class="up-row"><span data-i18n="Duration">Duration</span>: <span id="popupDur">...</span></div>
         </div>
 
         <div class="route-toggle-bar">
-            <span style="color:var(--secondary);">●</span>
-            <button onclick="toggleRoute(true)" style="font-weight:700;color:var(--text-main);">Show Route</button>
+            <span style="color:var(--secondary);font-size:16px;">●</span>
+            <button class="active-btn" id="btnShow" onclick="toggleRoute(true)" data-i18n="Show Route">Show Route</button>
             <span style="color:var(--border);">|</span>
-            <button onclick="toggleRoute(false)" style="font-weight:500;color:var(--text-muted);">Hide Route</button>
+            <button class="inactive-btn" id="btnHide" onclick="toggleRoute(false)" data-i18n="Hide Route">Hide Route</button>
         </div>
     </div>
 </div>
@@ -391,57 +380,47 @@
 @section Scripts {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Mảng tọa độ thực tế khu trung tâm
-        const realCoords = [
-            [10.7726, 106.6980], [10.7744, 106.7030], [10.7952, 106.7220], [10.7343, 106.7100],
-            [10.7995, 106.6820], [10.8520, 106.7600], [10.7673, 106.6920], [10.7796, 106.6990]
-        ];
-
-        // 1. NẠP DỮ LIỆU TRẠM (STATIONS)
         const stations = [
-        @{
-            var stationList = ViewBag.StationMapData as List<SaigonRide.Models.Station>;
-            if (stationList != null && stationList.Any())
-            {
-                int i = 0;
-                foreach (var s in stationList)
+            @{
+                var stationList = ViewBag.StationMapData as List<SaigonRide.Models.Station>;
+                if (stationList != null && stationList.Any())
                 {
-                    double u = s.Capacity > 0 ? (double)s.CurrentInventory / s.Capacity * 100 : 0;
-                    string t = u >= 90 ? "overload" : u < 20 ? "lowinventory" : "available";
-                    <text>{ id: @s.StationId, name: "@Html.Raw(s.StationName)", current: @s.CurrentInventory, cap: @s.Capacity, type: "@t", idx: @i }, </text>
-                    i++;
+                    int i = 0;
+                    foreach (var s in stationList)
+                    {
+                        double u = s.Capacity > 0 ? (double)s.CurrentInventory / s.Capacity * 100 : 0;
+                        string t = u >= 90 ? "overload" : u < 20 ? "lowinventory" : "available";
+                        <text>{ id: @s.StationId, name: "@Html.Raw(s.StationName)", current: @s.CurrentInventory, cap: @s.Capacity, type: "@t", lat: @(s.Latitude ?? 10.7769), lng: @(s.Longitude ?? 106.7009) }, </text>
+                        i++;
+                    }
                 }
             }
-        }
         ];
 
-        stations.forEach(s => {
-            let coord = realCoords[s.idx % realCoords.length];
-            s.lat = coord[0];
-            s.lng = coord[1];
-        });
-
-        // 2. NẠP DỮ LIỆU CHUYẾN ĐI (RENTALS) TỪ DATABASE
         const rentalData = [
-        @{
-            var rentals = ViewBag.RentalsMapData as List<SaigonRide.Models.Rental>;
-            if (rentals != null && rentals.Any())
-            {
-                foreach(var r in rentals)
+            @{
+                var rentals = ViewBag.RentalsMapData as List<SaigonRide.Models.Rental>;
+                if (rentals != null && rentals.Any())
                 {
-                    var startId = r.StartStationId;
-                    var endId = r.DestinationStationId ?? 0; // Nếu null nghĩa là đang chạy
-                    var userName = r.User?.FullName ?? "Khách";
-                    var veh = r.Vehicle?.Category?.CategoryName ?? "Bike";
-                    var dur = r.DestinationStationId == null ? "Đang chạy..." : "Đã hoàn thành";
-                    <text>{ start: @startId, end: @endId, user: '@userName', veh: '@veh', duration: '@dur' },</text>
+                    foreach (var r in rentals)
+                    {
+                        var startId = r.StartStationId;
+                        var endId = r.DestinationStationId ?? 0;
+                        var userName = r.User?.FullName ?? "Guest";
+                        var veh = r.Vehicle?.Category?.CategoryName ?? "Bike";
+                        var dur = r.DestinationStationId == null ? "Active..." : "Completed";
+                        <text>{ start: @startId, end: @endId, user: '@userName', veh: '@veh', duration: '@dur' }, </text>
+                    }
                 }
             }
-        }
         ];
 
-        const map = L.map('map').setView([10.7769, 106.7009], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 18 }).addTo(map);
+        const map = L.map('map', { zoomControl: true, preferCanvas: true }).setView([10.7769, 106.7009], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+        }).addTo(map);
 
         function makeIcon(color, border, emoji) {
             return L.divIcon({
@@ -462,55 +441,59 @@
         let stationMarkers = [];
         let rentalLayer = L.layerGroup().addTo(map);
         let heatLayer = L.layerGroup().addTo(map);
-        let routeLayerGroup = L.layerGroup().addTo(map); // Layer chứa các đường vẽ
+        let routeLayerGroup = L.layerGroup().addTo(map);
 
-        // VẼ TRẠM CỐ ĐỊNH
+        const lang = localStorage.getItem('sr_lang') || 'en';
+        const popupT = {
+            Capacity: lang === 'vi' ? 'Sức chứa' : 'Capacity',
+            Utilization: lang === 'vi' ? 'Tỉ lệ sử dụng' : 'Utilization',
+            Overload: lang === 'vi' ? 'Quá tải' : 'Overload',
+            LowInventory: lang === 'vi' ? 'Tồn kho thấp' : 'Low Inventory',
+            Available: lang === 'vi' ? 'Sẵn sàng' : 'Available',
+        };
+
         stations.forEach(s => {
             const util = Math.round(s.current / s.cap * 100);
             const badgeColor = s.type === 'overload' ? '#fdd8d8' : s.type === 'lowinventory' ? '#FFF3B0' : '#d4f5e2';
-            const badgeText = s.type === 'overload' ? 'Overload' : s.type === 'lowinventory' ? 'Low Inventory' : 'Available';
+            const badgeText = s.type === 'overload' ? popupT.Overload : s.type === 'lowinventory' ? popupT.LowInventory : popupT.Available;
             const badgeFg = s.type === 'overload' ? '#a33030' : s.type === 'lowinventory' ? '#7a4000' : '#276749';
 
-            let popup = `<div class="popup-title">${s.name}</div>
-            <div class="popup-row"><span>Capacity</span><span>${s.current}/${s.cap}</span></div>
-            <div class="popup-row"><span>Utilization</span><span><strong>${util}%</strong></span></div>
+            const popup = `<div class="popup-title">${s.name}</div>
+            <div class="popup-row"><span>${popupT.Capacity}</span><span>${s.current}/${s.cap}</span></div>
+            <div class="popup-row"><span>${popupT.Utilization}</span><span><strong>${util}%</strong></span></div>
             <span class="popup-badge" style="background:${badgeColor};color:${badgeFg};">${badgeText}</span>`;
-            
-            let marker = L.marker([s.lat, s.lng], { icon: icons[s.type] || icons.available }).bindPopup(popup);
-            marker.stationType = s.type; 
+
+            const marker = L.marker([s.lat, s.lng], { icon: icons[s.type] || icons.available }).bindPopup(popup);
+            marker.stationType = s.type;
             marker.addTo(map);
             stationMarkers.push(marker);
         });
 
-        // VẼ ĐƯỜNG ĐI (ROUTES) VÀ XE ĐANG CHẠY DỰA TRÊN DATABASE
         rentalData.forEach(r => {
-            let startStation = stations.find(s => s.id === r.start);
+            const startStation = stations.find(s => s.id === r.start);
             if (!startStation) return;
 
-            let isScooter = r.veh.toLowerCase().includes('scooter');
-            let vType = isScooter ? 'scooter' : 'bike';
+            const isScooter = r.veh.toLowerCase().includes('scooter');
+            const vType = isScooter ? 'scooter' : 'bike';
 
             if (r.end !== 0) {
-                // CHUYẾN ĐÃ HOÀN THÀNH: Nối Trạm đi -> Trạm đến bằng đường nét đứt
-                let endStation = stations.find(s => s.id === r.end);
+                const endStation = stations.find(s => s.id === r.end);
                 if (endStation) {
-                    L.polyline([
-                        [startStation.lat, startStation.lng],
-                        [endStation.lat, endStation.lng]
-                    ], { color: '#9B7FE8', weight: 2.5, opacity: 0.6, dashArray: '5 5' }).addTo(routeLayerGroup);
+                    L.polyline(
+                        [[startStation.lat, startStation.lng], [endStation.lat, endStation.lng]],
+                        { color: '#9B7FE8', weight: 2, opacity: 0.35, dashArray: '5 5' }
+                    ).addTo(map);
                 }
             } else {
-                // CHUYẾN ĐANG THUÊ (ACTIVE): Vẽ đường nối tới 1 điểm ngẫu nhiên xung quanh
-                let randLat = startStation.lat + (Math.random() - 0.5) * 0.015;
-                let randLng = startStation.lng + (Math.random() - 0.5) * 0.015;
-                
-                L.polyline([
-                    [startStation.lat, startStation.lng],
-                    [randLat, randLng]
-                ], { color: '#F5B8D0', weight: 3, opacity: 0.9 }).addTo(routeLayerGroup);
+                const randLat = startStation.lat + (Math.random() - 0.5) * 0.015;
+                const randLng = startStation.lng + (Math.random() - 0.5) * 0.015;
 
-                // Cắm marker xe đang di chuyển ở điểm ngẫu nhiên đó
-                let m = L.marker([randLat, randLng], { icon: icons[vType] }).on('click', function() {
+                L.polyline(
+                    [[startStation.lat, startStation.lng], [randLat, randLng]],
+                    { color: '#F5B8D0', weight: 3, opacity: 0.9 }
+                ).addTo(routeLayerGroup);
+
+                const m = L.marker([randLat, randLng], { icon: icons[vType] }).on('click', function () {
                     document.getElementById('popupUser').innerText = r.user;
                     document.getElementById('popupVeh').innerText = r.veh;
                     document.getElementById('popupDur').innerText = r.duration;
@@ -521,21 +504,20 @@
             }
         });
 
-        // Tạo Heatmap giả lập
         [[10.7726, 106.6980, 60], [10.7744, 106.7030, 40], [10.7796, 106.6990, 50]].forEach(([lat, lng, radius]) => {
-            L.circle([lat, lng], { radius: radius * 20, color: '#F5B8D0', fillColor: '#F5B8D0', fillOpacity: 0.18, weight: 0.5 }).addTo(heatLayer);
+            L.circle([lat, lng], {
+                radius: radius * 20,
+                color: '#F5B8D0', fillColor: '#F5B8D0', fillOpacity: 0.18, weight: 0.5
+            }).addTo(heatLayer);
         });
 
-        // CÁC HÀM LỌC
         function filterVehicle(type, btn) {
             document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
-            
+            const activeToggle = document.getElementById('toggle-active').classList.contains('on');
             rentalLayer.eachLayer(marker => {
-                if (type === 'all' || marker.vehicleType === type) {
-                    if (!map.hasLayer(marker) && document.querySelectorAll('.toggle')[1].classList.contains('on')) {
-                        map.addLayer(marker);
-                    }
+                if ((type === 'all' || marker.vehicleType === type) && activeToggle) {
+                    map.addLayer(marker);
                 } else {
                     map.removeLayer(marker);
                 }
@@ -544,8 +526,8 @@
 
         function toggleLayer(layer, btn) {
             btn.classList.toggle('on');
-            let isOn = btn.classList.contains('on');
-
+            const isOn = btn.classList.contains('on');
+            btn.textContent = isOn ? (lang === 'vi' ? 'Bật' : 'On') : (lang === 'vi' ? 'Tắt' : 'Off');
             if (layer === 'active') { isOn ? map.addLayer(rentalLayer) : map.removeLayer(rentalLayer); }
             if (layer === 'heat') { isOn ? map.addLayer(heatLayer) : map.removeLayer(heatLayer); }
             if (layer === 'low') {
@@ -555,11 +537,22 @@
             }
         }
 
-        // HÀM BẬT/TẮT SHOW ROUTE HOÀN CHỈNH
         let routeVisible = true;
         function toggleRoute(show) {
-            if (show && !routeVisible) { map.addLayer(routeLayerGroup); routeVisible = true; }
-            if (!show && routeVisible) { map.removeLayer(routeLayerGroup); routeVisible = false; }
+            const btnShow = document.getElementById('btnShow');
+            const btnHide = document.getElementById('btnHide');
+            if (show && !routeVisible) {
+                map.addLayer(routeLayerGroup);
+                routeVisible = true;
+                btnShow.classList.replace('inactive-btn', 'active-btn');
+                btnHide.classList.replace('active-btn', 'inactive-btn');
+            }
+            if (!show && routeVisible) {
+                map.removeLayer(routeLayerGroup);
+                routeVisible = false;
+                btnHide.classList.replace('inactive-btn', 'active-btn');
+                btnShow.classList.replace('active-btn', 'inactive-btn');
+            }
         }
     </script>
 }

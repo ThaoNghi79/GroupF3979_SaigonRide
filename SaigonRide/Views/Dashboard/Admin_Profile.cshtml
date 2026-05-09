@@ -1,0 +1,878 @@
+﻿@model SaigonRide.Models.ViewModels.AdminProfileViewModel
+@{
+    ViewData["Title"] = "Admin Profile";
+    ViewData["Page"] = "profile";
+}
+
+@section Styles {
+    <style>
+        .profile-wrap {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-banner {
+            background: var(--gradient);
+            border-radius: 16px;
+            padding: 22px 28px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-banner-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            border: 2.5px solid rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-main);
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+        }
+
+        .profile-banner-info h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .profile-banner-info p {
+            font-size: 12.5px;
+            color: rgba(61, 53, 87, 0.65);
+            margin: 0;
+        }
+
+        .profile-banner .role-pill {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 99px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(4px);
+        }
+
+        .role-pill .shield-icon {
+            color: #f59e0b;
+            font-size: 13px;
+        }
+
+        .p-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+            margin-bottom: 18px;
+            overflow: hidden;
+            animation: pFadeUp .35s ease both;
+        }
+
+        .p-card:nth-child(1) {
+            animation-delay: .04s
+        }
+
+        .p-card:nth-child(2) {
+            animation-delay: .10s
+        }
+
+        .p-card:nth-child(3) {
+            animation-delay: .16s
+        }
+
+        .p-card:nth-child(4) {
+            animation-delay: .22s
+        }
+
+        @@keyframes pFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .p-card-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .p-card-header .hicon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(201, 184, 245, 0.3), rgba(245, 184, 208, 0.3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--primary-text);
+            flex-shrink: 0;
+        }
+
+        .p-card-header .header-link {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .p-card-header .header-link:hover {
+            text-decoration: underline;
+        }
+
+        .p-card-body {
+            padding: 20px;
+        }
+
+        .avatar-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+        }
+
+        .av-wrap {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0;
+        }
+
+        .av-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--border);
+            overflow: hidden;
+        }
+
+        .av-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .av-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-text);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            color: white;
+            transition: background .15s;
+        }
+
+        .av-edit:hover {
+            background: var(--primary-dark);
+        }
+
+        #adminAvatarInput {
+            display: none;
+        }
+
+        .av-info p {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .av-info span {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .f-label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 6px;
+        }
+
+        .f-input {
+            width: 100%;
+            padding: 9px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-family: inherit;
+            color: var(--text-main);
+            background: white;
+            outline: none;
+            transition: border .18s, box-shadow .18s;
+        }
+
+        .f-input:focus {
+            border-color: var(--primary-text);
+            box-shadow: 0 0 0 3px rgba(124, 92, 191, .1);
+        }
+
+        .f-input.readonly {
+            background: var(--body-bg);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .f-hint {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .f-error {
+            font-size: 11.5px;
+            color: var(--danger);
+            margin-top: 5px;
+        }
+
+        .readonly-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: var(--body-bg);
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+
+        .readonly-box i {
+            font-size: 11px;
+        }
+
+        .priv-note {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            color: #92400e;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .priv-note i {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            color: #1e40af;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .info-box i {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:first-of-type {
+            padding-top: 0;
+        }
+
+        .toggle-row:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .toggle-row .tr-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .toggle-row .tr-desc {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-text) !important;
+            border-color: var(--primary-text) !important;
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(124, 92, 191, .15) !important;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.3em;
+            height: 1.25em;
+            cursor: pointer;
+        }
+
+        .pw-group {
+            position: relative;
+        }
+
+        .pw-group .f-input {
+            padding-right: 40px;
+        }
+
+        .pw-eye {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 0;
+            transition: color .15s;
+        }
+
+        .pw-eye:hover {
+            color: var(--primary-text);
+        }
+
+        .strength-bar {
+            height: 3px;
+            border-radius: 99px;
+            background: var(--border);
+            margin-top: 7px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width .3s, background .3s;
+        }
+
+        .strength-fill.weak {
+            width: 28%;
+            background: #ef4444;
+        }
+
+        .strength-fill.medium {
+            width: 62%;
+            background: #f59e0b;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: #22c55e;
+        }
+
+        .btn-p-primary {
+            padding: 9px 22px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: opacity .15s, transform .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-p-primary:hover {
+            opacity: .88;
+            transform: translateY(-1px);
+        }
+
+        .btn-p-dark {
+            padding: 9px 22px;
+            background: var(--text-main);
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            color: white;
+            transition: opacity .15s, transform .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-p-dark:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .act-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .act-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .act-item:first-child {
+            padding-top: 0;
+        }
+
+        .act-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .act-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .dot-login {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .dot-update {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .dot-report {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .dot-alert {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .act-text {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .act-time {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .act-empty {
+            text-align: center;
+            padding: 28px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .act-empty i {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 8px;
+            opacity: .5;
+        }
+    </style>
+}
+
+<div class="profile-wrap">
+
+    <div class="profile-banner">
+        <div class="profile-banner-avatar">
+            @(Model.FullName?.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "A")
+        </div>
+        <div class="profile-banner-info">
+            <h2>@Model.FullName</h2>
+            <p>@Model.Email · <span data-i18n="System Administrator">System Administrator</span></p>
+        </div>
+        <div class="role-pill">
+            <i class="fas fa-shield-alt shield-icon"></i>
+            <span data-i18n="System Admin">System Admin</span>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-custom alert-success mb-4">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-custom alert-error mb-4">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="p-card">
+        <div class="p-card-header">
+            <div class="hicon"><i class="fas fa-id-badge"></i></div>
+            <span data-i18n="Admin Identity">Admin Identity</span>
+        </div>
+        <div class="p-card-body">
+            <form asp-action="UpdateAdminProfile" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="avatar-upload-row">
+                    <div class="av-wrap">
+                        <div class="av-circle" id="adminAvatarPreview">
+                            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                            {
+                                <img src="@Model.AvatarUrl" alt="avatar" />
+                            }
+                            else
+                            {
+                                @(Model.FullName?.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "A")
+                            }
+                        </div>
+                        <label class="av-edit" for="adminAvatarInput" title="Change photo">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="adminAvatarInput" name="AvatarFile" accept="image/png,image/jpeg,image/webp" />
+                    </div>
+                    <div class="av-info">
+                        <p data-i18n="Profile Photo">Profile Photo</p>
+                        <span data-i18n="JPG, PNG or WebP — max 2 MB">JPG, PNG or WebP — max 2 MB</span>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="f-label" data-i18n="Display Name">Display Name</label>
+                        <input asp-for="FullName" class="f-input" data-i18n-placeholder="Enter display name" placeholder="Enter display name" />
+                        <span asp-validation-for="FullName" class="f-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="f-label" data-i18n="Work Email">Work Email</label>
+                        <input asp-for="Email" class="f-input" type="email" data-i18n-placeholder="Enter work email" placeholder="Enter work email" />
+                        <p class="f-hint" data-i18n="This email will receive system alert notifications.">This email will receive system alert notifications.</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="f-label" data-i18n="System Role">System Role</label>
+                        <input value="System Admin" class="f-input readonly" disabled />
+                        <p class="f-hint">
+                            <span data-i18n="Cannot self-modify — prevents">Cannot self-modify — prevents</span>
+                            <strong style="color:var(--text-main);" data-i18n="Privilege Escalation">Privilege Escalation</strong>.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="f-label" data-i18n="Employee ID">Employee ID</label>
+                        <input value="@Model.EmployeeId" class="f-input readonly" readonly />
+                        <p class="f-hint" data-i18n="Assigned at onboarding.">Assigned at onboarding.</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn-p-dark">
+                        <i class="fas fa-check"></i> <span data-i18n="Save Identity Changes">Save Identity Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="p-card">
+        <div class="p-card-header">
+            <div class="hicon"><i class="fas fa-bell"></i></div>
+            <span data-i18n="System Alert Notifications">System Alert Notifications</span>
+        </div>
+        <div class="p-card-body">
+            <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;" data-i18n="Choose which system events send an email notification to your work address.">
+                Choose which system events send an email notification to your work address.
+            </p>
+
+            <form asp-action="UpdateAlertSettings" asp-controller="Admin" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="tr-title">
+                            <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>
+                            <span data-i18n="Station Overload (>80%)">Station Overload (&gt;80% capacity)</span>
+                        </div>
+                        <div class="tr-desc" data-i18n="Alert when any station exceeds 80% capacity.">Alert when any station exceeds 80% capacity.</div>
+                    </div>
+                    <div class="form-check form-switch ms-3 mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="AlertStationOverload" />
+                    </div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="tr-title">
+                            <i class="fas fa-wrench" style="color:var(--danger);"></i>
+                            <span data-i18n="Vehicle Reported as Maintenance">Vehicle Reported as Maintenance</span>
+                        </div>
+                        <div class="tr-desc" data-i18n="Alert when a vehicle status is set to Maintenance.">Alert when a vehicle status is set to Maintenance.</div>
+                    </div>
+                    <div class="form-check form-switch ms-3 mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="AlertVehicleMaintenance" />
+                    </div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="tr-title">
+                            <i class="fas fa-chart-bar" style="color:var(--primary-text);"></i>
+                            <span data-i18n="Station Low Inventory">Station Low Inventory</span>
+                        </div>
+                        <div class="tr-desc" data-i18n="Alert when any station drops below 20% capacity.">Alert when any station drops below 20% capacity.</div>
+                    </div>
+                    <div class="form-check form-switch ms-3 mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="AlertStationInventory" />
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn-p-primary">
+                        <i class="fas fa-save"></i> <span data-i18n="Save Notification Settings">Save Notification Settings</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="p-card">
+        <div class="p-card-header">
+            <div class="hicon"><i class="fas fa-shield-alt"></i></div>
+            <span data-i18n="Security &amp; Access Control">Security &amp; Access Control</span>
+        </div>
+        <div class="p-card-body">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <span>
+                    <span data-i18n="Passwords are hashed with">Passwords are hashed with</span> <strong>bcrypt / SHA-256</strong>.
+                    <span data-i18n="Use a strong, unique password and never reuse credentials from other services.">Use a strong, unique password and never reuse credentials from other services.</span>
+                </span>
+            </div>
+
+            <div class="priv-note">
+                <i class="fas fa-shield-alt"></i>
+                <span>
+                    <strong data-i18n="Privilege Escalation Protection:">Privilege Escalation Protection:</strong>
+                    <span data-i18n="Admins cannot self-assign roles. Role changes must be performed by another Super Admin via User Management.">Admins cannot self-assign roles. Role changes must be performed by another Super Admin via User Management.</span>
+                </span>
+            </div>
+
+            <form asp-action="ChangeAdminPassword" asp-controller="Admin" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="f-label"><span data-i18n="Current Password">Current Password</span> <span style="color:var(--danger)">*</span></label>
+                        <div class="pw-group">
+                            <input asp-for="CurrentPassword" type="password" id="adm_pw_cur" class="f-input" data-i18n-placeholder="Enter current password" placeholder="Enter current password" />
+                            <button type="button" class="pw-eye" data-target="adm_pw_cur">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="CurrentPassword" class="f-error"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="f-label"><span data-i18n="New Password">New Password</span> <span style="color:var(--danger)">*</span></label>
+                        <div class="pw-group">
+                            <input asp-for="NewPassword" type="password" id="adm_pw_new" class="f-input" data-i18n-placeholder="Min. 8 characters" placeholder="Min. 8 characters" />
+                            <button type="button" class="pw-eye" data-target="adm_pw_new">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="strength-bar"><div class="strength-fill" id="sFill"></div></div>
+                        <small id="sLabel" class="f-hint"></small>
+                        <span asp-validation-for="NewPassword" class="f-error"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="f-label"><span data-i18n="Confirm New Password">Confirm New Password</span> <span style="color:var(--danger)">*</span></label>
+                        <div class="pw-group">
+                            <input asp-for="ConfirmNewPassword" type="password" id="adm_pw_cfm" class="f-input" data-i18n-placeholder="Repeat new password" placeholder="Repeat new password" />
+                            <button type="button" class="pw-eye" data-target="adm_pw_cfm">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmNewPassword" class="f-error"></span>
+                        <small id="matchHint" class="f-hint"></small>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn-p-primary">
+                        <i class="fas fa-lock"></i> <span data-i18n="Save Security Changes">Save Security Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetDotClass(string? t) => t switch
+    {
+        "Login" => "dot-login",
+        "Update" => "dot-update",
+        "Report" => "dot-report",
+        "Alert" => "dot-alert",
+        _ => "dot-login"
+    };
+
+    string GetDotIcon(string? t) => t switch
+    {
+        "Login" => "fas fa-sign-in-alt",
+        "Update" => "fas fa-pencil-alt",
+        "Report" => "fas fa-chart-bar",
+        "Alert" => "fas fa-bell",
+        _ => "fas fa-circle"
+    };
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('adminAvatarInput').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const wrap = document.getElementById('adminAvatarPreview');
+                wrap.innerHTML = '<img src="' + e.target.result + '" alt="avatar" />';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.querySelectorAll('.pw-eye').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const input = document.getElementById(this.dataset.target);
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        const pwNew = document.getElementById('adm_pw_new');
+        const sFill = document.getElementById('sFill');
+        const sLabel = document.getElementById('sLabel');
+
+        pwNew?.addEventListener('input', function () {
+            const v = this.value;
+            let score = 0;
+            if (v.length >= 8) score++;
+            if (v.length >= 12) score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+
+            sFill.className = 'strength-fill';
+            if (score <= 2) {
+                sFill.classList.add('weak');
+                sLabel.textContent = (typeof _lang !== 'undefined' && _lang === 'vi') ? 'Yếu — thêm chữ hoa, số hoặc ký tự đặc biệt' : 'Weak — add uppercase, numbers or symbols';
+                sLabel.style.color = '#ef4444';
+            } else if (score <= 3) {
+                sFill.classList.add('medium');
+                sLabel.textContent = (typeof _lang !== 'undefined' && _lang === 'vi') ? 'Trung bình — thêm ký tự đặc biệt' : 'Medium — add special characters';
+                sLabel.style.color = '#f59e0b';
+            } else {
+                sFill.classList.add('strong');
+                sLabel.textContent = (typeof _lang !== 'undefined' && _lang === 'vi') ? 'Mạnh ✓' : 'Strong ✓';
+                sLabel.style.color = '#22c55e';
+            }
+        });
+
+        const pwCfm = document.getElementById('adm_pw_cfm');
+        const matchHint = document.getElementById('matchHint');
+
+        pwCfm?.addEventListener('input', function () {
+            if (!pwNew.value) return;
+            if (this.value === pwNew.value) {
+                matchHint.textContent = (typeof _lang !== 'undefined' && _lang === 'vi') ? '✓ Mật khẩu khớp' : '✓ Passwords match';
+                matchHint.style.color = '#22c55e';
+            } else {
+                matchHint.textContent = (typeof _lang !== 'undefined' && _lang === 'vi') ? '✗ Mật khẩu không khớp' : '✗ Passwords do not match';
+                matchHint.style.color = '#ef4444';
+            }
+        });
+    </script>
+}
