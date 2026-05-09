@@ -7,6 +7,9 @@
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.1/assets/css/leaflet.css" />
+
     <style>
         .page-banner-plain {
             display: flex;
@@ -15,18 +18,18 @@
             margin-bottom: 18px;
         }
 
-            .page-banner-plain h1 {
-                font-size: 22px;
-                font-weight: 800;
-                color: var(--text-main);
-            }
+        .page-banner-plain h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
 
-            .page-banner-plain .sub {
-                font-size: 13px;
-                color: var(--text-muted);
-                margin-top: 3px;
-                font-weight: 500;
-            }
+        .page-banner-plain .sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 500;
+        }
 
         .banner-btns {
             display: flex;
@@ -49,9 +52,9 @@
             transition: all 0.15s;
         }
 
-            .btn-outline:hover {
-                border-color: var(--primary);
-            }
+        .btn-outline:hover {
+            border-color: var(--primary);
+        }
 
         .btn-filled {
             display: inline-flex;
@@ -69,11 +72,10 @@
             transition: all 0.15s;
         }
 
-            .btn-filled:hover {
-                background: #3d3557;
-            }
+        .btn-filled:hover {
+            background: #3d3557;
+        }
 
-        /* Filter bar */
         .filter-bar-plain {
             display: flex;
             align-items: center;
@@ -100,43 +102,48 @@
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
+            appearance: none;
+            padding-right: 28px;
+            background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
             user-select: none;
             transition: all 0.15s;
         }
 
-            .fdrop:hover {
-                border-color: var(--primary);
-            }
+        .fdrop:hover {
+            border-color: var(--primary);
+        }
 
         .fsearch {
             flex: 1;
             position: relative;
         }
 
-            .fsearch input {
-                width: 100%;
-                padding: 8px 14px 8px 34px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                font-size: 13px;
-                font-family: inherit;
-                outline: none;
-            }
+        .fsearch input {
+            width: 100%;
+            padding: 8px 14px 8px 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
 
-                .fsearch input:focus {
-                    border-color: var(--primary);
-                }
+        .fsearch input:focus {
+            border-color: var(--primary);
+        }
 
-            .fsearch .si {
-                position: absolute;
-                left: 11px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--text-muted);
-                font-size: 12px;
-            }
+        .fsearch .si {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 12px;
+        }
 
-        /* Table card */
         .vtable-card {
             background: white;
             border: 1px solid var(--border);
@@ -153,46 +160,46 @@
             border-bottom: 1px solid var(--border);
         }
 
-            .vtable-head h3 {
-                font-size: 14px;
-                font-weight: 700;
-                color: var(--text-main);
-            }
+        .vtable-head h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
         .vtable {
             width: 100%;
             border-collapse: collapse;
         }
 
-            .vtable th {
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-muted);
-                padding: 10px 16px;
-                border-bottom: 1px solid var(--border);
-                text-align: left;
-            }
+        .vtable th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
 
-            .vtable td {
-                padding: 11px 16px;
-                border-bottom: 1px solid var(--border);
-                font-size: 13px;
-                vertical-align: middle;
-            }
+        .vtable td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
 
-            .vtable tr:last-child td {
-                border-bottom: none;
-            }
+        .vtable tr:last-child td {
+            border-bottom: none;
+        }
 
-            .vtable tr:hover td {
-                background: #faf8ff;
-            }
+        .vtable tr:hover td {
+            background: #faf8ff;
+        }
 
-            .vtable tr.selected-row td {
-                background: rgba(201,184,245,0.08);
-            }
+        .vtable tr.selected-row td {
+            background: rgba(201,184,245,0.08);
+        }
 
         .id-chip {
             display: inline-block;
@@ -216,10 +223,10 @@
             font-weight: 700;
         }
 
-            .cat-pill.warm {
-                background: rgba(255,212,163,0.35);
-                color: #b86d2a;
-            }
+        .cat-pill.warm {
+            background: rgba(255,212,163,0.35);
+            color: #b86d2a;
+        }
 
         .status-pill {
             display: inline-block;
@@ -258,23 +265,22 @@
             transition: all 0.15s;
         }
 
-            .act-btn.edit {
-                color: var(--primary-text);
-            }
+        .act-btn.edit {
+            color: var(--primary-text);
+        }
 
-                .act-btn.edit:hover {
-                    background: #ede9fa;
-                }
+        .act-btn.edit:hover {
+            background: #ede9fa;
+        }
 
-            .act-btn.del {
-                color: var(--danger);
-            }
+        .act-btn.del {
+            color: var(--danger);
+        }
 
-                .act-btn.del:hover {
-                    background: #fdd8d8;
-                }
+        .act-btn.del:hover {
+            background: #fdd8d8;
+        }
 
-        /* Selection bar */
         .sel-bar {
             display: flex;
             align-items: center;
@@ -360,16 +366,15 @@
             transition: all 0.15s;
         }
 
-            .pag-btn.active {
-                background: var(--gradient);
-                color: var(--text-main);
-                border-color: transparent;
-                font-weight: 700;
-            }
+        .pag-btn.active {
+            background: var(--gradient);
+            color: var(--text-main);
+            border-color: transparent;
+            font-weight: 700;
+        }
     </style>
 }
 
-<!-- PAGE HEADER -->
 <div class="page-banner-plain">
     <div>
         <h1 data-i18n="Vehicle Management">Vehicle Management</h1>
@@ -389,25 +394,24 @@
     </div>
 </div>
 
-<!-- FILTER BAR -->
 <div class="filter-bar-plain">
     <span class="flabel" data-i18n="Filter by:">Filter by:</span>
     <select class="fdrop" id="filterCategory" onchange="applyFilter()"
             style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
-        <option value="">🚲 All Categories</option>
-        <option value="Standard Bike">Standard Bike</option>
-        <option value="E-Scooter">E-Scooter</option>
+        <option value="" data-i18n="All Categories" data-i18n-prefix="🚲 ">All Categories</option>
+        <option value="Standard Bike" data-i18n="Standard Bike">Standard Bike</option>
+        <option value="E-Scooter" data-i18n="E-Scooter">E-Scooter</option>
     </select>
     <select class="fdrop" id="filterStatus" onchange="applyFilter()"
             style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
-        <option value="">🔄 All Statuses</option>
-        <option value="Available">Available</option>
-        <option value="InTransit">In-Transit</option>
-        <option value="Maintenance">Maintenance</option>
+        <option value="" data-i18n="All Statuses" data-i18n-prefix="🔄 ">All Statuses</option>
+        <option value="Available" data-i18n="Available">Available</option>
+        <option value="InTransit" data-i18n="In-Transit">In-Transit</option>
+        <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
     </select>
     <select class="fdrop" id="filterStation" onchange="applyFilter()"
             style="appearance:none;padding-right:28px;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%238b80a8%22 stroke-width=%221.4%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:10px;">
-        <option value="">📍 All Stations</option>
+        <option value="" data-i18n="All Stations" data-i18n-prefix="📍 ">All Stations</option>
         @if (stations != null)
         {
             foreach (var s in stations)
@@ -425,7 +429,6 @@
     </div>
 </div>
 
-<!-- TABLE -->
 <div class="vtable-card">
     <div class="vtable-head">
         <h3 data-i18n="All Vehicles">All Vehicles</h3>
@@ -461,27 +464,27 @@
                         <td>
                             @if (v.Category?.CategoryName == "Standard Bike")
                             {
-                                <span class="cat-pill warm">🚲 Standard Bike</span>
+                                <span class="cat-pill warm">🚲<span data-i18n="Standard Bike">Standard Bike</span></span>
                             }
                             else
                             {
-                                <span class="cat-pill">🛴 E-Scooter</span>
+                                <span class="cat-pill">🛴 <span data-i18n="E-Scooter">E-Scooter</span></span>
                             }
                         </td>
                         <td style="font-weight:700;color:var(--primary-text);">
-                            ₫ @v.Category?.PricePerMinute.ToString("N0")/min
+                            ₫ @v.Category?.PricePerMinute.ToString("N0")<span data-i18n="/min">/min</span>
                         </td>
                         <td>
                             @switch (v.Status)
                             {
                                 case SaigonRide.Models.VehicleStatus.Available:
-                                    <span class="status-pill sp-available">Available</span>
+                                    <span class="status-pill sp-available"><span data-i18n="Available">Available</span></span>
                                     break;
                                 case SaigonRide.Models.VehicleStatus.InTransit:
-                                    <span class="status-pill sp-intransit">In-Transit</span>
+                                    <span class="status-pill sp-intransit"><span data-i18n="In-Transit">In-Transit</span></span>
                                     break;
                                 case SaigonRide.Models.VehicleStatus.Maintenance:
-                                    <span class="status-pill sp-maintenance">Maintenance</span>
+                                    <span class="status-pill sp-maintenance"><span data-i18n="Maintenance">Maintenance</span></span>
                                     break;
                             }
                         </td>
@@ -507,27 +510,24 @@
         </table>
     </div>
 
-    <!-- Bulk bar — thêm Update Status -->
     <div class="sel-bar" id="bulkBar" style="display:none;">
         <span class="sel-info">
-            <span id="bulkCount">0</span> Selected
-            <span class="clear-sel" onclick="clearSelection()">Clear selection</span>
+            <span id="bulkCount">0</span> <span data-i18n="Selected">Selected</span>
+            <span class="clear-sel" onclick="clearSelection()" data-i18n="Clear selection">Clear selection</span>
         </span>
         <div class="sel-actions">
-            <button class="btn-danger" onclick="bulkDelete()">🗑 Delete Selected</button>
-            <button class="btn-warn" onclick="openModal('bulkStatusModal')">✎ Update Status</button>
+            <button class="btn-danger" onclick="bulkDelete()">🗑 <span data-i18n="Delete Selected">Delete Selected</span></button>
+            <button class="btn-warn" onclick="openModal('bulkStatusModal')">✎ <span data-i18n="Update Status">Update Status</span></button>
             <button class="btn-outline" style="padding:7px 14px;" onclick="exportTableCSV()">⬇ Export CSV</button>
         </div>
     </div>
 
-    <!-- Pagination thật — JS tự render -->
     <div class="pag-bar">
         <div class="pag-info" id="pagInfo">Page 1 of 1</div>
         <div class="pag-btns" id="pagBtns"></div>
     </div>
 </div>
 
-<!-- Bulk Update Status Modal -->
 <div class="modal-backdrop-custom" id="bulkStatusModal">
     <div class="modal-box">
         <div class="modal-header-custom">
@@ -552,7 +552,6 @@
     </div>
 </div>
 
-<!-- ADD MODAL -->
 <div class="modal-backdrop-custom" id="addModal">
     <div class="modal-box">
         <div class="modal-header-custom">
@@ -570,18 +569,22 @@
                 <input name="VehicleName" class="form-input-custom" placeholder="e.g. Bike VN-01" required maxlength="100" />
                 <label class="form-label-custom" data-i18n="Category">Category</label>
                 <select name="CategoryId" class="form-input-custom" required>
-                    <option value="">— Select Category —</option>
+                    <option value="" data-i18n="— Select Category —">— Select Category —</option>
                     @if (categories != null)
                     {
                         foreach (var c in categories)
                         {
-                            <option value="@c.CategoryId">@c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)</option>
+                            <option value="@c.CategoryId"
+                                    data-catname="@c.CategoryName"
+                                    data-price="₫@c.PricePerMinute.ToString("N0")/min">
+                                @c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)
+                            </option>
                         }
                     }
                 </select>
                 <label class="form-label-custom" data-i18n="Assign to Station">Assign to Station</label>
                 <select name="StationId" class="form-input-custom" required>
-                    <option value="">— Select Station —</option>
+                    <option value="" data-i18n="— Select Station —">— Select Station —</option>
                     @if (stations != null)
                     {
                         foreach (var s in stations)
@@ -604,8 +607,8 @@
                 </select>
                 <label class="form-label-custom" data-i18n="Initial Status">Initial Status</label>
                 <select name="Status" class="form-input-custom">
-                    <option value="Available">Available</option>
-                    <option value="Maintenance">Maintenance</option>
+                    <option value="Available" data-i18n="Available">Available</option>
+                    <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
                 </select>
             </div>
             <div style="padding:0 24px 24px;">
@@ -621,84 +624,31 @@
     </div>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-backdrop-custom" id="editModal">
-    <div class="modal-box">
-        <div class="modal-header-custom">
-            <h4>
-                <i class="fas fa-pen" style="margin-right:8px;"></i>
-                <span data-i18n="Edit Vehicle">Edit Vehicle</span> — <span id="editModalTitle"></span>
-            </h4>
-        </div>
-        <form method="post" id="editForm">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="VehicleId" id="editVehicleId" />
-            <div class="modal-body-custom">
-                <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
-                <input name="VehicleCode" id="editVehicleCode" class="form-input-custom" required maxlength="20" />
-                <label class="form-label-custom" data-i18n="Vehicle Name">Vehicle Name</label>
-                <input name="VehicleName" id="editVehicleName" class="form-input-custom" required maxlength="100" />
-                <label class="form-label-custom" data-i18n="Category">Category</label>
-                <select name="CategoryId" id="editCategoryId" class="form-input-custom" required>
-                    @if (categories != null)
-                    {
-                        foreach (var c in categories)
-                        {
-                            <option value="@c.CategoryId">@c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)</option>
-                        }
-                    }
-                </select>
-                <label class="form-label-custom" data-i18n="Station">Station</label>
-                <select name="StationId" id="editStationId" class="form-input-custom" required>
-                    @if (stations != null)
-                    {
-                        foreach (var s in stations)
-                        {
-                            <option value="@s.StationId">@s.StationName (@s.CurrentInventory/@s.Capacity)</option>
-                        }
-                    }
-                </select>
-                <label class="form-label-custom" data-i18n="STATUS">Status</label>
-                <select name="Status" id="editStatus" class="form-input-custom">
-                    <option value="Available">Available</option>
-                    <option value="InTransit">In-Transit</option>
-                    <option value="Maintenance">Maintenance</option>
-                </select>
-            </div>
-            <div style="padding:0 24px 24px;">
-                <div class="modal-footer-custom">
-                    <button type="button" class="btn-cancel" onclick="closeModal('editModal')" data-i18n="Cancel">Cancel</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save" style="margin-right:5px;"></i>
-                        <span data-i18n="Save Changes">Save Changes</span>
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
+@await Html.PartialAsync("Edit")
 @section Scripts {
     <script>
-        // ── Modal ────────────────────────────────────────────────
-        function openModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
-        document.querySelectorAll('.modal-backdrop-custom').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop-custom.show').forEach(m => closeModal(m.id)); });
-
-        function openEditModal(id, code, name, catId, stationId, status) {
-            document.getElementById('editVehicleId').value = id;
-            document.getElementById('editVehicleCode').value = code;
-            document.getElementById('editVehicleName').value = name;
-            document.getElementById('editCategoryId').value = catId;
-            document.getElementById('editStationId').value = stationId;
-            document.getElementById('editStatus').value = status;
-            document.getElementById('editModalTitle').textContent = code;
-            document.getElementById('editForm').action = `/Vehicle/Edit/${id}`;
-            openModal('editModal');
+        function openModal(id) { 
+            document.getElementById(id).classList.add('show'); 
+            document.body.style.overflow = 'hidden'; 
         }
 
-        // ── Pagination thật ──────────────────────────────────────
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('show'); 
+            document.body.style.overflow = ''; 
+        }
+
+        document.querySelectorAll('.modal-backdrop-custom').forEach(m => {
+            let mouseDownTarget = null;
+            m.addEventListener('mousedown', e => { mouseDownTarget = e.target; });
+            m.addEventListener('click', e => {
+                if (e.target === m && mouseDownTarget === m) closeModal(m.id);
+            });
+        });
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop-custom.show').forEach(m => closeModal(m.id)); 
+        });
+
         const PAGE_SIZE = 7;
         let currentPage = 1;
         let allRows = [];
@@ -709,7 +659,9 @@
             goToPage(1);
         }
 
-        function getFiltered() { return allRows.filter(r => r.dataset.filtered !== 'false'); }
+        function getFiltered() { 
+            return allRows.filter(r => r.dataset.filtered !== 'false'); 
+        }
 
         function goToPage(page) {
             const rows = getFiltered();
@@ -719,8 +671,13 @@
             const start = (currentPage - 1) * PAGE_SIZE;
             rows.slice(start, start + PAGE_SIZE).forEach(r => r.style.display = '');
             const showing = Math.min(PAGE_SIZE, rows.length - start);
-            document.getElementById('pagInfo').textContent = `Page ${currentPage} of ${totalPages} — ${rows.length} vehicles`;
-            document.getElementById('showingCount').textContent = `Showing ${showing} of ${rows.length} vehicles`;
+            const isVi = (localStorage.getItem('sr_lang') || 'en') === 'vi';
+            document.getElementById('pagInfo').textContent = isVi
+                ? `Trang ${currentPage} / ${totalPages} — ${rows.length} xe`
+                : `Page ${currentPage} of ${totalPages} — ${rows.length} vehicles`;
+            document.getElementById('showingCount').textContent = isVi
+                ? `Hiển thị ${showing} / ${rows.length} xe`
+                : `Showing ${showing} of ${rows.length} vehicles`;
             renderPagBtns(currentPage, totalPages);
         }
 
@@ -740,14 +697,18 @@
             for (let i = Math.max(1, cur - 1); i <= Math.min(total, cur + 1); i++) pages.add(i);
             let prev = 0;
             [...pages].sort((a, b) => a - b).forEach(p => {
-                if (p - prev > 1) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; c.appendChild(sp); }
+                if (p - prev > 1) { 
+                    const sp = document.createElement('span'); 
+                    sp.textContent = '…'; 
+                    sp.style.cssText = 'padding:0 4px;color:var(--text-muted);line-height:28px;'; 
+                    c.appendChild(sp); 
+                }
                 c.appendChild(mkBtn(p, p, p === cur));
                 prev = p;
             });
             c.appendChild(mkBtn('<i class="fas fa-chevron-right" style="font-size:10px;"></i>', cur + 1));
         }
 
-        // ── Filter ───────────────────────────────────────────────
         function applyFilter() {
             const cat = document.getElementById('filterCategory').value;
             const status = document.getElementById('filterStatus').value.toLowerCase();
@@ -764,22 +725,25 @@
             goToPage(1);
         }
 
-        // ── Selection ────────────────────────────────────────────
         function toggleAll(cb) {
             document.querySelectorAll('#vehicleBody tr').forEach(r => {
                 if (r.style.display !== 'none') r.querySelector('.row-check').checked = cb.checked;
             });
             updateBulkBar();
         }
+
         function updateBulkBar() {
             const n = document.querySelectorAll('.row-check:checked').length;
             document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
             document.getElementById('bulkCount').textContent = n;
             document.getElementById('bulkStatusCount').textContent = n;
         }
-        function clearSelection() { document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); updateBulkBar(); }
 
-        // ── Bulk Delete ──────────────────────────────────────────
+        function clearSelection() { 
+            document.querySelectorAll('.row-check,#selectAll').forEach(c => c.checked = false); 
+            updateBulkBar(); 
+        }
+
         function bulkDelete() {
             const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
             if (!ids.length) return;
@@ -789,7 +753,6 @@
                 .then(() => location.reload());
         }
 
-        // ── Bulk Update Status ───────────────────────────────────
         function bulkUpdateStatus() {
             const ids = [...document.querySelectorAll('.row-check:checked')].map(c => c.value);
             const newStatus = document.getElementById('bulkStatusSelect').value;
@@ -802,7 +765,6 @@
             }))).then(() => { closeModal('bulkStatusModal'); location.reload(); });
         }
 
-        // ── Export CSV ───────────────────────────────────────────
         function exportTableCSV() {
             const rows = [['Code', 'Name', 'Category', 'Fare', 'Status', 'Station']];
             getFiltered().forEach(row => {

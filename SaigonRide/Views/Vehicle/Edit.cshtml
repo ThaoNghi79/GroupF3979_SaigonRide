@@ -1,58 +1,83 @@
-﻿@model SaigonRide.Models.Vehicle
-@{
-    ViewData["Title"] = "Edit Vehicle";
-    ViewData["Page"] = "vehicles";
-    var categories = ViewBag.Categories as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
-    var stationsList = ViewBag.Stations as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
-    var statuses = ViewBag.Statuses as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+﻿@{
+    var categories = ViewBag.Categories as List<SaigonRide.Models.VehicleCategory>;
+    var stations = ViewBag.Stations as List<SaigonRide.Models.Station>;
 }
 
-<div style="max-width:560px; margin:0 auto;">
-    <a href="/Vehicle" style="font-size:13px; color:var(--primary-text); font-weight:600;
-        text-decoration:none; display:flex; align-items:center; gap:6px; margin-bottom:20px;">
-        <i class="fas fa-arrow-left"></i>
-        <span data-i18n="Back to Vehicles">Back to Vehicles</span>
-    </a>
-
-    <div class="card-custom">
-        <div style="background:var(--gradient); margin:-20px -20px 24px;
-            padding:20px 24px; border-radius:14px 14px 0 0;">
-            <h4 style="color:var(--text-main); font-size:17px; font-weight:700;">
+<div class="modal-backdrop-custom" id="editModal">
+    <div class="modal-box">
+        <div class="modal-header-custom">
+            <h4>
                 <i class="fas fa-pen" style="margin-right:8px;"></i>
-                <span data-i18n="Edit Vehicle">Edit Vehicle</span> — @Model.VehicleCode
+                <span data-i18n="Edit Vehicle">Edit Vehicle</span> — <span id="editModalTitle"></span>
             </h4>
         </div>
-
-        <form method="post" action="/Vehicle/Edit/@Model.VehicleId">
+        <form method="post" id="editForm">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="VehicleId" value="@Model.VehicleId" />
-
-            <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
-            <input name="VehicleCode" class="form-input-custom"
-                   value="@Model.VehicleCode" required />
-
-            <label class="form-label-custom" data-i18n="Vehicle Name">Vehicle Name</label>
-            <input name="VehicleName" class="form-input-custom"
-                   value="@Model.VehicleName" required />
-
-            <label class="form-label-custom" data-i18n="Category">Category</label>
-            @Html.DropDownList("CategoryId", categories, new { @class = "form-input-custom" })
-
-            <label class="form-label-custom" data-i18n="Station">Station</label>
-            @Html.DropDownList("StationId", stationsList, new { @class = "form-input-custom" })
-
-            <label class="form-label-custom" data-i18n="Status">Status</label>
-            @Html.DropDownList("Status", statuses, new { @class = "form-input-custom" })
-
-            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
-                <a href="/Vehicle" class="btn-cancel"
-                   style="display:flex; align-items:center; text-decoration:none;"
-                   data-i18n="Cancel">Cancel</a>
-                <button type="submit" class="btn-save">
-                    <i class="fas fa-save" style="margin-right:5px;"></i>
-                    <span data-i18n="Save Changes">Save Changes</span>
-                </button>
+            <input type="hidden" name="VehicleId" id="editVehicleId" />
+            <div class="modal-body-custom">
+                <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
+                <input name="VehicleCode" id="editVehicleCode" class="form-input-custom" required maxlength="20" />
+                
+                <label class="form-label-custom" data-i18n="Vehicle Name">Vehicle Name</label>
+                <input name="VehicleName" id="editVehicleName" class="form-input-custom" required maxlength="100" />
+                
+                <label class="form-label-custom" data-i18n="Category">Category</label>
+                <select name="CategoryId" id="editCategoryId" class="form-input-custom" required>
+                    @if (categories != null)
+                    {
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.CategoryId"
+                                    data-catname="@c.CategoryName"
+                                    data-price="₫@c.PricePerMinute.ToString("N0")/min">
+                                @c.CategoryName (₫@c.PricePerMinute.ToString("N0")/min)
+                            </option>
+                        }
+                    }
+                </select>
+                
+                <label class="form-label-custom" data-i18n="Station">Station</label>
+                <select name="StationId" id="editStationId" class="form-input-custom" required>
+                    @if (stations != null)
+                    {
+                        foreach (var s in stations)
+                        {
+                            <option value="@s.StationId">@s.StationName (@s.CurrentInventory/@s.Capacity)</option>
+                        }
+                    }
+                </select>
+                
+                <label class="form-label-custom" data-i18n="STATUS">Status</label>
+                <select name="Status" id="editStatus" class="form-input-custom">
+                    <option value="Available">Available</option>
+                    <option value="InTransit">In-Transit</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div style="padding:0 24px 24px;">
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editModal')" data-i18n="Cancel">Cancel</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save" style="margin-right:5px;"></i>
+                        <span data-i18n="Save Changes">Save Changes</span>
+                    </button>
+                </div>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function openEditModal(id, code, name, catId, stationId, status) {
+        document.getElementById('editVehicleId').value = id;
+        document.getElementById('editVehicleCode').value = code;
+        document.getElementById('editVehicleName').value = name;
+        document.getElementById('editCategoryId').value = catId;
+        document.getElementById('editStationId').value = stationId;
+        document.getElementById('editStatus').value = status;
+        document.getElementById('editModalTitle').textContent = code;
+        document.getElementById('editForm').action = `/Vehicle/Edit/${id}`;
+        
+        openModal('editModal');
+    }
+</script>
