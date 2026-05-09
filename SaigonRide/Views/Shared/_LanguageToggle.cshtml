@@ -1,0 +1,253 @@
+﻿<div class="lang-pill" id="langPill" onclick="toggleLang()" title="Switch language / Đổi ngôn ngữ">
+    <span class="lp-flag" id="lp-flag1">🇻🇳</span>
+    <span class="lp-active" id="lp-a">VI</span>
+    <span class="lp-sep">/</span>
+    <span class="lp-inactive" id="lp-b">EN</span>
+    <span class="lp-flag" id="lp-flag2">🇬🇧</span>
+</div>
+
+<script>
+    const T = {
+        "Smart Mobility": "Di chuyển thông minh", "MAIN MENU": "MENU CHÍNH", "MANAGEMENT": "QUẢN LÝ", "REPORT": "BÁO CÁO",
+        "Dashboard": "Bảng điều khiển", "Vehicles": "Phương tiện", "Stations": "Trạm", "Inventory": "Tồn kho", "Revenue": "Doanh thu",
+        "All services online": "Hệ thống hoạt động bình thường",
+        "Search vehicle ID, station...": "Tìm mã xe, tên trạm...",
+        "Logout": "Đăng xuất",
+        "FLEET OVERVIEW": "TỔNG QUAN ĐỘI XE", "Fleet Overview": "Tổng quan đội xe", "Find a Vehicle Near You": "Tìm xe gần bạn",
+        "Track live vehicle availability across all stations in Ho Chi Minh City.": "Theo dõi xe khả dụng tại tất cả các trạm ở TP. HCM.",
+        "View Live Map": "Xem bản đồ", "Manage Fleet": "Quản lý đội xe",
+        "Total Vehicles": "Tổng phương tiện", "Active Rentals": "Đang thuê",
+        "Total Revenue": "Tổng doanh thu", "Low Inventory Stations": "Trạm tồn kho thấp",
+        "Recent Activity": "Hoạt động gần đây", "Last 5 rental transactions": "5 giao dịch gần nhất",
+        "+8 this week": "+8 tuần này", "Live now": "Đang hoạt động",
+        "+12% vs last week": "+12% so với tuần trước", "Needs rebalancing": "Cần cân bằng lại",
+        "No rental data found.": "Chưa có dữ liệu thuê xe nào trong Database.",
+        "/min": "/phút",
+        "All": "Tất cả", "Active": "Hoạt động", "Completed": "Hoàn thành", "View all": "Xem tất cả",
+        "USER": "NGƯỜI DÙNG", "VEHICLE": "PHƯƠNG TIỆN", "START STATION": "TRẠM ĐI",
+        "END STATION": "TRẠM ĐẾN", "DURATION / TIME": "THỜI GIAN", "FARE": "GIÁ CƯỚC", "STATUS": "TRẠNG THÁI",
+        "Actions": "Thao tác", "Filter by:": "Lọc theo:", "Export CSV": "Xuất CSV", "Export PDF": "Xuất PDF",
+        "Cancel": "Hủy", "Save Changes": "Lưu thay đổi", "Selected": "đã chọn",
+        "Clear selection": "Bỏ chọn tất cả", "Delete Selected": "Xóa đã chọn",
+        "Update Status": "Cập nhật trạng thái", "Status": "Trạng thái", "Total:": "Tổng:",
+        "Available": "Có sẵn", "In-Transit": "Đang thuê", "Maintenance": "Bảo trì",
+        "Offline": "Ngoại tuyến", "Balanced": "Cân bằng", "Low Inventory": "Tồn kho thấp", "Overload": "Quá tải",
+        "Vehicle Management": "Quản lý phương tiện",
+        "Manage your fleet inventory — bikes and e-scooters across all stations": "Quản lý đội xe — xe đạp và xe điện tại các trạm",
+        "Add New Vehicle": "Thêm xe mới", "All Categories": "Tất cả loại xe",
+        "All Statuses": "Tất cả trạng thái", "All Stations": "Tất cả trạm", "All Vehicles": "Tất cả phương tiện",
+        "Standard Bike": "Xe đạp thường", "E-Scooter": "Xe điện",
+        "Search vehicle name or ID...": "Tìm tên xe hoặc mã xe...",
+        "Vehicle Name": "Tên xe", "Vehicle Code": "Mã xe", "ID Code": "Mã xe",
+        "Category": "Loại xe", "Fare (VND/min)": "Giá (VND/phút)", "Station": "Trạm",
+        "Initial Status": "Trạng thái ban đầu", "Assign to Station": "Gán vào trạm",
+        "Save Vehicle": "Lưu xe", "Edit Vehicle": "Chỉnh sửa xe", "Back to Vehicles": "Quay lại danh sách xe",
+        "— Select Category —": "— Chọn loại xe —", "— Select Station —": "— Chọn trạm —",
+        "Stations Management": "Quản lý trạm",
+        "Manage your station network — monitor capacities, live status, and vehicle distribution": "Quản lý mạng lưới trạm — theo dõi sức chứa và phân phối xe",
+        "Add New Station": "Thêm trạm mới", "All Districts": "Tất cả quận",
+        "Search station name or location...": "Tìm tên trạm hoặc địa điểm...",
+        "Station Name": "Tên trạm", "Location": "Địa điểm", "Location / Address": "Địa chỉ",
+        "Inventory (Bike | Scooter)": "Tồn kho (Đạp | Điện)",
+        "Capacity": "Sức chứa", "Available Slots": "Chỗ trống", "Utilization %": "Tỉ lệ sử dụng %",
+        "Max Capacity": "Sức chứa tối đa", "Current Inventory": "Tồn kho hiện tại",
+        "Save Station": "Lưu trạm", "Edit Station": "Chỉnh sửa trạm", "Back to Stations": "Quay lại danh sách trạm",
+        "Station Status": "Trạng thái trạm", "Pin Location": "Ghim vị trí (Click trên bản đồ)",
+        "Map preview": "Xem bản đồ", "Relocate": "Điều phối",
+        "Station Inventory & Capacity": "Tồn kho & Sức chứa trạm",
+        "Real-time overview of station capacity and vehicle availability": "Tổng quan thời gian thực về sức chứa và xe tại các trạm",
+        "Total Stations": "Tổng số trạm", "Across all districts": "Tất cả quận",
+        "Balanced (20-90%)": "Cân bằng (20–90%)", "Low Inventory (<20%)": "Tồn kho thấp (<20%)",
+        "Full/Overloaded (>90%)": "Đầy/Quá tải (>90%)", "15% DISCOUNT applies here!": "Áp dụng giảm giá 15%!", "of total": "trên tổng số",
+        "Capacity vs. Utilization by Station": "Sức chứa vs. Tỉ lệ sử dụng theo trạm",
+        "Displaying Top 10 critical stations": "Hiển thị Top 10 trạm quan trọng nhất (sắp xếp theo % sử dụng)",
+        "Overload / Full (>90%)": "Quá tải / Đầy (>90%)", "Balanced (20% - 90%)": "Cân bằng (20% - 90%)",
+        "Filter": "Bộ lọc", "District / Area": "Quận / Khu vực",
+        "Utilization Status": "Trạng thái sử dụng", "All Status": "Tất cả trạng thái",
+        "Station Inventory Details": "Chi tiết tồn kho trạm",
+        "Current Bike": "Xe đạp hiện tại", "Current E-Scooter": "Xe điện hiện tại",
+        "Discount?": "Giảm giá?", "This month": "Tháng này", "Reduce": "Giảm",
+        "Revenue Report by Vehicle Category": "Báo cáo doanh thu theo loại xe",
+        "Financial performance breakdown — Standard Bike vs E-Scooter": "Phân tích hiệu suất — Xe đạp vs Xe điện",
+        "Date Range:": "Khoảng thời gian:", "Apply Filter": "Áp dụng lọc", "Clear": "Xóa bộ lọc",
+        "Total Revenue (VND)": "Tổng doanh thu (VND)", "Discount Given (VND)": "Giảm giá (VND)",
+        "Net Revenue (VND)": "Doanh thu thuần (VND)", "Avg Duration (min)": "TG trung bình (phút)",
+        "Revenue Share": "Tỉ trọng DT", "Revenue by Category": "Doanh thu theo loại xe",
+        "Revenue Breakdown by Category": "Chi tiết doanh thu", "Revenue Trend by Vehicle Type": "Xu hướng doanh thu theo loại xe",
+        "Layers": "Lớp hiển thị", "Legend": "Chú thích", "Quick Stats": "Thống kê nhanh",
+        "Scooter": "Xe điện", "Bike": "Xe đạp", "Heatmap": "Bản đồ nhiệt",
+        "Available station": "Trạm sẵn sàng", "Full / Overflowing": "Đầy / Quá tải",
+        "Active (E-Scooter)": "Đang thuê (Xe điện)", "Active (Bike)": "Đang thuê (Xe đạp)",
+        "High demand": "Nhu cầu cao",
+        "Total": "Tổng", "Low": "Thấp", "Full": "Đầy",
+        "Active Rental": "Đang thuê", "User": "Người dùng", "Duration": "Thời gian",
+        "Show Route": "Hiện tuyến đường", "Hide Route": "Ẩn tuyến đường",
+        "On": "Bật", "Off": "Tắt",
+        "Admin Profile": "Hồ sơ quản trị",
+        "System Administrator": "Quản trị viên hệ thống",
+        "System Admin": "Quản trị viên",
+        "Admin Identity": "Thông tin quản trị viên",
+        "Profile Photo": "Ảnh đại diện",
+        "JPG, PNG or WebP — max 2 MB": "JPG, PNG hoặc WebP — tối đa 2 MB",
+        "Display Name": "Tên hiển thị",
+        "Work Email": "Email công việc",
+        "This email will receive system alert notifications.": "Email này sẽ nhận thông báo cảnh báo hệ thống.",
+        "System Role": "Vai trò hệ thống",
+        "Cannot self-modify — prevents": "Không thể tự sửa — ngăn chặn",
+        "Privilege Escalation": "Leo thang đặc quyền",
+        "Employee ID": "Mã nhân viên",
+        "Assigned at onboarding.": "Được gán khi tạo tài khoản.",
+        "Save Identity Changes": "Lưu thông tin",
+        "System Alert Notifications": "Thông báo cảnh báo hệ thống",
+        "Choose which system events send an email notification to your work address.": "Chọn sự kiện hệ thống nào sẽ gửi thông báo email đến địa chỉ làm việc của bạn.",
+        "Station Overload (>80%)": "Trạm quá tải (>80% sức chứa)",
+        "Alert when any station exceeds 80% capacity.": "Cảnh báo khi trạm vượt quá 80% sức chứa.",
+        "Vehicle Reported as Maintenance": "Xe được báo cáo bảo trì",
+        "Alert when a vehicle status is set to Maintenance.": "Cảnh báo khi trạng thái xe chuyển sang Bảo trì.",
+        "Station Low Inventory": "Trạm tồn kho thấp",
+        "Alert when any station drops below 20% capacity.": "Cảnh báo khi trạm xuống dưới 20% sức chứa.",
+        "Save Notification Settings": "Lưu cài đặt thông báo",
+        "Security & Access Control": "Bảo mật & Kiểm soát truy cập",
+        "Passwords are hashed with": "Mật khẩu được mã hóa bằng",
+        "Use a strong, unique password and never reuse credentials from other services.": "Hãy dùng mật khẩu mạnh, không tái sử dụng từ dịch vụ khác.",
+        "Privilege Escalation Protection:": "Bảo vệ leo thang đặc quyền:",
+        "Admins cannot self-assign roles. Role changes must be performed by another Super Admin via User Management.": "Quản trị viên không thể tự gán vai trò. Thay đổi vai trò phải do Super Admin khác thực hiện.",
+        "Current Password": "Mật khẩu hiện tại",
+        "New Password": "Mật khẩu mới",
+        "Min. 8 characters": "Tối thiểu 8 ký tự",
+        "Confirm New Password": "Xác nhận mật khẩu mới",
+        "Repeat new password": "Nhập lại mật khẩu mới",
+        "Save Security Changes": "Lưu thay đổi bảo mật",
+        "Recent Admin Activity": "Hoạt động gần đây",
+        "Last 10 actions on this account": "10 hành động gần nhất trên tài khoản này",
+        "No activity recorded yet.": "Chưa có hoạt động nào được ghi lại.",
+        "Enter current password": "Nhập mật khẩu hiện tại",
+        "Enter display name": "Nhập tên hiển thị",
+        "Enter work email": "Nhập email công việc",
+    };
+
+    let _lang = localStorage.getItem('sr_lang') || 'en';
+
+    function applyLang(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            el.textContent = (lang === 'vi' && T[k]) ? T[k] : k;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const k = el.getAttribute('data-i18n-placeholder');
+            el.placeholder = (lang === 'vi' && T[k]) ? T[k] : k;
+        });
+        document.querySelectorAll('option[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            const prefix = el.getAttribute('data-i18n-prefix') || '';
+            el.textContent = prefix + ((lang === 'vi' && T[k]) ? T[k] : k);
+        });
+        document.querySelectorAll('[data-vi][data-en]').forEach(el => {
+            const val = el.getAttribute('data-' + lang);
+            if (!val) return;
+            if (el.tagName === 'INPUT') el.placeholder = val;
+            else el.innerHTML = val;
+        });
+        document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
+            el.placeholder = el.getAttribute('data-placeholder-' + lang);
+        });
+        document.querySelectorAll('option[data-catname]').forEach(opt => {
+            const name = opt.getAttribute('data-catname');
+            const price = opt.getAttribute('data-price');
+            const translated = (lang === 'vi' && T[name]) ? T[name] : name;
+            opt.textContent = `${translated} (${price})`;
+        });
+
+        const a = document.getElementById('lp-a');
+        const b = document.getElementById('lp-b');
+        const f1 = document.getElementById('lp-flag1');
+        const f2 = document.getElementById('lp-flag2');
+        if (lang === 'vi') {
+            if (a) { a.textContent = 'VI'; a.className = 'lp-active'; }
+            if (b) { b.textContent = 'EN'; b.className = 'lp-inactive'; }
+            if (f1) f1.textContent = '🇻🇳';
+            if (f2) f2.textContent = '🇬🇧';
+        } else {
+            if (a) { a.textContent = 'EN'; a.className = 'lp-active'; }
+            if (b) { b.textContent = 'VI'; b.className = 'lp-inactive'; }
+            if (f1) f1.textContent = '🇬🇧';
+            if (f2) f2.textContent = '🇻🇳';
+        }
+        document.documentElement.lang = lang;
+        if (typeof goToPage === 'function') goToPage(currentPage);
+
+        const alertMap = {
+            "Please fill in all required fields.": "Vui lòng điền đầy đủ thông tin.",
+            "Vehicle deleted successfully.": "Xóa phương tiện thành công.",
+            "Station deleted successfully.": "Xóa trạm thành công.",
+            "Station not found!": "Không tìm thấy trạm.",
+            "No stations selected for update.": "Chưa chọn trạm nào để cập nhật.",
+            "Cannot delete vehicle in active rental.": "Không thể xóa phương tiện đang được thuê.",
+            "Station is full. Cannot add vehicle.": "Trạm đã đầy. Không thể thêm xe.",
+            "New station is full.": "Trạm đích đã đầy.",
+            "Vehicle not found.": "Không tìm thấy phương tiện.",
+            "Cannot delete station with vehicles assigned.": "Không thể xóa trạm đang còn xe.",
+            "Profile updated successfully.": "Cập nhật hồ sơ thành công.",
+            "Password changed successfully.": "Đổi mật khẩu thành công.",
+            "Current password is incorrect.": "Mật khẩu hiện tại không đúng.",
+            "New passwords do not match.": "Mật khẩu mới không khớp.",
+            "Notification settings saved.": "Đã lưu cài đặt thông báo.",
+            "Avatar updated successfully.": "Cập nhật ảnh đại diện thành công.",
+        };
+
+        const alertRegex = [
+            { pattern: /Vehicle '(.+)' created successfully!/, vi: (m) => `Thêm phương tiện '${m[1]}' thành công!` },
+            { pattern: /Vehicle '(.+)' updated successfully!/, vi: (m) => `Cập nhật phương tiện '${m[1]}' thành công!` },
+            { pattern: /Station '(.+)' created successfully!/, vi: (m) => `Thêm trạm '${m[1]}' thành công!` },
+            { pattern: /Station '(.+)' updated successfully!/, vi: (m) => `Cập nhật trạm '${m[1]}' thành công!` },
+            { pattern: /Successfully updated (\d+) stations to '(.+)'!/, vi: (m) => `Đã cập nhật ${m[1]} trạm sang trạng thái '${m[2]}' thành công!` },
+        ];
+
+        document.querySelectorAll('.alert-custom').forEach(el => {
+            const icon = el.querySelector('i');
+            if (!el.getAttribute('data-orig')) {
+                el.setAttribute('data-orig', el.textContent.trim());
+            }
+
+            const rawText = el.getAttribute('data-orig');
+
+            if (lang === 'vi') {
+                const exactKey = Object.keys(alertMap).find(k => rawText.includes(k));
+                if (exactKey) {
+                    el.textContent = ' ' + alertMap[exactKey];
+                    if (icon) el.prepend(icon);
+                    return;
+                }
+                for (const { pattern, vi } of alertRegex) {
+                    const m = rawText.match(pattern);
+                    if (m) {
+                        el.textContent = ' ' + vi(m);
+                        if (icon) el.prepend(icon);
+                        return;
+                    }
+                }
+            } else {
+                el.textContent = ' ' + rawText;
+                if (icon) el.prepend(icon);
+            }
+        });
+    }
+
+    function toggleLang() {
+        _lang = _lang === 'en' ? 'vi' : 'en';
+        localStorage.setItem('sr_lang', _lang);
+        applyLang(_lang);
+    }
+
+    function setAppLang(lang) {
+        _lang = lang;
+        localStorage.setItem('sr_lang', lang);
+        applyLang(lang);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const saved = localStorage.getItem('sr_lang') || 'en';
+        _lang = saved;
+        applyLang(saved);
+    });
+</script>

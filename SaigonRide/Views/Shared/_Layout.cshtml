@@ -8,1052 +8,1139 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-            :root {
-                --primary: #C9B8F5;
-                --primary-dark: #b8a3f0;
-                --primary-text: #7c5cbf;
-                --secondary: #F5B8D0;
-                --accent-warm: #FFD4A3;
-                --accent-yellow: #FFF3B0;
-                --gradient: linear-gradient(135deg, #C9B8F5, #F5B8D0);
-                --sidebar-width: 220px;
-                --sidebar-bg: #ffffff;
-                --body-bg: #FAF8FF;
-                --card-bg: #ffffff;
-                --text-main: #3D3557;
-                --text-muted: #8b80a8;
-                --border: #ebe6fa;
-                --success: #6fcf97;
-                --warning: #f2994a;
-                --danger: #eb5757;
-            }
-
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                font-family: 'Plus Jakarta Sans', sans-serif;
-                background: var(--body-bg);
-                color: var(--text-main);
-                display: flex;
-                min-height: 100vh;
-            }
-
-            /* ── SIDEBAR ── */
-            .sidebar {
-                width: var(--sidebar-width);
-                background: var(--sidebar-bg);
-                border-right: 1px solid var(--border);
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                z-index: 100;
-            }
-
-            /* Logo — icon + wordmark liền một khối, không rời rạc */
-            .sidebar-logo {
-                padding: 16px 16px 14px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                border-bottom: 1px solid var(--border);
-                text-decoration: none;
-            }
-
-                .sidebar-logo .logo-icon {
-                    width: 32px;
-                    height: 32px;
-                    background: var(--gradient);
-                    border-radius: 9px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
-                    box-shadow: 0 2px 8px rgba(201,184,245,0.4);
-                }
-
-                .sidebar-logo .logo-name {
-                    font-weight: 800;
-                    font-size: 15px;
-                    color: var(--text-main);
-                    letter-spacing: -0.3px;
-                }
-
-            .sidebar-section-label {
-                padding: 13px 16px 5px;
-                font-size: 10px;
-                font-weight: 700;
-                color: var(--text-muted);
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-            }
-
-            .sidebar-nav a {
-                display: flex;
-                align-items: center;
-                gap: 9px;
-                padding: 8px 14px;
-                color: var(--text-muted);
-                text-decoration: none;
-                font-size: 13px;
-                font-weight: 500;
-                border-radius: 8px;
-                margin: 1px 8px;
-                transition: all 0.18s;
-            }
-
-                .sidebar-nav a:hover {
-                    background: #f0eaff;
-                    color: var(--primary-text);
-                }
-
-                .sidebar-nav a.active {
-                    background: #f0eaff;
-                    color: var(--primary-text);
-                    font-weight: 600;
-                }
-
-                .sidebar-nav a .nav-icon {
-                    width: 17px;
-                    text-align: center;
-                    font-size: 13px;
-                    flex-shrink: 0;
-                }
-
-            .sidebar-badge {
-                margin-left: auto;
-                background: var(--primary-text);
-                color: white;
-                font-size: 10px;
-                font-weight: 700;
-                padding: 2px 7px;
-                border-radius: 20px;
-                min-width: 22px;
-                text-align: center;
-            }
-
-            .sidebar-status {
-                margin-top: auto;
-                padding: 11px 16px;
-                border-top: 1px solid var(--border);
-                font-size: 11px;
-                color: var(--text-muted);
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-
-            .status-dot {
-                width: 7px;
-                height: 7px;
-                background: var(--success);
-                border-radius: 50%;
-                flex-shrink: 0;
-            }
-
-            /* ── TOPBAR ── */
-            .main-wrapper {
-                margin-left: var(--sidebar-width);
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .topbar {
-                background: white;
-                border-bottom: 1px solid var(--border);
-                padding: 0 20px;
-                height: 56px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                position: sticky;
-                top: 0;
-                z-index: 50;
-            }
-
-            /* Search pill */
-            .topbar-search {
-                flex: 1;
-                max-width: 420px;
-                position: relative;
-            }
-
-                .topbar-search input {
-                    width: 100%;
-                    padding: 8px 34px 8px 36px;
-                    border: 1px solid var(--border);
-                    border-radius: 20px;
-                    font-size: 13px;
-                    font-family: inherit;
-                    background: var(--body-bg);
-                    color: var(--text-main);
-                    outline: none;
-                    transition: border 0.2s;
-                }
-
-                    .topbar-search input:focus {
-                        border-color: var(--primary);
-                    }
-
-                    .topbar-search input::placeholder {
-                        color: var(--text-muted);
-                    }
-
-                .topbar-search .s-icon {
-                    position: absolute;
-                    left: 13px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: var(--text-muted);
-                    font-size: 12px;
-                }
-
-                .topbar-search .s-arrow {
-                    position: absolute;
-                    right: 12px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: var(--text-muted);
-                    font-size: 10px;
-                }
-
-            .topbar-actions {
-                margin-left: auto;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            /* VI / EN — text thuần, không có pill background, đúng Figma */
-            .lang-pill {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                cursor: pointer;
-                user-select: none;
-                padding: 4px 6px;
-                border-radius: 8px;
-                transition: background 0.15s;
-            }
-
-                .lang-pill:hover {
-                    background: var(--body-bg);
-                }
-
-                .lang-pill .lp-flag {
-                    font-size: 13px;
-                }
-
-                .lang-pill .lp-active {
-                    font-size: 12px;
-                    font-weight: 700;
-                    color: var(--primary-text);
-                    font-family: inherit;
-                }
-
-                .lang-pill .lp-inactive {
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: var(--text-muted);
-                    font-family: inherit;
-                }
-
-                .lang-pill .lp-sep {
-                    font-size: 11px;
-                    color: var(--text-muted);
-                    margin: 0 1px;
-                }
-
-            /* Bell */
-            .topbar-bell {
-                width: 32px;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                cursor: pointer;
-                color: var(--text-muted);
-                font-size: 15px;
-                transition: background 0.15s;
-            }
-
-                .topbar-bell:hover {
-                    background: var(--body-bg);
-                }
-
-            /* User chip — gradient pill, đúng Figma */
-            .topbar-user-chip {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: linear-gradient(135deg, rgba(201,184,245,0.25), rgba(245,184,208,0.25));
-                border: 1px solid rgba(201,184,245,0.4);
-                border-radius: 24px;
-                padding: 5px 14px 5px 5px;
-                cursor: pointer;
-                transition: all 0.15s;
-            }
-
-                .topbar-user-chip:hover {
-                    background: linear-gradient(135deg, rgba(201,184,245,0.4), rgba(245,184,208,0.4));
-                }
-
-            .topbar-avatar {
-                width: 28px;
-                height: 28px;
-                background: var(--gradient);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 11px;
-                font-weight: 700;
-                flex-shrink: 0;
-            }
-
-            .topbar-username {
-                font-size: 13px;
-                font-weight: 600;
-                color: var(--text-main);
-            }
-
-            .topbar-chevron {
-                font-size: 9px;
-                color: var(--text-muted);
-                margin-left: 2px;
-            }
-
-            /* Logout */
-            .topbar-logout {
-                font-size: 13px;
-                color: var(--text-muted);
-                text-decoration: none;
-                padding: 6px 8px;
-                border-radius: 7px;
-                transition: all 0.15s;
-                display: flex;
-                align-items: center;
-            }
-
-                .topbar-logout:hover {
-                    color: var(--danger);
-                    background: #fdd8d8;
-                }
-
-            /* ── PAGE CONTENT ── */
-            .page-content {
-                padding: 24px;
-                flex: 1;
-            }
-
-            /* ── BANNER ── */
-            .page-banner {
-                background: var(--gradient);
-                border-radius: 16px;
-                padding: 20px 24px;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-                .page-banner h2 {
-                    color: var(--text-main);
-                    font-size: 20px;
-                    font-weight: 700;
-                    margin-bottom: 3px;
-                }
-
-                .page-banner p {
-                    color: rgba(61,53,87,0.65);
-                    font-size: 13px;
-                }
-
-                .page-banner .banner-actions {
-                    display: flex;
-                    gap: 10px;
-                }
-
-            /* ── BUTTONS ── */
-            .btn-primary-custom {
-                background: white;
-                color: var(--primary-text);
-                border: none;
-                padding: 9px 18px;
-                border-radius: 10px;
-                font-size: 13px;
-                font-weight: 600;
-                font-family: inherit;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 7px;
-                transition: all 0.2s;
-                text-decoration: none;
-            }
-
-                .btn-primary-custom:hover {
-                    background: rgba(255,255,255,0.85);
-                    color: var(--primary-text);
-                }
-
-            .btn-dark-custom {
-                background: rgba(255,255,255,0.18);
-                color: var(--text-main);
-                border: 1px solid rgba(255,255,255,0.4);
-                padding: 9px 18px;
-                border-radius: 10px;
-                font-size: 13px;
-                font-weight: 600;
-                font-family: inherit;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 7px;
-                transition: all 0.2s;
-                text-decoration: none;
-                backdrop-filter: blur(4px);
-            }
-
-                .btn-dark-custom:hover {
-                    background: rgba(255,255,255,0.28);
-                    color: var(--text-main);
-                }
-
-            .btn-save {
-                padding: 10px 22px;
-                background: var(--gradient);
-                border: none;
-                border-radius: 10px;
-                font-size: 13.5px;
-                font-weight: 700;
-                font-family: inherit;
-                cursor: pointer;
-                color: var(--text-main);
-                transition: all 0.15s;
-            }
-
-                .btn-save:hover {
-                    opacity: 0.88;
-                    transform: translateY(-1px);
-                }
-
-            .btn-cancel {
-                padding: 10px 20px;
-                border: 1.5px solid var(--border);
-                border-radius: 10px;
-                background: white;
-                font-size: 13.5px;
-                font-weight: 600;
-                font-family: inherit;
-                cursor: pointer;
-                color: var(--text-muted);
-                transition: all 0.15s;
-            }
-
-                .btn-cancel:hover {
-                    border-color: var(--primary-text);
-                }
-
-            /* ── CARDS ── */
-            .card-custom {
-                background: var(--card-bg);
-                border-radius: 14px;
-                border: 1px solid var(--border);
-                padding: 20px;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            }
-
-            .stat-card {
-                background: white;
-                border-radius: 14px;
-                border: 1px solid var(--border);
-                padding: 18px 20px;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            }
-
-                .stat-card .stat-label {
-                    font-size: 12px;
-                    color: var(--text-muted);
-                    font-weight: 500;
-                    margin-bottom: 6px;
-                }
-
-                .stat-card .stat-value {
-                    font-size: 28px;
-                    font-weight: 800;
-                    color: var(--text-main);
-                    line-height: 1;
-                    margin-bottom: 6px;
-                }
-
-                .stat-card .stat-sub {
-                    font-size: 11.5px;
-                    color: var(--success);
-                    font-weight: 500;
-                }
-
-                .stat-card .stat-icon {
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 10px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 16px;
-                    margin-bottom: 12px;
-                }
-
-            .stat-bar {
-                height: 3px;
-                border-radius: 2px;
-                margin-top: 10px;
-            }
-
-            /* ── FILTER ── */
-            .filter-bar {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 16px;
-                flex-wrap: wrap;
-            }
-
-            .filter-label {
-                font-size: 13px;
-                color: var(--text-muted);
-                font-weight: 500;
-            }
-
-            .filter-select {
-                padding: 7px 12px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                font-size: 13px;
-                font-family: inherit;
-                background: white;
-                color: var(--text-main);
-                cursor: pointer;
-                outline: none;
-            }
-
-                .filter-select:focus {
-                    border-color: var(--primary);
-                }
-
-            .filter-search {
-                flex: 1;
-                padding: 7px 14px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                font-size: 13px;
-                font-family: inherit;
-                outline: none;
-            }
-
-                .filter-search:focus {
-                    border-color: var(--primary);
-                }
-
-            /* ── TABLE ── */
-            .table-custom {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-                .table-custom th {
-                    font-size: 11px;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    color: var(--text-muted);
-                    padding: 10px 14px;
-                    border-bottom: 1px solid var(--border);
-                    text-align: left;
-                }
-
-                .table-custom td {
-                    padding: 12px 14px;
-                    border-bottom: 1px solid var(--border);
-                    font-size: 13.5px;
-                    vertical-align: middle;
-                }
-
-                .table-custom tr:last-child td {
-                    border-bottom: none;
-                }
-
-                .table-custom tr:hover td {
-                    background: #f5f0ff;
-                }
-
-            /* ── BADGES ── */
-            .badge-custom {
-                padding: 4px 10px;
-                border-radius: 20px;
-                font-size: 11.5px;
-                font-weight: 600;
-                display: inline-block;
-            }
-
-            .badge-available {
-                background: #d4f5e2;
-                color: #276749;
-            }
-
-            .badge-intransit {
-                background: var(--accent-yellow);
-                color: #7a6800;
-            }
-
-            .badge-maintenance {
-                background: #fdd8d8;
-                color: #a33030;
-            }
-
-            .badge-active {
-                background: #d4f5e2;
-                color: #276749;
-            }
-
-            .badge-offline {
-                background: #ede9fa;
-                color: var(--primary-text);
-            }
-
-            .badge-overload {
-                background: #fdd8d8;
-                color: #a33030;
-            }
-
-            .badge-balanced {
-                background: #d4f5e2;
-                color: #276749;
-            }
-
-            .badge-lowinventory {
-                background: var(--accent-warm);
-                color: #7a4000;
-            }
-
-            .badge-category-bike {
-                background: #ede9fa;
-                color: var(--primary-text);
-            }
-
-            .badge-category-scooter {
-                background: #fde8f0;
-                color: #a3305a;
-            }
-
-            .vehicle-code {
-                font-size: 11.5px;
-                color: var(--primary-text);
-                font-weight: 600;
-                background: #ede9fa;
-                padding: 3px 8px;
-                border-radius: 6px;
-            }
-
-            /* ── ACTION BTNS ── */
-            .action-btn {
-                width: 30px;
-                height: 30px;
-                border-radius: 7px;
-                border: 1px solid var(--border);
-                background: white;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                font-size: 13px;
-                transition: all 0.15s;
-                text-decoration: none;
-            }
-
-                .action-btn.edit {
-                    color: var(--primary-text);
-                }
-
-                    .action-btn.edit:hover {
-                        background: #ede9fa;
-                        border-color: var(--primary);
-                    }
-
-                .action-btn.delete {
-                    color: var(--danger);
-                }
-
-                    .action-btn.delete:hover {
-                        background: #fdd8d8;
-                        border-color: var(--danger);
-                    }
-
-            /* ── UTIL BAR ── */
-            .util-bar-wrap {
-                min-width: 90px;
-            }
-
-            .util-bar-bg {
-                height: 6px;
-                background: #f3f4f6;
-                border-radius: 3px;
-                overflow: hidden;
-                margin-top: 3px;
-            }
-
-            .util-bar-fill {
-                height: 100%;
-                border-radius: 3px;
-                transition: width 0.3s;
-            }
-
-            .util-pct {
-                font-size: 12px;
-                font-weight: 700;
-            }
-
-            /* ── PAGINATION ── */
-            .pagination-custom {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                margin-top: 16px;
-                justify-content: flex-end;
-            }
-
-            .page-btn {
-                width: 30px;
-                height: 30px;
-                border: 1px solid var(--border);
-                border-radius: 7px;
-                background: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 13px;
-                cursor: pointer;
-                font-family: inherit;
-                transition: all 0.15s;
-            }
-
-                .page-btn.active {
-                    background: var(--gradient);
-                    color: var(--text-main);
-                    border: none;
-                    font-weight: 700;
-                }
-
-                .page-btn:hover:not(.active) {
-                    border-color: var(--primary);
-                    color: var(--primary-text);
-                }
-
-            /* ── MODAL ── */
-            .modal-backdrop-custom {
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.35);
-                z-index: 200;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+        :root {
+            --primary: #C9B8F5;
+            --primary-dark: #b8a3f0;
+            --primary-text: #7c5cbf;
+            --secondary: #F5B8D0;
+            --accent-warm: #FFD4A3;
+            --accent-yellow: #FFF3B0;
+            --gradient: linear-gradient(135deg, #C9B8F5, #F5B8D0);
+            --sidebar-width: 220px;
+            --sidebar-bg: #ffffff;
+            --body-bg: #FAF8FF;
+            --card-bg: #ffffff;
+            --text-main: #3D3557;
+            --text-muted: #8b80a8;
+            --border: #ebe6fa;
+            --success: #6fcf97;
+            --warning: #f2994a;
+            --danger: #eb5757;
+            --topbar-h: 56px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--body-bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            height: var(--topbar-h);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(201,184,245,0.4);
+        }
+
+        .sidebar-logo .logo-name {
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-section-label {
+            padding: 13px 16px 5px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 1px 8px;
+            transition: all 0.18s;
+        }
+
+        .sidebar-nav a:hover {
+            background: #f0eaff;
+            color: var(--primary-text);
+        }
+
+        .sidebar-nav a.active {
+            background: #f0eaff;
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .sidebar-nav a .nav-icon {
+            width: 17px;
+            text-align: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: var(--primary-text);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-status {
+            margin-top: auto;
+            padding: 11px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--success);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-search {
+            flex: 1;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .topbar-search input {
+            width: 100%;
+            padding: 8px 34px 8px 36px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--body-bg);
+            color: var(--text-main);
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .topbar-search input:focus {
+            border-color: var(--primary);
+        }
+
+        .topbar-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .topbar-search .s-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .topbar-search .s-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+            z-index: 999;
+            overflow: hidden;
+            display: none;
+        }
+
+        .search-dropdown.show {
+            display: block;
+        }
+
+        .search-dropdown-section {
+            padding: 8px 0 4px;
+        }
+
+        .search-dropdown-label {
+            padding: 4px 14px 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .search-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.12s;
+            text-decoration: none;
+        }
+
+        .search-dropdown-item:hover {
+            background: #f5f0ff;
+            color: var(--primary-text);
+        }
+
+        .search-dropdown-item .sdi-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #f0eaff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--primary-text);
+            flex-shrink: 0;
+        }
+
+        .search-dropdown-item .sdi-icon.scooter {
+            background: #fde8f0;
+            color: #a3305a;
+        }
+
+        .search-dropdown-item .sdi-icon.station {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .search-dropdown-item .sdi-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .search-dropdown-empty {
+            padding: 16px 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .search-dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        .topbar-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 6px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+
+        .lang-pill:hover {
+            background: var(--body-bg);
+        }
+
+        .lang-pill .lp-flag {
+            font-size: 13px;
+        }
+
+        .lang-pill .lp-active {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-text);
+            font-family: inherit;
+        }
+
+        .lang-pill .lp-inactive {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: inherit;
+        }
+
+        .lang-pill .lp-sep {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 0 1px;
+        }
+
+        .topbar-bell {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 15px;
+            transition: background 0.15s;
+        }
+
+        .topbar-bell:hover {
+            background: var(--body-bg);
+        }
+
+        .topbar-user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(201,184,245,0.25), rgba(245,184,208,0.25));
+            border: 1px solid rgba(201,184,245,0.4);
+            border-radius: 24px;
+            padding: 5px 14px 5px 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .topbar-user-chip:hover {
+            background: linear-gradient(135deg, rgba(201,184,245,0.4), rgba(245,184,208,0.4));
+        }
+
+        .topbar-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .topbar-username {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .topbar-chevron {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .topbar-logout {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 7px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-logout:hover {
+            color: var(--danger);
+            background: #fdd8d8;
+        }
+
+        .page-content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        .page-banner {
+            background: var(--gradient);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-banner h2 {
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .page-banner p {
+            color: rgba(61,53,87,0.65);
+            font-size: 13px;
+        }
+
+        .page-banner .banner-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary-custom {
+            background: white;
+            color: var(--primary-text);
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary-custom:hover {
+            background: rgba(255,255,255,0.85);
+            color: var(--primary-text);
+        }
+
+        .btn-dark-custom {
+            background: rgba(255,255,255,0.18);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-dark-custom:hover {
+            background: rgba(255,255,255,0.28);
+            color: var(--text-main);
+        }
+
+        .btn-save {
+            padding: 10px 22px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.15s;
+        }
+
+        .btn-save:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.15s;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--primary-text);
+        }
+
+        .card-custom {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .stat-sub {
+            font-size: 11.5px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .stat-card .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .stat-bar {
+            height: 3px;
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 7px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            color: var(--text-main);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-search {
+            flex: 1;
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .filter-search:focus {
+            border-color: var(--primary);
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-custom th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .table-custom td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13.5px;
+            vertical-align: middle;
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: #f5f0ff;
+        }
+
+        .badge-custom {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-available {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .badge-intransit {
+            background: var(--accent-yellow);
+            color: #7a6800;
+        }
+
+        .badge-maintenance {
+            background: #fdd8d8;
+            color: #a33030;
+        }
+
+        .badge-active {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .badge-offline {
+            background: #ede9fa;
+            color: var(--primary-text);
+        }
+
+        .badge-overload {
+            background: #fdd8d8;
+            color: #a33030;
+        }
+
+        .badge-balanced {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .badge-lowinventory {
+            background: var(--accent-warm);
+            color: #7a4000;
+        }
+
+        .badge-category-bike {
+            background: #ede9fa;
+            color: var(--primary-text);
+        }
+
+        .badge-category-scooter {
+            background: #fde8f0;
+            color: #a3305a;
+        }
+
+        .vehicle-code {
+            font-size: 11.5px;
+            color: var(--primary-text);
+            font-weight: 600;
+            background: #ede9fa;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .action-btn.edit {
+            color: var(--primary-text);
+        }
+
+        .action-btn.edit:hover {
+            background: #ede9fa;
+            border-color: var(--primary);
+        }
+
+        .action-btn.delete {
+            color: var(--danger);
+        }
+
+        .action-btn.delete:hover {
+            background: #fdd8d8;
+            border-color: var(--danger);
+        }
+
+        .util-bar-wrap {
+            min-width: 90px;
+        }
+
+        .util-bar-bg {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+
+        .util-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .util-pct {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pagination-custom {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .page-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .page-btn.active {
+            background: var(--gradient);
+            color: var(--text-main);
+            border: none;
+            font-weight: 700;
+        }
+
+        .page-btn:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary-text);
+        }
+
+        .modal-backdrop-custom {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-backdrop-custom.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 18px;
+            padding: 0;
+            width: 480px;
+            max-width: 95vw;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            transform: translateY(20px);
+            transition: transform 0.25s;
+            overflow: hidden;
+        }
+
+        .modal-backdrop-custom.show .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-header-custom {
+            background: var(--gradient);
+            padding: 20px 24px;
+        }
+
+        .modal-header-custom h4 {
+            color: var(--text-main);
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .modal-body-custom {
+            padding: 24px;
+        }
+
+        .form-label-custom {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-input-custom {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .form-input-custom:focus {
+            border-color: var(--primary-text);
+        }
+
+        .form-input-custom::placeholder {
+            color: #b0a8c8;
+        }
+
+        .modal-footer-custom {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 4px;
+        }
+
+        .alert-custom {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background: #d4f5e2;
+            color: #276749;
+        }
+
+        .alert-error {
+            background: #fdd8d8;
+            color: #a33030;
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--primary-text);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .bulk-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-top: 1px solid var(--border);
+            background: var(--body-bg);
+            border-radius: 0 0 12px 12px;
+            font-size: 13px;
+        }
+
+        .bulk-bar .bulk-count {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .bulk-bar .bulk-clear {
+            color: var(--primary-text);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .bulk-bar .bulk-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-bulk {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
+
+        .btn-bulk-delete {
+            background: #fdd8d8;
+            color: #a33030;
+        }
+
+        .btn-bulk-delete:hover {
+            background: #fbbcbc;
+        }
+
+        .table-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .table-meta .table-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .table-meta .table-count {
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateX(100px);
                 opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.2s;
             }
 
-                .modal-backdrop-custom.show {
-                    opacity: 1;
-                    pointer-events: all;
-                }
-
-            .modal-box {
-                background: white;
-                border-radius: 18px;
-                padding: 0;
-                width: 480px;
-                max-width: 95vw;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-                transform: translateY(20px);
-                transition: transform 0.25s;
-                overflow: hidden;
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
-
-            .modal-backdrop-custom.show .modal-box {
-                transform: translateY(0);
-            }
-
-            .modal-header-custom {
-                background: var(--gradient);
-                padding: 20px 24px;
-            }
-
-                .modal-header-custom h4 {
-                    color: var(--text-main);
-                    font-size: 17px;
-                    font-weight: 700;
-                }
-
-            .modal-body-custom {
-                padding: 24px;
-            }
-
-            .form-label-custom {
-                font-size: 12.5px;
-                font-weight: 600;
-                color: var(--text-main);
-                margin-bottom: 6px;
-                display: block;
-            }
-
-            .form-input-custom {
-                width: 100%;
-                padding: 10px 14px;
-                border: 1.5px solid var(--border);
-                border-radius: 10px;
-                font-size: 13.5px;
-                font-family: inherit;
-                outline: none;
-                transition: border 0.2s;
-                margin-bottom: 16px;
-                color: var(--text-main);
-            }
-
-                .form-input-custom:focus {
-                    border-color: var(--primary-text);
-                }
-
-                .form-input-custom::placeholder {
-                    color: #b0a8c8;
-                }
-
-            .modal-footer-custom {
-                display: flex;
-                gap: 10px;
-                justify-content: flex-end;
-                padding-top: 4px;
-            }
-
-            /* ── ALERTS / MISC ── */
-            .alert-custom {
-                padding: 12px 16px;
-                border-radius: 10px;
-                font-size: 13px;
-                font-weight: 500;
-                margin-bottom: 16px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .alert-success {
-                background: #d4f5e2;
-                color: #276749;
-            }
-
-            .alert-error {
-                background: #fdd8d8;
-                color: #a33030;
-            }
-
-            input[type="checkbox"] {
-                accent-color: var(--primary-text);
-                width: 15px;
-                height: 15px;
-                cursor: pointer;
-            }
-
-            .bulk-bar {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 10px 14px;
-                border-top: 1px solid var(--border);
-                background: var(--body-bg);
-                border-radius: 0 0 12px 12px;
-                font-size: 13px;
-            }
-
-                .bulk-bar .bulk-count {
-                    font-weight: 600;
-                    color: var(--text-main);
-                }
-
-                .bulk-bar .bulk-clear {
-                    color: var(--primary-text);
-                    cursor: pointer;
-                    font-weight: 500;
-                }
-
-                .bulk-bar .bulk-actions {
-                    margin-left: auto;
-                    display: flex;
-                    gap: 8px;
-                }
-
-            .btn-bulk {
-                padding: 7px 14px;
-                border-radius: 8px;
-                font-size: 12.5px;
-                font-weight: 600;
-                font-family: inherit;
-                cursor: pointer;
-                border: none;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                transition: all 0.15s;
-            }
-
-            .btn-bulk-delete {
-                background: #fdd8d8;
-                color: #a33030;
-            }
-
-                .btn-bulk-delete:hover {
-                    background: #fbbcbc;
-                }
-
-            .table-meta {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 12px;
-            }
-
-                .table-meta .table-title {
-                    font-size: 14px;
-                    font-weight: 700;
-                    color: var(--text-main);
-                }
-
-                .table-meta .table-count {
-                    font-size: 12.5px;
-                    color: var(--text-muted);
-                }
-
-            @@keyframes slideIn {
-                from {
-                    transform: translateX(100px);
-                    opacity: 0;
-                }
-
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
+        }
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 
-    <!-- ═══ SIDEBAR ═══ -->
-    <aside class="sidebar">
-        <!-- Logo: icon + SaigonRide — đúng như Figma, không có subtitle -->
-        <a href="/Dashboard" class="sidebar-logo">
-            <div class="logo-icon">
-                <i class="fas fa-bicycle" style="font-size:14px; color:white;"></i>
+    @{
+        bool hideSidebar = ViewData["HideSidebar"] is bool b && b;
+        string currentPage = ViewData["Page"]?.ToString() ?? "";
+    }
+
+    @if (!hideSidebar)
+    {
+        <aside class="sidebar">
+            <a href="/Dashboard" class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-bicycle" style="font-size:14px; color:white;"></i>
+                </div>
+                <span class="logo-name">SaigonRide</span>
+            </a>
+
+            <div class="sidebar-section-label" data-i18n="MAIN MENU">MAIN MENU</div>
+            <nav class="sidebar-nav">
+                <a href="/Dashboard" class="@(currentPage == "dashboard" ? "active" : "")">
+                    <i class="fas fa-th-large nav-icon"></i>
+                    <span data-i18n="Dashboard">Dashboard</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-label" data-i18n="MANAGEMENT">MANAGEMENT</div>
+            <nav class="sidebar-nav">
+                <a href="/Vehicle" class="@(currentPage == "vehicles" ? "active" : "")">
+                    <i class="fas fa-bicycle nav-icon"></i>
+                    <span data-i18n="Vehicles">Vehicles</span>
+                    <span class="sidebar-badge">@ViewBag.VehicleCount</span>
+                </a>
+                <a href="/Station" class="@(currentPage == "stations" ? "active" : "")">
+                    <i class="fas fa-map-marker-alt nav-icon"></i>
+                    <span data-i18n="Stations">Stations</span>
+                    <span class="sidebar-badge">@ViewBag.StationCount</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-label" data-i18n="REPORT">REPORT</div>
+            <nav class="sidebar-nav">
+                <a href="/Report/StationInventory" class="@(currentPage == "inventory" ? "active" : "")">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span data-i18n="Inventory">Inventory</span>
+                </a>
+                <a href="/Report/Revenue" class="@(currentPage == "revenue" ? "active" : "")">
+                    <i class="fas fa-chart-line nav-icon"></i>
+                    <span data-i18n="Revenue">Revenue</span>
+                    <span class="sidebar-badge">7</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-status">
+                <span class="status-dot"></span>
+                <span data-i18n="All services online">All services online</span>
             </div>
-            <span class="logo-name">SaigonRide</span>
-        </a>
+        </aside>
+    }
 
-        <div class="sidebar-section-label" data-i18n="MAIN MENU">MAIN MENU</div>
-        <nav class="sidebar-nav">
-            <a href="/Dashboard" class="@(ViewData["Page"]?.ToString() == "dashboard" ? "active" : "")">
-                <i class="fas fa-th-large nav-icon"></i>
-                <span data-i18n="Dashboard">Dashboard</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-section-label" data-i18n="MANAGEMENT">MANAGEMENT</div>
-        <nav class="sidebar-nav">
-            <a href="/Vehicle" class="@(ViewData["Page"]?.ToString() == "vehicles" ? "active" : "")">
-                <i class="fas fa-bicycle nav-icon"></i>
-                <span data-i18n="Vehicles">Vehicles</span>
-                <span class="sidebar-badge">@ViewBag.VehicleCount</span>
-            </a>
-            <a href="/Station" class="@(ViewData["Page"]?.ToString() == "stations" ? "active" : "")">
-                <i class="fas fa-map-marker-alt nav-icon"></i>
-                <span data-i18n="Stations">Stations</span>
-                <span class="sidebar-badge">@ViewBag.StationCount</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-section-label" data-i18n="REPORT">REPORT</div>
-        <nav class="sidebar-nav">
-            <a href="/Report/StationInventory" class="@(ViewData["Page"]?.ToString() == "inventory" ? "active" : "")">
-                <i class="fas fa-chart-bar nav-icon"></i>
-                <span data-i18n="Inventory">Inventory</span>
-            </a>
-            <a href="/Report/Revenue" class="@(ViewData["Page"]?.ToString() == "revenue" ? "active" : "")">
-                <i class="fas fa-chart-line nav-icon"></i>
-                <span data-i18n="Revenue">Revenue</span>
-                <span class="sidebar-badge">7</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-status">
-            <span class="status-dot"></span>
-            <span data-i18n="All services online">All services online</span>
-        </div>
-    </aside>
-
-    <!-- ═══ MAIN ═══ -->
-    <div class="main-wrapper">
-        <!-- TOPBAR — pixel-perfect theo Figma -->
+    <div class="main-wrapper" style="@(hideSidebar ? "margin-left:0;" : "")">
         <header class="topbar">
-            <!-- Search pill -->
-            <div class="topbar-search">
-                <i class="fas fa-search s-icon"></i>
-                <input type="text" id="globalSearch"
-                       data-i18n-placeholder="Search vehicle ID, station..."
-                       placeholder="Search vehicle ID, station..." />
-                <i class="fas fa-chevron-down s-arrow"></i>
-            </div>
+            @if (hideSidebar)
+            {
+                <a href="/Dashboard" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+                    <div class="logo-icon" style="width:32px;height:32px;background:var(--gradient);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(201,184,245,0.4);">
+                        <i class="fas fa-bicycle" style="font-size:14px;color:white;"></i>
+                    </div>
+                    <span style="font-weight:800;font-size:15px;color:var(--text-main);letter-spacing:-0.3px;">SaigonRide</span>
+                </a>
+            }
+            else if (currentPage == "dashboard")
+            {
+                <div class="topbar-search">
+                    <i class="fas fa-search s-icon"></i>
+                    <input type="text" id="globalSearch"
+                           data-i18n-placeholder="Search vehicle ID, station..."
+                           placeholder="Search vehicle ID, station..."
+                           autocomplete="off" />
+                    <i class="fas fa-chevron-down s-arrow" id="searchArrow"></i>
+                    <div class="search-dropdown" id="searchDropdown"></div>
+                </div>
+            }
 
             <div class="topbar-actions">
-                <!-- 🇻🇳 VI / EN 🇬🇧 — pill gradient nhạt -->
-                <div class="lang-pill" id="langPill" onclick="toggleLang()" title="Switch language / Đổi ngôn ngữ">
-                    <span class="lp-flag" id="lp-flag1">🇻🇳</span>
-                    <span class="lp-active" id="lp-a">VI</span>
-                    <span class="lp-sep">/</span>
-                    <span class="lp-inactive" id="lp-b">EN</span>
-                    <span class="lp-flag" id="lp-flag2">🇬🇧</span>
-                </div>
-
-                <!-- Bell -->
+                @await Html.PartialAsync("_LanguageToggle")
                 <div class="topbar-bell"><i class="fas fa-bell"></i></div>
 
-                <!-- User chip -->
                 @{
                     var uName = Context.Session.GetString("UserName") ?? "Thao Nghi";
+                    var uAvatar = Context.Session.GetString("AvatarUrl");
                     var initials = string.Concat(uName.Split(' ').Where(w => w.Length > 0).Take(2).Select(w => w[0])).ToUpper();
                 }
-                <div class="topbar-user-chip">
-                    <div class="topbar-avatar">@initials</div>
+                <a href="/Admin/Profile" class="topbar-user-chip" style="text-decoration:none;">
+                    @if (!string.IsNullOrEmpty(uAvatar))
+                    {
+                        <img src="@uAvatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+                    }
+                    else
+                    {
+                        <div class="topbar-avatar">@initials</div>
+                    }
                     <span class="topbar-username">@uName</span>
                     <i class="fas fa-chevron-down topbar-chevron"></i>
-                </div>
-
-                <!-- Logout -->
+                </a>
                 <a href="/Auth/Logout" class="topbar-logout" title="Sign out">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </header>
 
-        <!-- CONTENT -->
         <main class="page-content">
             @if (TempData["Success"] != null)
             {
@@ -1073,129 +1160,115 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- ═══ BILINGUAL VI/EN — hoạt động thật sự ═══ -->
     <script>
-        const T = {
-        "Smart Mobility": "Di chuyển thông minh", "MAIN MENU": "MENU CHÍNH", "MANAGEMENT": "QUẢN LÝ", "REPORT": "BÁO CÁO",
-        "Dashboard": "Bảng điều khiển", "Vehicles": "Phương tiện", "Stations": "Trạm", "Inventory": "Tồn kho", "Revenue": "Doanh thu",
-        "All services online": "Hệ thống hoạt động bình thường",
-        "Search vehicle ID, station...": "Tìm mã xe, tên trạm...",
-        // Dashboard
-        "Fleet Overview": "Tổng quan đội xe", "Find a Vehicle Near You": "Tìm xe gần bạn",
-        "Track live vehicle availability across all 52 stations in Ho Chi Minh City.": "Theo dõi xe khả dụng tại 52 trạm ở TP. HCM.",
-        "View Live Map": "Xem bản đồ", "Manage Fleet": "Quản lý đội xe",
-        "Total Vehicles": "Tổng phương tiện", "Active Rentals": "Đang thuê",
-        "Total Revenue": "Tổng doanh thu", "Low Inventory Stations": "Trạm tồn kho thấp",
-        "Recent Activity": "Hoạt động gần đây", "Last 5 rental transactions": "5 giao dịch gần nhất",
-        "All": "Tất cả", "Active": "Đang thuê", "Completed": "Hoàn thành", "View all": "Xem tất cả",
-        "USER": "NGƯỜI DÙNG", "VEHICLE": "PHƯƠNG TIỆN", "START STATION": "TRẠM ĐI",
-        "END STATION": "TRẠM ĐẾN", "DURATION / TIME": "THỜI GIAN", "FARE": "GIÁ CƯỚC", "STATUS": "TRẠNG THÁI",
-        // Vehicles
-        "Vehicle Management": "Quản lý phương tiện",
-        "Manage your fleet inventory — bikes and e-scooters across all stations": "Quản lý đội xe — xe đạp và xe điện tại các trạm",
-        "Export CSV": "Xuất CSV", "Add New Vehicle": "Thêm xe mới", "Filter by:": "Lọc theo:",
-        "All Categories": "Tất cả loại xe", "Standard Bike": "Xe đạp thường", "E-Scooter": "Xe điện",
-        "All Statuses": "Tất cả trạng thái", "Available": "Sẵn sàng", "In-Transit": "Đang thuê", "Maintenance": "Bảo trì",
-        "All Stations": "Tất cả trạm", "Search vehicle name or ID...": "Tìm tên xe hoặc mã xe...",
-        "All Vehicles": "Tất cả phương tiện", "ID Code": "Mã xe", "Vehicle Name": "Tên xe",
-        "Category": "Loại xe", "Fare (VND/min)": "Giá (VND/phút)", "Station": "Trạm", "Actions": "Thao tác",
-        "Vehicle Code": "Mã xe", "Initial Status": "Trạng thái ban đầu", "Assign to Station": "Gán vào trạm",
-        "Cancel": "Hủy", "Save Vehicle": "Lưu xe", "Save Changes": "Lưu thay đổi",
-        "Edit Vehicle": "Chỉnh sửa xe", "Back to Vehicles": "Quay lại danh sách xe",
-        "Clear selection": "Bỏ chọn tất cả", "Delete Selected": "Xóa đã chọn", "Total:": "Tổng:",
-        // Stations
-        "Stations Management": "Quản lý trạm",
-        "Manage your station network — monitor capacities, live status, and vehicle distribution": "Quản lý mạng lưới trạm — theo dõi sức chứa và phân phối xe",
-        "Add New Station": "Thêm trạm mới", "Search station name or location...": "Tìm tên trạm hoặc địa điểm...",
-        "Station Name": "Tên trạm", "Location": "Địa điểm", "Inventory (Bike | Scooter)": "Tồn kho (Đạp | Điện)",
-        "Capacity": "Sức chứa", "Available Slots": "Chỗ trống", "Utilization %": "Tỉ lệ sử dụng %",
-        "Low Inventory": "Tồn kho thấp", "Overload": "Quá tải", "Balanced": "Cân bằng",
-        "Location / Address": "Địa chỉ", "Map preview": "Xem bản đồ", "Max Capacity": "Sức chứa tối đa",
-        "Save Station": "Lưu trạm", "Edit Station": "Chỉnh sửa trạm", "Current Inventory": "Tồn kho hiện tại",
-        "Back to Stations": "Quay lại danh sách trạm",
-        // Reports
-        "Station Inventory & Capacity": "Tồn kho & Sức chứa trạm",
-        "Real-time overview of station capacity and vehicle availability": "Tổng quan thời gian thực về sức chứa và xe tại các trạm",
-        "Export PDF": "Xuất PDF", "Total Stations": "Tổng số trạm", "Across all districts": "Tất cả quận",
-        "Balanced (20-90%)": "Cân bằng (20–90%)", "Low Inventory (<20%)": "Tồn kho thấp (<20%)",
-        "Full/Overloaded (>90%)": "Đầy/Quá tải (>90%)", "Needs rebalancing": "Cần cân bằng lại",
-        "15% DISCOUNT applies here!": "Áp dụng giảm giá 15%!",
-        "Capacity vs. Utilization by Station": "Sức chứa vs. Tỉ lệ sử dụng theo trạm",
-        "Filter": "Bộ lọc", "Utilization Status": "Trạng thái sử dụng", "All Status": "Tất cả trạng thái",
-        "Station Inventory Details": "Chi tiết tồn kho trạm", "Discount?": "Giảm giá?",
-        "Revenue Report by Vehicle Category": "Báo cáo doanh thu theo loại xe",
-        "Financial performance breakdown — Standard Bike vs E-Scooter": "Phân tích hiệu suất — Xe đạp vs Xe điện",
-        "Date Range:": "Khoảng thời gian:", "Apply Filter": "Áp dụng lọc", "Clear": "Xóa bộ lọc",
-        "Total Revenue (VND)": "Tổng doanh thu (VND)", "Discount Given (VND)": "Giảm giá (VND)",
-        "Net Revenue (VND)": "Doanh thu thuần (VND)", "Avg Duration (min)": "TG trung bình (phút)",
-        "Revenue Share": "Tỉ trọng DT", "Revenue by Category": "Doanh thu theo loại xe",
-        "Revenue Breakdown by Category": "Chi tiết doanh thu", "Revenue Trend by Vehicle Type": "Xu hướng doanh thu theo loại xe",
-        // Common
-        "Logout": "Đăng xuất", "Relocate": "Điều phối",
-        };
+        (function () {
+            const input = document.getElementById('globalSearch');
+            const dropdown = document.getElementById('searchDropdown');
+            const arrow = document.getElementById('searchArrow');
+            if (!input || !dropdown) return;
 
-        let _lang = localStorage.getItem('sr_lang') || 'en';
+            let debounceTimer = null;
 
-        function applyLang(lang) {
-        // data-i18n → textContent
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-        const k = el.getAttribute('data-i18n');
-        el.textContent = (lang === 'vi' && T[k]) ? T[k] : k;
-        });
-        // data-i18n-placeholder → placeholder
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const k = el.getAttribute('data-i18n-placeholder');
-        el.placeholder = (lang === 'vi' && T[k]) ? T[k] : k;
-        });
-        // data-vi / data-en (Auth page pattern)
-        document.querySelectorAll('[data-vi][data-en]').forEach(el => {
-        const val = el.getAttribute('data-' + lang);
-        if (!val) return;
-        if (el.tagName === 'INPUT') el.placeholder = val;
-        else el.innerHTML = val;
-        });
-        // data-placeholder-vi/en
-        document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
-        el.placeholder = el.getAttribute('data-placeholder-' + lang);
-        });
+            function renderEmpty(msg) {
+                dropdown.innerHTML = '<div class="search-dropdown-empty">' + msg + '</div>';
+                dropdown.classList.add('show');
+            }
 
-        // Update pill UI
-        const a = document.getElementById('lp-a');
-        const b = document.getElementById('lp-b');
-        const f1 = document.getElementById('lp-flag1');
-        const f2 = document.getElementById('lp-flag2');
-        if (lang === 'vi') {
-        if (a) { a.textContent = 'VI'; a.className = 'lp-active'; }
-        if (b) { b.textContent = 'EN'; b.className = 'lp-inactive'; }
-        if (f1) f1.textContent = '🇻🇳';
-        if (f2) f2.textContent = '🇬🇧';
-        } else {
-        if (a) { a.textContent = 'EN'; a.className = 'lp-active'; }
-        if (b) { b.textContent = 'VI'; b.className = 'lp-inactive'; }
-        if (f1) f1.textContent = '🇬🇧';
-        if (f2) f2.textContent = '🇻🇳';
-        }
-        document.documentElement.lang = lang;
-        }
+            function renderResults(vehicles, stations) {
+                let html = '';
 
-        function toggleLang() {
-        _lang = _lang === 'en' ? 'vi' : 'en';
-        localStorage.setItem('sr_lang', _lang);
-        applyLang(_lang);
-        }
+                if (vehicles.length > 0) {
+                    html += '<div class="search-dropdown-section"><div class="search-dropdown-label">Vehicles</div>';
+                    vehicles.forEach(function (v) {
+                        var iconClass = v.categoryName && v.categoryName.toLowerCase().includes('scooter') ? 'scooter' : '';
+                        var icon = iconClass ? 'fa-bolt' : 'fa-bicycle';
+                        html += '<a class="search-dropdown-item" href="/Vehicle/Edit/' + v.vehicleId + '">'
+                            + '<div class="sdi-icon ' + iconClass + '"><i class="fas ' + icon + '"></i></div>'
+                            + '<div><div>' + escHtml(v.vehicleName) + '</div>'
+                            + '<div class="sdi-sub">' + escHtml(v.vehicleCode) + ' · ' + escHtml(v.categoryName || '') + '</div></div>'
+                            + '</a>';
+                    });
+                    html += '</div>';
+                }
 
-        // setAppLang — dùng cho Auth pages
-        function setAppLang(lang) {
-        _lang = lang;
-        localStorage.setItem('sr_lang', lang);
-        applyLang(lang);
-        }
+                if (vehicles.length > 0 && stations.length > 0) {
+                    html += '<div class="search-dropdown-divider"></div>';
+                }
 
-        document.addEventListener('DOMContentLoaded', () => {
-        const saved = localStorage.getItem('sr_lang') || 'en';
-        _lang = saved;
-        applyLang(saved);
-        });
+                if (stations.length > 0) {
+                    html += '<div class="search-dropdown-section"><div class="search-dropdown-label">Stations</div>';
+                    stations.forEach(function (s) {
+                        html += '<a class="search-dropdown-item" href="/Station/Edit/' + s.stationId + '">'
+                            + '<div class="sdi-icon station"><i class="fas fa-map-marker-alt"></i></div>'
+                            + '<div><div>' + escHtml(s.stationName) + '</div>'
+                            + '<div class="sdi-sub">' + escHtml(s.location || '') + '</div></div>'
+                            + '</a>';
+                    });
+                    html += '</div>';
+                }
+
+                if (html === '') {
+                    renderEmpty('No results found');
+                    return;
+                }
+
+                dropdown.innerHTML = html;
+                dropdown.classList.add('show');
+            }
+
+            function escHtml(str) {
+                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            function doSearch(q) {
+                if (!q || q.trim().length < 1) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                fetch('/Dashboard/Search?q=' + encodeURIComponent(q.trim()))
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        renderResults(data.vehicles || [], data.stations || []);
+                    })
+                    .catch(function () {
+                        renderEmpty('Search unavailable');
+                    });
+            }
+
+            input.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function () {
+                    doSearch(input.value);
+                }, 250);
+            });
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(debounceTimer);
+                    doSearch(input.value);
+                }
+                if (e.key === 'Escape') {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            if (arrow) {
+                arrow.addEventListener('click', function () {
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    } else if (input.value.trim().length > 0) {
+                        doSearch(input.value);
+                    }
+                });
+            }
+
+            document.addEventListener('click', function (e) {
+                if (!input.closest('.topbar-search').contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        })();
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
