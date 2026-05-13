@@ -95,9 +95,10 @@ namespace SaigonRide.Controllers
     {
         private readonly IVehicleService _vehicleSvc;
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _env;
 
-        public VehicleController(IVehicleService vehicleSvc, ApplicationDbContext db)
-        { _vehicleSvc = vehicleSvc; _db = db; }
+        public VehicleController(IVehicleService vehicleSvc, ApplicationDbContext db, IWebHostEnvironment env)
+        { _vehicleSvc = vehicleSvc; _db = db; _env = env; }
 
         public IActionResult Index(string? category, string? status, int? stationId)
         {
@@ -110,7 +111,7 @@ namespace SaigonRide.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Vehicle vehicle)
+        public async Task<IActionResult> Create(Vehicle vehicle, IFormFile? ImageFile)
         {
             if (!ModelState.IsValid)
             {
@@ -120,6 +121,8 @@ namespace SaigonRide.Controllers
             }
             try
             {
+                if (ImageFile != null && ImageFile.Length > 0)
+                    vehicle.ImageUrl = await SaveVehicleImage(ImageFile);
                 _vehicleSvc.Create(vehicle);
                 TempData["Success"] = $"Vehicle '{vehicle.VehicleName}' created successfully!";
             }
@@ -142,7 +145,7 @@ namespace SaigonRide.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, Vehicle vehicle, IFormFile? ImageFile, bool RemoveImage = false)
         {
             if (!ModelState.IsValid)
             {
@@ -151,6 +154,26 @@ namespace SaigonRide.Controllers
             }
             try
             {
+                var existing = _db.Vehicles.AsNoTracking().FirstOrDefault(v => v.VehicleId == id);
+
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+
+                    if (!string.IsNullOrEmpty(existing?.ImageUrl))
+                        DeleteVehicleImage(existing.ImageUrl);
+                    vehicle.ImageUrl = await SaveVehicleImage(ImageFile);
+                }
+                else if (RemoveImage)
+                {
+                    if (!string.IsNullOrEmpty(existing?.ImageUrl))
+                        DeleteVehicleImage(existing.ImageUrl);
+                    vehicle.ImageUrl = null;
+                }
+                else
+                {
+                    vehicle.ImageUrl = existing?.ImageUrl;
+                }
+
                 _vehicleSvc.Update(id, vehicle);
                 TempData["Success"] = $"Vehicle '{vehicle.VehicleName}' updated successfully!";
                 return RedirectToAction(nameof(Index));
@@ -169,6 +192,9 @@ namespace SaigonRide.Controllers
         {
             try
             {
+                var vehicle = _db.Vehicles.Find(id);
+                if (!string.IsNullOrEmpty(vehicle?.ImageUrl))
+                    DeleteVehicleImage(vehicle.ImageUrl);
                 _vehicleSvc.Delete(id);
                 TempData["Success"] = "Vehicle deleted successfully.";
             }
@@ -226,6 +252,37 @@ namespace SaigonRide.Controllers
             }
 
             return Ok();
+        }
+        private async Task<string> SaveVehicleImage(IFormFile file)
+        {
+            var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+            if (!allowedTypes.Contains(file.ContentType.ToLower()))
+                throw new InvalidOperationException("Only JPG, PNG, WEBP, GIF images are allowed.");
+            if (file.Length > 5 * 1024 * 1024)
+                throw new InvalidOperationException("Image size must be under 5MB.");
+
+            var folder = Path.Combine(_env.WebRootPath, "uploads", "vehicles");
+            Directory.CreateDirectory(folder);
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var fileName = $"vehicle_{Guid.NewGuid():N}{ext}";
+            var filePath = Path.Combine(folder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/uploads/vehicles/{fileName}";
+        }
+
+        private void DeleteVehicleImage(string imageUrl)
+        {
+            try
+            {
+                var fullPath = Path.Combine(_env.WebRootPath, imageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(fullPath))
+                    System.IO.File.Delete(fullPath);
+            }
+            catch { }
         }
     }
 
@@ -417,6 +474,55 @@ namespace SaigonRide.Controllers
             ViewBag.To = to?.ToString("yyyy-MM-dd") ?? "";
             var data = _revenueSvc.GetRevenueReport(from, to);
             return View(data);
+        }
+    }
+    public class UserManagementController : Controller
+    {
+        private readonly ApplicationDbContext _db;
+
+        public UserManagementController(ApplicationDbContext db) => _db = db;
+
+        public IActionResult Index()
+        {
+            ViewBag.VehicleCount = _db.Vehicles.Count();
+            ViewBag.StationCount = _db.Stations.Count();
+            ViewBag.TotalLocal = _db.Users.Count(u => u.Role == UserRole.LocalCommuter);
+            ViewBag.TotalTourist = _db.Users.Count(u => u.Role == UserRole.ForeignTourist);
+
+            var users = _db.Users
+                .Where(u => u.Role != UserRole.Admin)
+                .OrderBy(u => u.FullName)
+                .ToList();
+
+            return View(users);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LockUser(int id)
+        {
+            var user = _db.Users.Find(id);
+            if (user == null || user.Role == UserRole.Admin)
+                return NotFound();
+
+            user.IsLocked = true;
+            _db.SaveChanges();
+            TempData["Success"] = $"Account '{user.FullName}' has been locked.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UnlockUser(int id)
+        {
+            var user = _db.Users.Find(id);
+            if (user == null)
+                return NotFound();
+
+            user.IsLocked = false;
+            _db.SaveChanges();
+            TempData["Success"] = $"Account '{user.FullName}' has been unlocked.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

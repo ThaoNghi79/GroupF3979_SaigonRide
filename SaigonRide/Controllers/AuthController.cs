@@ -28,6 +28,12 @@ namespace SaigonRide.Controllers
                 TempData["Panel"] = "login";
                 return RedirectToAction("Index");
             }
+            if (user.IsLocked)
+            {
+                TempData["AuthError"] = "Your account has been suspended. Please contact support.";
+                TempData["Panel"] = "login";
+                return RedirectToAction("Index");
+            }
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserName", user.FullName);
@@ -73,7 +79,7 @@ namespace SaigonRide.Controllers
                 Role = role,
                 PassportNumber = PassportNumber,
                 IsPassportVerified = false,
-                WalletBalance = 200000
+                WalletBalance = 0
             };
             _db.Users.Add(user);
             _db.SaveChanges();
