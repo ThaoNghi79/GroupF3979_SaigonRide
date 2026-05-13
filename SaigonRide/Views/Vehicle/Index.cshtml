@@ -372,6 +372,88 @@
             border-color: transparent;
             font-weight: 700;
         }
+
+        .vehicle-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1.5px solid var(--border);
+        }
+
+        .vehicle-thumb-placeholder {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1.5px dashed var(--border);
+            background: #f5f3ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+
+        .img-upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            background: #faf8ff;
+            position: relative;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .img-upload-box:hover {
+            border-color: var(--primary);
+            background: #f3effe;
+        }
+
+        .img-upload-box input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .img-upload-box .upload-icon { font-size: 22px; color: var(--text-muted); margin-bottom: 4px; }
+        .img-upload-box .upload-text { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .img-upload-box .upload-hint { font-size: 11px; color: #bbb; margin-top: 2px; }
+
+        .img-preview-wrap {
+            margin-top: 10px;
+            display: none;
+            position: relative;
+        }
+
+        .img-preview-wrap img {
+            width: 100%;
+            max-height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+        }
+
+        .img-preview-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
     </style>
 }
 
@@ -433,7 +515,7 @@
     <div class="vtable-head">
         <h3 data-i18n="All Vehicles">All Vehicles</h3>
         <span style="font-size:12.5px;color:var(--text-muted);" id="showingCount">
-            Showing @Model.Count() vehicles
+            <span id="showingCount">Showing @Model.Count() vehicles</span>
         </span>
     </div>
 
@@ -442,6 +524,7 @@
             <thead>
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="selectAll" onchange="toggleAll(this)" /></th>
+                    <th style="width:60px;" data-i18n="Photo">Photo</th>
                     <th>ID</th>
                     <th data-i18n="Vehicle Name">Vehicle Name</th>
                     <th data-i18n="Category">Category</th>
@@ -459,6 +542,22 @@
                         data-station="@v.StationId"
                         data-name="@v.VehicleName.ToLower() @v.VehicleCode.ToLower()">
                         <td><input type="checkbox" class="row-check" value="@v.VehicleId" onchange="updateBulkBar()" /></td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(v.ImageUrl))
+                            {
+                                <img src="@v.ImageUrl" alt="@v.VehicleName" class="vehicle-thumb"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" />
+                                <span class="vehicle-thumb-placeholder" style="display:none;">
+                                    @(v.Category?.CategoryName == "Standard Bike" ? "🚲" : "🛴")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="vehicle-thumb-placeholder">
+                                    @(v.Category?.CategoryName == "Standard Bike" ? "🚲" : "🛴")
+                                </span>
+                            }
+                        </td>
                         <td><span class="id-chip">@v.VehicleCode</span></td>
                         <td style="font-weight:600;">@v.VehicleName</td>
                         <td>
@@ -493,7 +592,7 @@
                         </td>
                         <td style="text-align:center;">
                             <button class="act-btn edit" title="Edit"
-                                    onclick="openEditModal(@v.VehicleId,'@Html.Raw(v.VehicleCode)','@Html.Raw(v.VehicleName)',@v.CategoryId,@v.StationId,'@v.Status')">
+                                    onclick="openEditModal(@v.VehicleId,'@Html.Raw(v.VehicleCode)','@Html.Raw(v.VehicleName)',@v.CategoryId,@v.StationId,'@v.Status','@Html.Raw(v.ImageUrl ?? "")')">
                                 <i class="fas fa-pen"></i>
                             </button>
                             <form method="post" action="/Vehicle/Delete/@v.VehicleId" style="display:inline;"
@@ -518,7 +617,7 @@
         <div class="sel-actions">
             <button class="btn-danger" onclick="bulkDelete()">🗑 <span data-i18n="Delete Selected">Delete Selected</span></button>
             <button class="btn-warn" onclick="openModal('bulkStatusModal')">✎ <span data-i18n="Update Status">Update Status</span></button>
-            <button class="btn-outline" style="padding:7px 14px;" onclick="exportTableCSV()">⬇ Export CSV</button>
+            <button class="btn-outline" style="padding:7px 14px;" onclick="exportTableCSV()">⬇ <span data-i18n="Export CSV">Export CSV</span></button>
         </div>
     </div>
 
@@ -531,21 +630,21 @@
 <div class="modal-backdrop-custom" id="bulkStatusModal">
     <div class="modal-box">
         <div class="modal-header-custom">
-            <h4>✎ Update Status — <span id="bulkStatusCount">0</span> vehicles</h4>
+            <h4>✎ <span data-i18n="Update Status">Update Status</span> — <span id="bulkStatusCount">0</span> <span data-i18n="All Vehicles">vehicles</span></h4>
         </div>
         <div class="modal-body-custom">
-            <label class="form-label-custom">New Status</label>
+            <label class="form-label-custom" data-i18n="Status">New Status</label>
             <select id="bulkStatusSelect" class="form-input-custom">
-                <option value="Available">Available</option>
-                <option value="InTransit">In-Transit</option>
-                <option value="Maintenance">Maintenance</option>
+                <option value="Available" data-i18n="Available">Available</option>
+                <option value="InTransit" data-i18n="In-Transit">In-Transit</option>
+                <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
             </select>
         </div>
         <div style="padding:0 24px 24px;">
             <div class="modal-footer-custom">
-                <button type="button" class="btn-cancel" onclick="closeModal('bulkStatusModal')">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('bulkStatusModal')" data-i18n="Cancel">Cancel</button>
                 <button type="button" class="btn-save" onclick="bulkUpdateStatus()">
-                    <i class="fas fa-save" style="margin-right:5px;"></i> Apply
+                    <i class="fas fa-save" style="margin-right:5px;"></i> <span data-i18n="Save Changes">Apply</span>
                 </button>
             </div>
         </div>
@@ -560,7 +659,8 @@
                 <span data-i18n="Add New Vehicle">Add New Vehicle</span>
             </h4>
         </div>
-        <form method="post" action="/Vehicle/Create">
+        <form method="post" action="/Vehicle/Create" enctype="multipart/form-data"
+                style="display:flex;flex-direction:column;flex:1;min-height:0;">
             @Html.AntiForgeryToken()
             <div class="modal-body-custom">
                 <label class="form-label-custom" data-i18n="Vehicle Code">Vehicle Code</label>
@@ -610,8 +710,26 @@
                     <option value="Available" data-i18n="Available">Available</option>
                     <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
                 </select>
+                <label class="form-label-custom">
+                    <span data-i18n="Vehicle Photo">Vehicle Photo</span> 
+                    <span style="color:var(--text-muted);font-weight:400;" data-i18n="(optional)">(optional)</span>
+                </label>
+                <div class="img-upload-box" id="addUploadBox">
+                    <input type="file" name="ImageFile" accept="image/*"
+                           onchange="previewImage(this,'addPreviewWrap','addPreviewImg','addUploadBox')" />
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="upload-text" data-i18n="Click or drag to upload image">Click or drag to upload image</div>
+                    <div class="upload-hint" data-i18n="JPG, PNG, WEBP · max 5MB">JPG, PNG, WEBP · max 5MB</div>
+                </div>
+                <div class="img-preview-wrap" id="addPreviewWrap">
+                    <img id="addPreviewImg" src="" alt="Preview" />
+                    <button type="button" class="img-preview-remove"
+                            onclick="clearImage('addPreviewWrap','addUploadBox',document.querySelector('#addUploadBox input'))">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            <div style="padding:0 24px 24px;">
+            <div style="padding:0 24px 24px;flex-shrink:0;">
                 <div class="modal-footer-custom">
                     <button type="button" class="btn-cancel" onclick="closeModal('addModal')" data-i18n="Cancel">Cancel</button>
                     <button type="submit" class="btn-save">
@@ -627,6 +745,28 @@
 @await Html.PartialAsync("Edit")
 @section Scripts {
     <script>
+        function previewImage(input, wrapId, imgId, boxId) {
+            if (!input.files || !input.files[0]) return;
+            if (input.files[0].size > 5 * 1024 * 1024) {
+                alert('Image must be under 5MB.');
+                input.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById(imgId).src = e.target.result;
+                document.getElementById(wrapId).style.display = 'block';
+                document.getElementById(boxId).style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function clearImage(wrapId, boxId, inputEl) {
+            document.getElementById(wrapId).style.display = 'none';
+            document.getElementById(boxId).style.display = 'block';
+            if (inputEl) inputEl.value = '';
+        }
+
         function openModal(id) { 
             document.getElementById(id).classList.add('show'); 
             document.body.style.overflow = 'hidden'; 
@@ -769,8 +909,8 @@
             const rows = [['Code', 'Name', 'Category', 'Fare', 'Status', 'Station']];
             getFiltered().forEach(row => {
                 const c = row.querySelectorAll('td');
-                if (c.length < 7) return;
-                rows.push([c[1], c[2], c[3], c[4], c[5], c[6]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
+                if (c.length < 8) return;
+                rows.push([c[2], c[3], c[4], c[5], c[6], c[7]].map(x => `"${x.textContent.trim().replace(/"/g, '""')}"`));
             });
             const a = document.createElement('a');
             a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));

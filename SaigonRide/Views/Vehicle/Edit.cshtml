@@ -11,7 +11,8 @@
                 <span data-i18n="Edit Vehicle">Edit Vehicle</span> — <span id="editModalTitle"></span>
             </h4>
         </div>
-        <form method="post" id="editForm">
+        <form method="post" id="editForm" enctype="multipart/form-data"
+                style="display:flex;flex-direction:column;flex:1;min-height:0;">
             @Html.AntiForgeryToken()
             <input type="hidden" name="VehicleId" id="editVehicleId" />
             <div class="modal-body-custom">
@@ -49,12 +50,42 @@
                 
                 <label class="form-label-custom" data-i18n="STATUS">Status</label>
                 <select name="Status" id="editStatus" class="form-input-custom">
-                    <option value="Available">Available</option>
-                    <option value="InTransit">In-Transit</option>
-                    <option value="Maintenance">Maintenance</option>
+                    <option value="Available" data-i18n="Available">Available</option>
+                    <option value="InTransit" data-i18n="In-Transit">In-Transit</option>
+                    <option value="Maintenance" data-i18n="Maintenance">Maintenance</option>
                 </select>
+                <input type="hidden" name="RemoveImage" id="editRemoveImage" value="false" />
+                <label class="form-label-custom">
+                    <span data-i18n="Vehicle Photo">Vehicle Photo</span> 
+                    <span style="color:var(--text-muted);font-weight:400;" data-i18n="(optional)">(optional)</span>
+                </label>
+                <div id="editCurrentImgWrap" style="display:none;margin-bottom:8px;">
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;" data-i18n="Current photo:">Current photo:</div>
+                    <div style="position:relative;display:inline-block;">
+                        <img id="editCurrentImg" src="" alt="Current"
+                             style="height:80px;border-radius:10px;border:1.5px solid var(--border);object-fit:cover;" />
+                        <button type="button"
+                                style="position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:white;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;"
+                                onclick="clearEditCurrentImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="img-upload-box" id="editUploadBox">
+                    <input type="file" name="ImageFile" id="editImageFile" accept="image/*"
+                           onchange="previewImage(this,'editPreviewWrap','editPreviewImg','editUploadBox')" />
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="upload-text" data-i18n="Click or drag to replace photo">Click or drag to replace photo</div>
+                    <div class="upload-hint" data-i18n="JPG, PNG, WEBP · max 5MB">JPG, PNG, WEBP · max 5MB</div>
+                </div>
+                <div class="img-preview-wrap" id="editPreviewWrap">
+                    <img id="editPreviewImg" src="" alt="New Preview" />
+                    <button type="button" class="img-preview-remove" onclick="clearEditNewImage()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            <div style="padding:0 24px 24px;">
+            <div style="padding:0 24px 24px;flex-shrink:0;">
                 <div class="modal-footer-custom">
                     <button type="button" class="btn-cancel" onclick="closeModal('editModal')" data-i18n="Cancel">Cancel</button>
                     <button type="submit" class="btn-save">
@@ -65,10 +96,11 @@
             </div>
         </form>
     </div>
+
 </div>
 
 <script>
-    function openEditModal(id, code, name, catId, stationId, status) {
+    function openEditModal(id, code, name, catId, stationId, status, imageUrl) {
         document.getElementById('editVehicleId').value = id;
         document.getElementById('editVehicleCode').value = code;
         document.getElementById('editVehicleName').value = name;
@@ -77,7 +109,28 @@
         document.getElementById('editStatus').value = status;
         document.getElementById('editModalTitle').textContent = code;
         document.getElementById('editForm').action = `/Vehicle/Edit/${id}`;
-        
+        document.getElementById('editRemoveImage').value = 'false';
+        document.getElementById('editPreviewWrap').style.display = 'none';
+        document.getElementById('editUploadBox').style.display = 'block';
+        document.getElementById('editImageFile').value = '';
+         const imgWrap = document.getElementById('editCurrentImgWrap');
+        if (imageUrl && imageUrl.trim() !== '') {
+            document.getElementById('editCurrentImg').src = imageUrl;
+            imgWrap.style.display = 'block';
+        } else {
+            imgWrap.style.display = 'none';
+        }
         openModal('editModal');
+    }
+
+    function clearEditCurrentImage() {
+        document.getElementById('editCurrentImgWrap').style.display = 'none';
+        document.getElementById('editRemoveImage').value = 'true';
+    }
+
+    function clearEditNewImage() {
+        document.getElementById('editPreviewWrap').style.display = 'none';
+        document.getElementById('editUploadBox').style.display = 'block';
+        document.getElementById('editImageFile').value = '';
     }
 </script>
