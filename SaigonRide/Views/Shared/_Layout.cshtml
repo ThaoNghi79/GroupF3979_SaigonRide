@@ -859,10 +859,13 @@
             padding: 0;
             width: 480px;
             max-width: 95vw;
+            max-height: 90vh;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
             transform: translateY(20px);
             transition: transform 0.25s;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-backdrop-custom.show .modal-box {
@@ -882,6 +885,8 @@
 
         .modal-body-custom {
             padding: 24px;
+            overflow-y: auto;
+            flex: 1;
         }
 
         .form-label-custom {
@@ -1068,7 +1073,12 @@
                     <span data-i18n="Stations">Stations</span>
                     <span class="sidebar-badge">@ViewBag.StationCount</span>
                 </a>
+                    <a href="/UserManagement" class="@(currentPage == "users" ? "active" : "")">
+                    <i class="fas fa-users nav-icon"></i>
+                    <span data-i18n="Users">Users</span>
+                </a>
             </nav>
+
 
             <div class="sidebar-section-label" data-i18n="REPORT">REPORT</div>
             <nav class="sidebar-nav">
