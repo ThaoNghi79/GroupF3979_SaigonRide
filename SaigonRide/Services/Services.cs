@@ -68,7 +68,6 @@ namespace SaigonRide.Services
         {
             var (cur, max) = _inv.GetStationInventory(v.StationId);
             if (cur >= max) throw new InvalidOperationException("Station is full. Cannot add vehicle.");
-            v.Status = VehicleStatus.Available;
             _db.Vehicles.Add(v);
             _db.SaveChanges();
             _inv.UpdateStationInventory(v.StationId, +1);
@@ -83,7 +82,10 @@ namespace SaigonRide.Services
             existing.VehicleCode = data.VehicleCode;
             existing.VehicleName = data.VehicleName;
             existing.CategoryId = data.CategoryId;
+            existing.ImageUrl = data.ImageUrl;
 
+            if (data.ImageUrl != null)
+                existing.ImageUrl = data.ImageUrl;
 
             if (data.StationId != oldStation)
             {
