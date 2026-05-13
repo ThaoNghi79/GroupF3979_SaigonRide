@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaigonRide.Data;
 
@@ -11,9 +12,11 @@ using SaigonRide.Data;
 namespace SaigonRide.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512101004_AddVehicleImageUrl")]
+    partial class AddVehicleImageUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,9 +183,6 @@ namespace SaigonRide.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("IsLocked")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsPassportVerified")
                         .HasColumnType("bit");
 
@@ -213,9 +213,8 @@ namespace SaigonRide.Migrations
                             AlertVehicleMaintenance = false,
                             Email = "admin@saigonride.vn",
                             FullName = "Thao Nghi Admin",
-                            IsLocked = false,
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$vLe9Wi0Y1ym2JPHaq4qSEeWXxZVpyvyOjCtMkTNXqkfKXzertYd/.",
+                            PasswordHash = "$2a$11$RvGqYUdZdemAHVoXNE5jzeJFY4p0o/MZgoW9A3mKBYgdu65JPm/Xy",
                             Role = 2,
                             WalletBalance = 0m
                         },
@@ -227,9 +226,8 @@ namespace SaigonRide.Migrations
                             AlertVehicleMaintenance = false,
                             Email = "local@saigonride.vn",
                             FullName = "Nguyen Van A",
-                            IsLocked = false,
                             IsPassportVerified = false,
-                            PasswordHash = "$2a$11$1K1sJ42.BWDH5dHCarK4dOCkX5Crc9UVGuQaT8gx17TDC5FcZlGL.",
+                            PasswordHash = "$2a$11$rzmYvWipIbU9NXXBJ65MQemnEeX7wvzuXbUcIsL8teS2dCTeniRkm",
                             Role = 0,
                             WalletBalance = 500000m
                         },
@@ -241,10 +239,9 @@ namespace SaigonRide.Migrations
                             AlertVehicleMaintenance = false,
                             Email = "tourist@saigonride.vn",
                             FullName = "Chris Evans",
-                            IsLocked = false,
                             IsPassportVerified = true,
                             PassportNumber = "US123456",
-                            PasswordHash = "$2a$11$KF.kKUqRbxDY0ZRV7X68FuD8MDwC6bm0V9upe9QHFumeymF6Sv9ZC",
+                            PasswordHash = "$2a$11$RNkhu8/ZlPLWZXsnAFnua.GHpuMXs/nNjtaGoPmqtAb/doFW4M2di",
                             Role = 1,
                             WalletBalance = 1000000m
                         });
