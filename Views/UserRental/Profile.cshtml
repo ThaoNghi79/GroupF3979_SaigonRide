@@ -1,0 +1,847 @@
+﻿@model SaigonRide.Models.User
+
+@{
+    var isForeignTourist = Model.Role == SaigonRide.Models.UserRole.ForeignTourist;
+    Layout = null;
+    ViewData["Title"] = "Thông tin cá nhân";
+
+    var roleName = Model.Role == SaigonRide.Models.UserRole.LocalCommuter
+        ? "Người dùng nội địa"
+        : Model.Role == SaigonRide.Models.UserRole.ForeignTourist
+            ? "Khách du lịch nước ngoài"
+            : "Quản trị viên";
+
+    var avatarText = !string.IsNullOrWhiteSpace(Model.FullName) && Model.FullName.Length >= 2
+        ? Model.FullName.Substring(0, 2).ToUpper()
+        : "U";
+
+    ViewBag.ActivePage = "Profile";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Thông tin cá nhân - SaigonRide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/css/user-topbar.css")" />
+
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --primary-pink: #ec4899;
+            --text-main: #342b55;
+            --text-muted: #8b80a8;
+            --border-soft: #ebe6fa;
+            --page-bg: #faf8ff;
+            --card-bg: #ffffff;
+            --gradient: linear-gradient(135deg, #c9b8f5, #f5b8d0);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--page-bg);
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: var(--text-main);
+        }
+
+        .profile-page {
+            min-height: calc(100vh - 66px);
+            padding: 36px 24px 60px;
+        }
+
+        .profile-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            width: 44px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid #e5d8ff;
+            background: white;
+            color: #8056df;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            margin-bottom: 22px;
+        }
+
+        .profile-banner {
+            background: var(--gradient);
+            border-radius: 24px;
+            padding: 30px 36px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: 0 10px 28px rgba(130, 100, 180, .08);
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .banner-avatar {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,.72);
+            background: rgba(255,255,255,.35);
+            color: #3d315f;
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+            .banner-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .banner-name {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .banner-email {
+            font-size: 14px;
+            color: rgba(61, 53, 87, .68);
+        }
+
+        .role-pill {
+            background: rgba(255,255,255,.50);
+            border: 1px solid rgba(255,255,255,.75);
+            border-radius: 999px;
+            padding: 11px 20px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #44375f;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .profile-card-header {
+            padding: 18px 26px;
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .header-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(201,184,245,.35), rgba(245,184,208,.35));
+            color: #8056df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-card-body {
+            padding: 26px;
+        }
+
+        .avatar-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--border-soft);
+            margin-bottom: 22px;
+        }
+
+        .avatar-upload-wrap {
+            position: relative;
+            width: 88px;
+            height: 88px;
+        }
+
+        .avatar-preview {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: var(--gradient);
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--border-soft);
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+            .avatar-preview img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .avatar-edit-btn {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #7c5cbf;
+            color: white;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #avatarFile {
+            display: none;
+        }
+
+        .avatar-info-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .avatar-info-sub {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-label-custom {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-input-custom {
+            width: 100%;
+            min-height: 50px;
+            border: 1.5px solid var(--border-soft);
+            border-radius: 13px;
+            background: #fff;
+            padding: 0 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+        }
+
+            .form-input-custom:focus {
+                border-color: #8b63f6;
+                box-shadow: 0 0 0 4px rgba(139,99,246,.10);
+            }
+
+            .form-input-custom.readonly {
+                background: #fbf9ff;
+                color: var(--text-muted);
+            }
+
+        .hint-text {
+            margin-top: 7px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .save-row {
+            margin-top: 26px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-profile {
+            height: 46px;
+            border-radius: 12px;
+            padding: 0 22px;
+            border: none;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            cursor: pointer;
+        }
+
+        .btn-save-profile {
+            background: #3d3557;
+            color: white;
+        }
+
+        .btn-soft {
+            background: white;
+            color: #8056df;
+            border: 1px solid #e5d8ff;
+        }
+
+        .wallet-card {
+            background: #fbf9ff;
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .wallet-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .wallet-title {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .wallet-balance {
+            color: #8056df;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .topup-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .btn-topup {
+            background: var(--gradient);
+            color: #3d3557;
+            min-width: 140px;
+        }
+
+        @@media(max-width: 768px) {
+
+            .profile-banner,
+            .banner-left,
+            .avatar-upload-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .two-cols,
+            .topup-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        .user-topbar {
+            height: 66px;
+            background: linear-gradient(90deg, #c9aff5, #f1b3d4);
+            display: flex;
+            align-items: center;
+            padding: 0 26px;
+            box-shadow: 0 10px 26px rgba(130, 100, 180, .10);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 58px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .nav-link-user {
+            height: 66px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #4a3e67;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .nav-link-user:hover {
+            color: #6f45d6;
+            background: rgba(255,255,255,.22);
+        }
+
+        .nav-link-user.active {
+            background: rgba(255,255,255,.42);
+            border-radius: 16px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-toggle {
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.68);
+            background: rgba(255,255,255,.44);
+            color: #5b4b78;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .language-toggle button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            opacity: .58;
+        }
+
+        .language-toggle button.active {
+            color: #7c3aed;
+            opacity: 1;
+        }
+
+        .language-toggle .flag {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .wallet-pill {
+            height: 36px;
+            background: rgba(255,255,255,.52);
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 999px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #44375f;
+            white-space: nowrap;
+        }
+
+        .topbar-bell,
+        .topbar-logout {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #5b4b78;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .topbar-user-chip {
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.75);
+            background: rgba(255,255,255,.48);
+            padding: 0 12px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #44375f;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .topbar-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .topbar-username {
+            max-width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-chevron {
+            font-size: 10px;
+            color: #76658e;
+        }
+
+        .topbar-logout {
+            color: #e25584;
+        }
+    </style>
+</head>
+
+<body>
+
+    @await Html.PartialAsync("~/Views/Shared/_UserTopbar.cshtml", Model)
+
+    <main class="profile-page">
+        <div class="profile-wrap">
+
+            <a asp-controller="UserRental"
+               asp-action="Index"
+               class="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            <section class="profile-banner">
+                <div class="banner-left">
+
+                    <div class="banner-avatar">
+                        @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                        {
+                            <img src="@Model.AvatarUrl" alt="Avatar" />
+                        }
+                        else
+                        {
+                            @avatarText
+                        }
+                    </div>
+
+                    <div>
+                        <div class="banner-name">@Model.FullName</div>
+                        <div class="banner-email">@Model.Email</div>
+                    </div>
+                </div>
+
+                <div class="role-pill">
+                    <i class="fa-solid fa-user-shield"></i>
+                    @roleName
+                </div>
+            </section>
+
+            <section class="profile-card">
+
+                <div class="profile-card-header">
+                    <div class="header-icon">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+
+                    Thông tin tài khoản
+                </div>
+
+                <div class="profile-card-body">
+
+                    <form asp-controller="UserRental"
+                          asp-action="UpdateProfile"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="avatar-upload-row">
+
+                            <div class="avatar-upload-wrap">
+
+                                <div class="avatar-preview" id="avatarPreview">
+
+                                    @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                                    {
+                                        <img src="@Model.AvatarUrl" alt="Avatar" />
+                                    }
+                                    else
+                                    {
+                                        @avatarText
+                                    }
+
+                                </div>
+
+                                <label class="avatar-edit-btn"
+                                       for="avatarFile">
+
+                                    <i class="fa-solid fa-camera"></i>
+
+                                </label>
+
+                                <input type="file"
+                                       id="avatarFile"
+                                       name="avatarFile"
+                                       accept="image/png,image/jpeg,image/webp" />
+
+                            </div>
+
+                            <div>
+                                <div class="avatar-info-title">
+                                    Ảnh đại diện
+                                </div>
+
+                                <div class="avatar-info-sub">
+                                    JPG, PNG hoặc WebP — tối đa 2MB
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label-custom">
+                                Họ và tên
+                            </label>
+
+                            <input type="text"
+                                   name="fullName"
+                                   value="@Model.FullName"
+                                   class="form-input-custom"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label-custom">
+                                Email đăng nhập
+                            </label>
+
+                            <input type="email"
+                                   value="@Model.Email"
+                                   class="form-input-custom readonly"
+                                   readonly />
+
+                            <div class="hint-text">
+                                Email này được dùng để đăng nhập hệ thống và không thể thay đổi.
+                            </div>
+                        </div>
+
+                        <div class="two-cols">
+
+                            <div>
+                                <label class="form-label-custom">
+                                    Vai trò người dùng
+                                </label>
+
+                                <input type="text"
+                                       value="@roleName"
+                                       class="form-input-custom readonly"
+                                       readonly />
+                            </div>
+
+                            @if (isForeignTourist)
+                            {
+                                <div>
+                                    <label class="form-label-custom">
+                                        Hộ chiếu
+                                    </label>
+
+                                    <input type="text"
+                                           name="passportNumber"
+                                           value="@Model.PassportNumber"
+                                           class="form-input-custom"
+                                           placeholder="Nhập số hộ chiếu" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <label class="form-label-custom">
+                                        Số dư ví
+                                    </label>
+
+                                    <input type="text"
+                                           value="@Model.WalletBalance.ToString("N0") VND"
+                                           class="form-input-custom readonly"
+                                           readonly />
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="save-row">
+
+                            <button type="submit"
+                                    class="btn-profile btn-save-profile">
+
+                                <i class="fa-solid fa-check"></i>
+                                Lưu thông tin
+
+                            </button>
+
+                            <a asp-controller="UserRental"
+                               asp-action="Index"
+                               class="btn-profile btn-soft">
+
+                                <i class="fa-solid fa-bicycle"></i>
+                                Quay lại thuê xe
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </section>
+
+            @if (!isForeignTourist)
+            {
+                <section class="profile-card">
+
+                    <div class="profile-card-header">
+                        <div class="header-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+
+                        Ví SaigonRide
+                    </div>
+
+                    <div class="profile-card-body">
+
+                        <div class="wallet-card">
+
+                            <div class="wallet-head">
+
+                                <div class="wallet-title">
+                                    <i class="fa-solid fa-coins"></i>
+                                    Số dư hiện tại
+                                </div>
+
+                                <div class="wallet-balance">
+                                    @Model.WalletBalance.ToString("N0") VND
+                                </div>
+
+                            </div>
+
+                            <form asp-controller="UserRental"
+                                  asp-action="TopUpWallet"
+                                  method="post"
+                                  class="topup-form">
+
+                                @Html.AntiForgeryToken()
+
+                                <div>
+
+                                    <label class="form-label-custom">
+                                        Số tiền nạp
+                                    </label>
+
+                                    <input type="number"
+                                           name="amount"
+                                           class="form-input-custom"
+                                           min="1000"
+                                           step="1000"
+                                           placeholder="Nhập số tiền cần nạp"
+                                           required />
+
+                                </div>
+
+                                <button type="submit"
+                                        class="btn-profile btn-topup">
+
+                                    <i class="fa-solid fa-plus"></i>
+                                    Nạp tiền
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </section>
+            }
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('avatarFile')?.addEventListener('change', function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                document.getElementById('avatarPreview').innerHTML =
+                    '<img src="' + e.target.result + '" alt="Avatar" />';
+
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+
+    <script src="@Url.Content("~/js/saigonride-i18n.js")"></script>
+
+</body>
+</html>

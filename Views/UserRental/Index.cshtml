@@ -1,0 +1,770 @@
+﻿@using Microsoft.AspNetCore.Http
+@model List<SaigonRide.Models.Vehicle>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Rent a Vehicle";
+
+    var stations = ViewBag.Stations as List<SaigonRide.Models.Station> ?? new List<SaigonRide.Models.Station>();
+    var categories = ViewBag.Categories as List<SaigonRide.Models.VehicleCategory> ?? new List<SaigonRide.Models.VehicleCategory>();
+
+    int? selectedStation = ViewBag.SelectedStation;
+    int? selectedCategory = ViewBag.SelectedCategory;
+
+    var selectedStationName =
+        stations.FirstOrDefault(s => s.StationId == selectedStation)?.StationName
+        ?? "All Stations";
+
+    var currentUser = ViewBag.CurrentUser as SaigonRide.Models.User;
+
+    var currentUserName = currentUser?.FullName
+        ?? Context.Session.GetString("UserName")
+        ?? "User";
+
+    var walletBalance = currentUser?.WalletBalance ?? 0m;
+
+    var isForeignTourist = currentUser?.Role == SaigonRide.Models.UserRole.ForeignTourist;
+
+    var avatarText = !string.IsNullOrWhiteSpace(currentUserName) && currentUserName.Length >= 2
+        ? currentUserName.Substring(0, 2).ToUpper()
+        : currentUserName.ToUpper();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - SaigonRide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --primary-pink: #ec4899;
+            --soft-purple: #f3e8ff;
+            --soft-pink: #fce7f3;
+            --text-main: #342b55;
+            --text-muted: #7b6f95;
+            --border-soft: #eee4ff;
+            --page-bg: #fbf9ff;
+            --white-soft: rgba(255, 255, 255, .72);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--page-bg);
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .user-topbar {
+            height: 66px;
+            background: linear-gradient(90deg, #c9aff5, #f1b3d4);
+            display: flex;
+            align-items: center;
+            padding: 0 26px;
+            box-shadow: 0 10px 26px rgba(130, 100, 180, .10);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 58px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 22px rgba(255,255,255,.28);
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: var(--text-main);
+        }
+
+        .nav-link-user {
+            height: 66px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #4a3e67;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .18s ease;
+        }
+
+        .nav-link-user:hover {
+            color: #6f45d6;
+            background: rgba(255,255,255,.22);
+        }
+
+        .nav-link-user.active {
+            background: rgba(255,255,255,.42);
+            border-radius: 16px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-toggle {
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.68);
+            background: rgba(255,255,255,.44);
+            color: #5b4b78;
+            font-size: 12px;
+            font-weight: 800;
+            user-select: none;
+        }
+
+        .language-toggle button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            opacity: .58;
+        }
+
+        .language-toggle button.active {
+            color: #7c3aed;
+            opacity: 1;
+        }
+
+        .language-toggle .flag {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .wallet-pill {
+            height: 36px;
+            background: rgba(255,255,255,.52);
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 999px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #44375f;
+            white-space: nowrap;
+        }
+
+        .topbar-bell {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #5b4b78;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-user-chip {
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.75);
+            background: rgba(255,255,255,.48);
+            padding: 0 12px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #44375f;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .topbar-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .topbar-username {
+            max-width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-chevron {
+            font-size: 10px;
+            color: #76658e;
+        }
+
+        .topbar-logout {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #e25584;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .18s ease;
+        }
+
+        .topbar-logout:hover {
+            background: #fff1f5;
+            color: #d93672;
+        }
+
+        .uc2-page {
+            padding: 28px 0 50px;
+        }
+
+        .uc2-wrap {
+            max-width: 1110px;
+            margin: 0 auto;
+        }
+
+        .uc2-hero {
+            height: 155px;
+            border-radius: 24px;
+            background: linear-gradient(90deg, #c7aff6 0%, #f2b0d3 100%);
+            padding: 34px 42px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 22px;
+            box-shadow: 0 12px 28px rgba(130, 100, 180, .10);
+        }
+
+        .uc2-kicker {
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: rgba(60,50,90,.45);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .uc2-hero-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #3b305d;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .uc2-hero-sub {
+            font-size: 14px;
+            color: rgba(60,50,90,.65);
+            font-weight: 600;
+        }
+
+        .hero-city {
+            position: absolute;
+            right: 0;
+            bottom: -6px;
+            width: 430px;
+            height: 125px;
+            object-fit: cover;
+            object-position: right bottom;
+            opacity: .88;
+            filter: saturate(1.05) contrast(.98);
+            pointer-events: none;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 26%, black 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 26%, black 100%);
+        }
+
+        .uc2-filter {
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 16px 18px;
+            margin-bottom: 26px;
+            box-shadow: 0 10px 25px rgba(130,100,180,.06);
+        }
+
+        .uc2-filter-row {
+            display: grid;
+            grid-template-columns: 175px 1fr 1fr 54px;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .uc2-filter-label {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            height: 44px;
+        }
+
+        .uc2-station-icon {
+            width: 31px;
+            height: 31px;
+            border-radius: 50%;
+            background: #f5e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .uc2-station-text {
+            font-size: 13px;
+            font-weight: 800;
+            color: #74668d;
+            white-space: nowrap;
+        }
+
+        .uc2-input {
+            height: 44px;
+            border-radius: 14px;
+            border: 1px solid #e8dcff;
+            box-shadow: none !important;
+            color: #65587e;
+            font-size: 14px;
+            font-weight: 600;
+            padding-left: 16px;
+        }
+
+        .uc2-refresh {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #f0d7eb;
+            background: #fff7fb;
+            color: #9c6ade;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            justify-self: end;
+        }
+
+        .uc2-title-row {
+            margin-bottom: 18px;
+        }
+
+        .uc2-section-title {
+            font-size: 23px;
+            font-weight: 800;
+            color: #3e355d;
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+
+        .uc2-card {
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            padding: 14px;
+            height: 100%;
+            box-shadow: 0 10px 22px rgba(130,100,180,.06);
+            transition: .2s ease;
+        }
+
+        .uc2-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 30px rgba(130,100,180,.12);
+        }
+
+        .uc2-img-box {
+            height: 210px;
+            border-radius: 18px;
+            background: #fbf8ff;
+            border: 1px solid #efe7ff;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .uc2-img-box img {
+            width: 90%;
+            height: 165px;
+            object-fit: contain;
+        }
+
+        .uc2-category {
+            position: absolute;
+            top: 13px;
+            left: 13px;
+            background: #eadcff;
+            color: #8056df;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .uc2-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #231a38;
+            margin-bottom: 9px;
+        }
+
+        .uc2-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 10px;
+        }
+
+        .uc2-code {
+            min-width: 108px;
+            height: 25px;
+            border-radius: 999px;
+            background: #f5efff;
+            border: 1px solid #e7dcff;
+            color: #8b63f6;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        .uc2-status {
+            min-width: 96px;
+            height: 25px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            margin-left: auto;
+        }
+
+        .available {
+            background: #dff2d4;
+            color: #2b9d46;
+        }
+
+        .intransit {
+            background: #ffe79d;
+            color: #9a7300;
+        }
+
+        .maintenance {
+            background: #f4d9f2;
+            color: #ba4d9c;
+        }
+
+        .uc2-price-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            font-size: 14px;
+            color: #948ca5;
+            font-weight: 600;
+        }
+
+        .uc2-price-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uc2-price-tag i {
+            font-size: 12px;
+            color: #8f7ca8;
+        }
+
+        .uc2-battery {
+            min-width: 28px;
+            height: 17px;
+            border-radius: 5px;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .high {
+            background: #35c66b;
+        }
+
+        .medium {
+            background: #f3c343;
+            color: #332800;
+        }
+
+        .low {
+            background: #e64646;
+        }
+
+        .uc2-btn {
+            width: 100%;
+            height: 41px;
+            border-radius: 13px;
+            border: 0;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .uc2-btn.active {
+            background: linear-gradient(90deg, #b79cf4, #f1a7d1);
+            color: white;
+        }
+
+        .uc2-btn.disabled {
+            background: #efefef;
+            color: #9f9f9f;
+            cursor: not-allowed;
+        }
+
+        @@media(max-width: 992px) {
+            .uc2-filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-city {
+                display: none;
+            }
+
+            .topbar-right {
+                display: none;
+            }
+        }
+    </style>
+
+    <link rel="stylesheet" href="@Url.Content("~/css/user-topbar.css")" />
+</head>
+
+<body>
+    @{ ViewBag.ActivePage = "Rent"; }
+    @await Html.PartialAsync("~/Views/Shared/_UserTopbar.cshtml", currentUser)
+
+    <div class="uc2-page">
+        <div class="uc2-wrap">
+
+            <div class="uc2-hero">
+                <div>
+                    <div class="uc2-kicker" data-i18n="Fleet Overview">Fleet Overview</div>
+                    <div class="uc2-hero-title" data-i18n="Start Your Rental">Start Your Rental</div>
+                    <div class="uc2-hero-sub" data-i18n="Choose a pick-up station and select a vehicle to start your journey">
+                        Choose a pick-up station and select a vehicle to start your journey
+                    </div>
+                </div>
+
+                <img src="~/images/city.png"
+                     class="hero-city"
+                     alt="City"
+                     onerror="this.style.display='none'" />
+            </div>
+
+            <form method="get" asp-action="Index" class="uc2-filter">
+                <div class="uc2-filter-row">
+
+                    <div class="uc2-filter-label">
+                        <div class="uc2-station-icon">📍</div>
+                        <div class="uc2-station-text" data-i18n="Pick-up Station">Pick-up Station</div>
+                    </div>
+
+                    <select name="stationId" class="form-select uc2-input">
+                        <option value="" data-i18n="All Stations">All Stations</option>
+
+                        @foreach (var station in stations)
+                        {
+                            if (selectedStation == station.StationId)
+                            {
+                                <option value="@station.StationId" selected>@station.StationName</option>
+                            }
+                            else
+                            {
+                                <option value="@station.StationId">@station.StationName</option>
+                            }
+                        }
+                    </select>
+
+                    <select name="categoryId"
+                            class="form-select uc2-input"
+                            onchange="this.form.submit()">
+                        <option value="" data-i18n="All Categories">🚲 All Categories</option>
+
+                        @foreach (var category in categories)
+                        {
+                            if (selectedCategory == category.CategoryId)
+                            {
+                                <option value="@category.CategoryId" selected>@category.CategoryName</option>
+                            }
+                            else
+                            {
+                                <option value="@category.CategoryId">@category.CategoryName</option>
+                            }
+                        }
+                    </select>
+
+                    <button type="submit" class="uc2-refresh" title="Refresh">
+                        &#10227;
+                    </button>
+
+                </div>
+            </form>
+
+            <div class="uc2-title-row">
+                <h3 class="uc2-section-title">
+                    <span data-i18n="Available Vehicles at">Available Vehicles at</span> @selectedStationName
+                </h3>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var vehicle in Model)
+                {
+                    var categoryName = vehicle.Category?.CategoryName ?? "";
+                    var isScooter = categoryName.Contains("Scooter");
+
+                    var imagePath = isScooter
+                        ? Url.Content("~/images/scooter.png")
+                        : Url.Content("~/images/bike.png");
+
+                    var statusClass =
+                        vehicle.Status == SaigonRide.Models.VehicleStatus.Available
+                        ? "available"
+                        : vehicle.Status == SaigonRide.Models.VehicleStatus.InTransit
+                        ? "intransit"
+                        : "maintenance";
+
+                    int? batteryLevel = null;
+
+                    if (isScooter)
+                    {
+                        batteryLevel =
+                            vehicle.Status == SaigonRide.Models.VehicleStatus.Available
+                            ? 100
+                            : vehicle.Status == SaigonRide.Models.VehicleStatus.InTransit
+                            ? 34
+                            : 13;
+                    }
+
+                    var batteryClass =
+                        batteryLevel >= 60
+                        ? "high"
+                        : batteryLevel >= 30
+                        ? "medium"
+                        : "low";
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="uc2-card">
+
+                            <div class="uc2-img-box">
+                                <div class="uc2-category">
+                                    @vehicle.Category?.CategoryName
+                                </div>
+
+                                <img src="@imagePath"
+                                     alt="@vehicle.VehicleName"
+                                     onerror="this.style.display='none'" />
+                            </div>
+
+                            <div class="uc2-name">
+                                @vehicle.VehicleName
+                            </div>
+
+                            <div class="uc2-meta-row">
+                                <div class="uc2-code">
+                                    ID: @vehicle.VehicleCode
+                                </div>
+
+                                <div class="uc2-status @statusClass">
+                                    <span data-i18n="@vehicle.Status.ToString()">@vehicle.Status</span>
+                                </div>
+                            </div>
+
+                            <div class="uc2-price-row">
+                                @if (batteryLevel.HasValue)
+                                {
+                                    <div class="uc2-battery @batteryClass">
+                                        @batteryLevel
+                                    </div>
+
+                                    <span>•</span>
+                                }
+
+                                <span class="uc2-price-tag">
+                                    <i class="fa-solid fa-tag"></i>
+                                    @vehicle.Category?.PricePerMinute.ToString("N0") VND/min
+                                </span>
+                            </div>
+
+                            @if (vehicle.Status == SaigonRide.Models.VehicleStatus.Available)
+                            {
+                                <a asp-controller="UserRental"
+                                   asp-action="Confirm"
+                                   asp-route-id="@vehicle.VehicleId"
+                                   class="uc2-btn active"
+                                   data-i18n="Rent This">
+                                    Rent This
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="uc2-btn disabled" disabled data-i18n="Rent This">
+                                    Rent This
+                                </button>
+                            }
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/js/saigonride-i18n.js")"></script>
+</body>
+</html>

@@ -1,0 +1,816 @@
+﻿@using System.Globalization
+@model SaigonRide.Models.Payment
+
+@{
+    var currentUser = Model.User ?? Model.Rental?.User;
+    Layout = null;
+    ViewData["Title"] = "Thanh toán thành công";
+
+    var rental = Model.Rental;
+    var vehicle = rental?.Vehicle;
+    var category = vehicle?.Category;
+
+    var rentalCode = $"#RIDE-{rental?.RentalId.ToString("D4")}";
+    var vehicleName = vehicle?.VehicleName ?? "Không xác định";
+
+    var startStation = rental?.StartStation;
+    var endStation = rental?.DestinationStation;
+
+    var startStationName = startStation?.StationName ?? "Trạm bắt đầu";
+    var endStationName = endStation?.StationName ?? "Trạm trả xe";
+
+    var startTime = rental?.StartTime.ToString("HH:mm:ss") ?? "--:--:--";
+    var endTime = rental?.EndTime?.ToString("HH:mm:ss") ?? "--:--:--";
+
+    var totalTripSeconds = rental?.EndTime != null && rental != null
+        ? Math.Max(1, (int)(rental.EndTime.Value - rental.StartTime).TotalSeconds)
+        : 0;
+
+    var displayMinutes = totalTripSeconds / 60;
+    var displaySeconds = totalTripSeconds % 60;
+
+    var durationText = displayMinutes > 0
+        ? $"{displayMinutes} phút {displaySeconds} giây"
+        : $"{displaySeconds} giây";
+
+    var baseFare = rental?.BaseFare ?? 0m;
+    var discount = rental?.DiscountAmount ?? 0m;
+    var totalAmount = Model.Amount;
+
+    var startLat = (startStation?.Latitude ?? 10.7725).ToString(CultureInfo.InvariantCulture);
+    var startLng = (startStation?.Longitude ?? 106.6980).ToString(CultureInfo.InvariantCulture);
+    var endLat = (endStation?.Latitude ?? 10.7805).ToString(CultureInfo.InvariantCulture);
+    var endLng = (endStation?.Longitude ?? 106.7055).ToString(CultureInfo.InvariantCulture);
+
+    string paymentName = Model.Method switch
+    {
+        SaigonRide.Models.PaymentMethod.Wallet => "Ví SaigonRide",
+        SaigonRide.Models.PaymentMethod.MoMo => "MoMo",
+        SaigonRide.Models.PaymentMethod.VNPay => "VNPAY",
+        SaigonRide.Models.PaymentMethod.Cash => "Tiền mặt",
+        SaigonRide.Models.PaymentMethod.ApplePay => "Apple Pay",
+        SaigonRide.Models.PaymentMethod.PayPal => "PayPal",
+        _ => "Thanh toán"
+    };
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Thanh toán thành công - SaigonRide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="@Url.Content("~/css/user-topbar.css")" />
+
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --primary-pink: #ec4899;
+            --soft-purple: #f3e8ff;
+            --soft-pink: #fce7f3;
+            --text-main: #342b55;
+            --text-muted: #7b6f95;
+            --border-soft: #eee4ff;
+            --page-bg: #fbf9ff;
+            --white-soft: rgba(255, 255, 255, .72);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f7f4fb;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: #2b2540;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .user-topbar {
+            height: 66px;
+            background: linear-gradient(90deg, #c9aff5, #f1b3d4);
+            display: flex;
+            align-items: center;
+            padding: 0 26px;
+            box-shadow: 0 10px 26px rgba(130, 100, 180, .10);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 58px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 22px rgba(255,255,255,.28);
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: var(--text-main);
+        }
+
+        .nav-link-user {
+            height: 66px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #4a3e67;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .18s ease;
+        }
+
+        .nav-link-user:hover {
+            color: #6f45d6;
+            background: rgba(255,255,255,.22);
+        }
+
+        .nav-link-user.active {
+            background: rgba(255,255,255,.42);
+            border-radius: 16px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-toggle {
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.68);
+            background: rgba(255,255,255,.44);
+            color: #5b4b78;
+            font-size: 12px;
+            font-weight: 800;
+            user-select: none;
+        }
+
+        .language-toggle button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            opacity: .58;
+        }
+
+        .language-toggle button.active {
+            color: #7c3aed;
+            opacity: 1;
+        }
+
+        .language-toggle .flag {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .wallet-pill {
+            height: 36px;
+            background: rgba(255,255,255,.52);
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 999px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #44375f;
+            white-space: nowrap;
+        }
+
+        .topbar-bell {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #5b4b78;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-user-chip {
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.75);
+            background: rgba(255,255,255,.48);
+            padding: 0 12px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #44375f;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .topbar-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .topbar-username {
+            max-width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-chevron {
+            font-size: 10px;
+            color: #76658e;
+        }
+
+        .topbar-logout {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #e25584;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .18s ease;
+        }
+
+        .topbar-logout:hover {
+            background: #fff1f5;
+            color: #d93672;
+        }
+
+        .success-page {
+            min-height: calc(100vh - 66px);
+            padding: 42px 38px 34px;
+            background: #f7f4fb;
+        }
+
+        .success-panel {
+            max-width: 1080px;
+            margin: 0 auto;
+            border-radius: 24px;
+            background: #def5ea;
+            padding: 34px 38px 34px;
+        }
+
+        .success-icon {
+            width: 106px;
+            height: 106px;
+            margin: -6px auto 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .72);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 18px 36px rgba(55, 195, 126, .22);
+        }
+
+        .success-icon-inner {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #86f0ba, #28c878);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            box-shadow: inset 0 -5px 12px rgba(0,0,0,.12), 0 8px 18px rgba(34, 180, 104, .35);
+        }
+
+        .success-title {
+            text-align: center;
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 800;
+            color: #45c978;
+            margin-bottom: 6px;
+        }
+
+        .success-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #777e80;
+            margin-bottom: 18px;
+        }
+
+        .success-grid {
+            width: 100%;
+            max-width: 860px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .success-card {
+            background: #f8f8ff;
+            border-radius: 22px;
+            padding: 18px 22px;
+            min-height: 310px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2f2a3e;
+            margin-bottom: 14px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: #efe6ff;
+            color: #8b63f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        .receipt-row {
+            display: grid;
+            grid-template-columns: 32px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            min-height: 32px;
+            font-size: 13px;
+            color: #2f2a3e;
+        }
+
+        .row-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #eee9f7;
+            color: #6f6685;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .receipt-label {
+            font-weight: 500;
+        }
+
+        .receipt-value {
+            font-weight: 500;
+            text-align: right;
+            max-width: 205px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .divider {
+            border-top: 1px dashed #d7c9f6;
+            margin: 8px 0;
+        }
+
+        .discount {
+            color: #ff3d3d;
+        }
+
+        .total-value {
+            color: #7d4cff;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pay-logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .wallet-logo {
+            background: linear-gradient(135deg, #ffbd59, #ff7658);
+            color: #111;
+        }
+
+        .momo-logo {
+            background: #d82d8b;
+        }
+
+        .vn-logo {
+            background: linear-gradient(135deg, #1b75bb, #e53935);
+        }
+
+        .cash-logo {
+            background: #76a8ff;
+        }
+
+        .journey-map {
+            position: relative;
+            height: 150px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border: 1px solid #e4ddf4;
+            background: #eef7f4;
+        }
+
+        #tripMap {
+            width: 100%;
+            height: 100%;
+        }
+
+        .leaflet-control-attribution {
+            font-size: 8px;
+        }
+
+        .co2-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 14px;
+            background: linear-gradient(90deg, #75ef9b, #cac5ff);
+            color: #26643d;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .rating-box {
+            background: white;
+            border: 1px solid #e5e0ef;
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .rating-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .rating-sub {
+            font-size: 8px;
+            color: #77717f;
+            margin-bottom: 4px;
+        }
+
+        .stars {
+            text-align: center;
+            color: #ffe119;
+            font-size: 30px;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .button-row {
+            max-width: 860px;
+            margin: 16px auto 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 360px;
+            max-width: 100%;
+            height: 46px;
+            border-radius: 999px;
+            border: none;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: .2s ease;
+        }
+
+        .primary-btn {
+            background: #8ce3b0;
+            color: #215c3a;
+        }
+
+        .primary-btn:hover {
+            background: #76d79e;
+            color: #1f5134;
+        }
+
+        @@media(max-width: 900px) {
+            .success-page {
+                padding: 24px 16px;
+            }
+
+            .success-panel {
+                padding: 28px 18px;
+            }
+
+            .success-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    @{
+        ViewBag.ActivePage = "MyTrip";
+    }
+
+    @await Html.PartialAsync("~/Views/Shared/_UserTopbar.cshtml", currentUser)
+
+    <main data-auto-i18n class="success-page">
+        <section class="success-panel">
+            <div class="success-icon">
+                <div class="success-icon-inner">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+
+            <div class="success-title">Thanh toán thành công!</div>
+
+            <div class="success-subtitle">
+                Cảm ơn bạn đã sử dụng SaigonRide
+            </div>
+
+            <div class="success-grid">
+                <div class="success-card">
+                    <div class="card-title">
+                        <span class="card-icon">
+                            <i class="fa-regular fa-clipboard"></i>
+                        </span>
+                        Chi tiết hóa đơn
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+
+                        <span class="receipt-label">Mã thuê xe</span>
+
+                        <span class="receipt-value">@rentalCode</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-bicycle"></i>
+                        </span>
+
+                        <span class="receipt-label">Phương tiện</span>
+
+                        <span class="receipt-value">@vehicleName</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-regular fa-clock"></i>
+                        </span>
+
+                        <span class="receipt-label">Thời lượng</span>
+
+                        <span class="receipt-value">
+                            (@startTime - @endTime) @durationText
+                        </span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </span>
+
+                        <span class="receipt-label">Tạm tính</span>
+
+                        <span class="receipt-value">
+                            @baseFare.ToString("N0") VND
+                        </span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-tag"></i>
+                        </span>
+
+                        <span class="receipt-label">Giảm giá 15%</span>
+
+                        <span class="receipt-value discount">
+                            -@discount.ToString("N0") VND
+                        </span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-coins"></i>
+                        </span>
+
+                        <span class="receipt-label">Tổng thanh toán</span>
+
+                        <span class="receipt-value total-value">
+                            @totalAmount.ToString("N0") VND
+                        </span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="row-icon">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </span>
+
+                        <span class="receipt-label">Thanh toán</span>
+
+                        <span class="receipt-value payment-badge">
+                            @paymentName
+
+                            @if (Model.Method == SaigonRide.Models.PaymentMethod.Wallet)
+                            {
+                                <span class="pay-logo wallet-logo">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </span>
+                            }
+                            else if (Model.Method == SaigonRide.Models.PaymentMethod.MoMo)
+                            {
+                                <span class="pay-logo momo-logo">mo</span>
+                            }
+                            else if (Model.Method == SaigonRide.Models.PaymentMethod.VNPay)
+                            {
+                                <span class="pay-logo vn-logo">VN</span>
+                            }
+                            else if (Model.Method == SaigonRide.Models.PaymentMethod.Cash)
+                            {
+                                <span class="pay-logo cash-logo">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                </span>
+                            }
+                        </span>
+                    </div>
+                </div>
+
+                <div class="success-card">
+                    <div class="card-title">
+                        <span class="card-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+
+                        Hành trình của bạn
+                    </div>
+
+                    <div class="journey-map">
+                        <div id="tripMap"></div>
+                    </div>
+
+                    <div class="co2-note">
+                        <i class="fa-solid fa-medal"></i>
+                        Tuyệt vời! Bạn đã góp phần giảm khoảng 0.5kg CO₂ hôm nay.
+                    </div>
+
+                    <div class="rating-box">
+                        <div class="rating-title">
+                            Bạn đánh giá chuyến đi thế nào?
+                        </div>
+
+                        <div class="rating-sub">
+                            Phản hồi của bạn giúp SaigonRide cải thiện dịch vụ
+                        </div>
+
+                        <div class="stars">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <a asp-controller="UserRental"
+                   asp-action="Index"
+                   class="action-btn primary-btn">
+                    <i class="fa-solid fa-house"></i>
+                    Về trang thuê xe
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const startPoint = [@startLat, @startLng];
+        const endPoint = [@endLat, @endLng];
+
+        const map = L.map('tripMap', {
+            zoomControl: false,
+            attributionControl: true
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        const startIcon = L.divIcon({
+            className: '',
+            html: '<div style="width:26px;height:26px;border-radius:50%;background:#8b63f6;color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,.18);"><i class="fa-solid fa-location-dot"></i></div>',
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
+        });
+
+        const endIcon = L.divIcon({
+            className: '',
+            html: '<div style="width:26px;height:26px;border-radius:50%;background:#ff6fb0;color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,.18);"><i class="fa-solid fa-location-dot"></i></div>',
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
+        });
+
+        L.marker(startPoint, { icon: startIcon })
+            .addTo(map)
+            .bindPopup('@startStationName');
+
+        L.marker(endPoint, { icon: endIcon })
+            .addTo(map)
+            .bindPopup('@endStationName');
+
+        const route = L.polyline([startPoint, endPoint], {
+            color: '#8b63f6',
+            weight: 4,
+            dashArray: '8, 10',
+            lineCap: 'round'
+        }).addTo(map);
+
+        map.fitBounds(route.getBounds(), {
+            padding: [30, 30]
+        });
+
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 200);
+    </script>
+
+    <script src="@Url.Content("~/js/saigonride-i18n.js")"></script>
+</body>
+</html>

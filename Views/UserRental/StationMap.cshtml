@@ -1,0 +1,642 @@
+﻿@using Microsoft.AspNetCore.Http
+@model IEnumerable<SaigonRide.Models.Station>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Station Map";
+
+    var currentUser = ViewBag.CurrentUser as SaigonRide.Models.User;
+    ViewBag.ActivePage = "StationMap";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - SaigonRide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="@Url.Content("~/css/user-topbar.css")" />
+
+    <style>
+        .user-topbar a {
+    text-decoration: none;
+}
+ .topbar-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#b86be4,#e04bae);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.topbar-logout {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.42);
+    border: 1px solid rgba(255,255,255,.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d9468f;
+    text-decoration: none;
+    transition: .18s ease;
+}
+
+.topbar-logout:hover {
+    background: rgba(255,255,255,.62);
+    color: #c0267a;
+}
+.topbar-user-chip {
+    height: 46px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.75);
+    background: rgba(255,255,255,.48);
+    padding: 0 14px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #44375f;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.topbar-username {
+    white-space: nowrap;
+}
+
+.topbar-chevron {
+    font-size: 13px;
+}
+.language-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: .58;
+}
+.language-toggle {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.68);
+    background: rgba(255,255,255,.44);
+    color: #5b4b78;
+    font-size: 12px;
+    font-weight: 800;
+    user-select: none;
+}
+
+.language-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: .58;
+}
+
+.language-toggle button.active {
+    color: #7c3aed;
+    opacity: 1;
+}
+
+.language-toggle .flag {
+    font-size: 13px;
+    line-height: 1;
+}
+.language-toggle button.active {
+    color: #7c3aed;
+    opacity: 1;
+}
+
+.wallet-pill {
+    height: 36px;
+    background: rgba(255,255,255,.52);
+    border: 1px solid rgba(255,255,255,.72);
+    border-radius: 999px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #44375f;
+    white-space: nowrap;
+}
+
+.topbar-bell,
+.topbar-logout {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.48);
+    border: 1px solid rgba(255,255,255,.68);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.topbar-user-chip {
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.75);
+    background: rgba(255,255,255,.48);
+    padding: 0 12px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #44375f;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+}
+        .user-topbar {
+    height: 66px;
+    background: linear-gradient(90deg, #c9aff5, #f1b3d4);
+    display: flex;
+    align-items: center;
+    padding: 0 26px;
+    box-shadow: 0 10px 26px rgba(130, 100, 180, .10);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 58px;
+    text-decoration: none;
+    color: #342b55;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-text {
+    font-size: 15px;
+    font-weight: 800;
+    color: #342b55;
+}
+
+.nav-link-user {
+    height: 66px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #4a3e67;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.nav-link-user.active {
+    background: rgba(255,255,255,.42);
+    border-radius: 16px;
+}
+
+.topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.language-toggle,
+.wallet-pill,
+.topbar-bell,
+.topbar-logout,
+.topbar-user-chip {
+    background: rgba(255,255,255,.48);
+    border: 1px solid rgba(255,255,255,.68);
+}
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #fbf9ff;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: #342b55;
+            overflow-x: hidden;
+        }
+
+        .map-page {
+            padding: 24px 30px;
+        }
+
+        .map-layout {
+            display: grid;
+            grid-template-columns: 370px minmax(0, 1fr);
+            gap: 24px;
+            width: 100%;
+        }
+
+        .map-sidebar {
+            background: white;
+            border: 1px solid #eee4ff;
+            border-radius: 18px;
+            padding: 20px;
+            height: calc(100vh - 114px);
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #342b55;
+        }
+
+        .page-sub {
+            font-size: 14px;
+            color: #8d84a1;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .search-box {
+            width: 100%;
+            height: 54px;
+            border: 1px solid #e9e0fb;
+            border-radius: 15px;
+            padding: 0 18px;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 18px;
+            font-family: inherit;
+            color: #342b55;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            height: 42px;
+            padding: 0 22px;
+            border-radius: 999px;
+            border: none;
+            font-size: 13px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            transition: .18s ease;
+        }
+
+        .filter-pill.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .filter-pill.soft {
+            background: #f4efff;
+            color: #6d5c91;
+        }
+
+        .station-card {
+            border: 1px solid #eee4ff;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            background: white;
+            transition: .18s ease;
+        }
+
+        .station-card.is-hidden {
+            display: none;
+        }
+
+        .station-card:hover,
+        .station-card.active {
+            border-color: #cdb6ff;
+            background: #faf7ff;
+            box-shadow: 0 10px 28px rgba(103, 74, 170, .08);
+        }
+
+        .station-name {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #241d3b;
+        }
+
+        .station-location {
+            font-size: 12px;
+            color: #9087a5;
+            margin-bottom: 12px;
+            line-height: 1.45;
+        }
+
+        .station-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .station-number {
+            font-size: 18px;
+            font-weight: 800;
+            color: #241d3b;
+        }
+
+        .station-label {
+            font-size: 11px;
+            color: #8d84a1;
+            margin-top: 2px;
+        }
+
+        .map-container {
+            background: white;
+            border: 1px solid #eee4ff;
+            border-radius: 18px;
+            overflow: hidden;
+            height: calc(100vh - 114px);
+            min-width: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        @@media(max-width: 992px) {
+            .map-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .map-sidebar,
+            .map-container {
+                height: 520px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    @await Html.PartialAsync("~/Views/Shared/_UserTopbar.cshtml", currentUser)
+
+    <div class="map-page">
+        <div class="map-layout">
+
+            <div class="map-sidebar">
+
+                <div class="page-title" data-i18n="Station Map">
+                    Station Map
+                </div>
+
+                <div class="page-sub" data-i18n="Find nearby stations and monitor real-time vehicle availability">
+                    Find nearby stations and monitor real-time vehicle availability
+                </div>
+
+                <input type="text"
+                       class="search-box"
+                       id="stationSearch"
+                       oninput="searchStations()"
+                       data-i18n-placeholder="Search station or location..."
+                       placeholder="🔍 Search station or location..." />
+
+                <div class="filter-row">
+                    <button type="button"
+                            class="filter-pill active"
+                            onclick="filterStations('all', this)"
+                            data-i18n="All Stations">
+                        All Stations
+                    </button>
+
+                    <button type="button"
+                            class="filter-pill soft"
+                            onclick="filterStations('available', this)"
+                            data-i18n="Available">
+                        Available
+                    </button>
+
+                    <button type="button"
+                            class="filter-pill soft"
+                            onclick="filterStations('low', this)"
+                            data-i18n="Low Stock">
+                        Low Stock
+                    </button>
+                </div>
+
+                @foreach (var station in Model)
+                {
+                    var bikeCount = station.Vehicles?.Count(v => v.Category?.CategoryName == "Standard Bike") ?? 0;
+                    var scooterCount = station.Vehicles?.Count(v => v.Category?.CategoryName == "E-Scooter") ?? 0;
+                    var availableSlots = station.Capacity - station.CurrentInventory;
+                    var isLowStock = station.CurrentInventory <= 2;
+
+                    <div class="station-card"
+                         data-name="@station.StationName"
+                         data-location="@station.Location"
+                         data-available-slots="@availableSlots"
+                         data-low-stock="@(isLowStock ? "true" : "false")"
+                         onclick="focusStation(@(station.Latitude ?? 10.7769), @(station.Longitude ?? 106.7009), this)">
+
+                        <div class="station-name">
+                            <i class="fa-solid fa-location-dot"></i>
+                            @station.StationName
+                        </div>
+
+                        <div class="station-location">
+                            @station.Location
+                        </div>
+
+                        <div class="station-stats">
+                            <div>
+                                <div class="station-number">@bikeCount</div>
+                                <div class="station-label">
+                                    <i class="fa-solid fa-bicycle"></i>
+                                    <span data-i18n="Bike">Bike</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="station-number">@scooterCount</div>
+                                <div class="station-label">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span data-i18n="Scooter">Scooter</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="station-number">@availableSlots</div>
+                                <div class="station-label" data-i18n="Slots">Slots</div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        let currentFilter = "all";
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const map = L.map("map").setView([10.7769, 106.7009], 13);
+
+            L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    attribution: "&copy; OpenStreetMap contributors"
+                }
+            ).addTo(map);
+
+            const customIcon = L.divIcon({
+                className: "",
+                html: `
+                    <div style="
+                        width:18px;
+                        height:18px;
+                        border-radius:50%;
+                        background:#8b5cf6;
+                        border:4px solid rgba(139,92,246,.25);
+                        box-shadow:0 4px 10px rgba(139,92,246,.35);
+                    "></div>
+                `,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            });
+
+            @foreach (var station in Model)
+            {
+                var bikeCount = station.Vehicles?.Count(v => v.Category?.CategoryName == "Standard Bike") ?? 0;
+                var scooterCount = station.Vehicles?.Count(v => v.Category?.CategoryName == "E-Scooter") ?? 0;
+
+                <text>
+                    L.marker(
+                        [@(station.Latitude ?? 10.7769), @(station.Longitude ?? 106.7009)],
+                        { icon: customIcon }
+                    )
+                    .addTo(map)
+                    .bindPopup(`
+                        <div style="font-family:Plus Jakarta Sans,sans-serif;">
+                            <div style="font-weight:800;margin-bottom:6px;">
+                                @station.StationName
+                            </div>
+
+                            <div style="font-size:12px;color:#8d84a1;margin-bottom:8px;">
+                                @station.Location
+                            </div>
+
+                            <div style="display:flex;gap:10px;">
+                                <div style="font-size:12px;">🚲 @bikeCount</div>
+                                <div style="font-size:12px;">⚡ @scooterCount</div>
+                            </div>
+                        </div>
+                    `);
+                </text>
+            }
+
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 500);
+
+            window.focusStation = function (lat, lng, element) {
+                map.flyTo([lat, lng], 15, {
+                    duration: 1.2
+                });
+
+                document
+                    .querySelectorAll(".station-card")
+                    .forEach(card => card.classList.remove("active"));
+
+                element.classList.add("active");
+            };
+        });
+
+        function filterStations(filter, button) {
+            currentFilter = filter;
+
+            document.querySelectorAll(".filter-pill").forEach(btn => {
+                btn.classList.remove("active");
+                btn.classList.add("soft");
+            });
+
+            button.classList.add("active");
+            button.classList.remove("soft");
+
+            applyStationFilters();
+        }
+
+        function searchStations() {
+            applyStationFilters();
+        }
+
+        function applyStationFilters() {
+            const keyword = (document.getElementById("stationSearch")?.value || "")
+                .toLowerCase()
+                .trim();
+
+            document.querySelectorAll(".station-card").forEach(card => {
+                const name = (card.dataset.name || "").toLowerCase();
+                const location = (card.dataset.location || "").toLowerCase();
+                const availableSlots = parseInt(card.dataset.availableSlots || "0", 10);
+                const isLowStock = card.dataset.lowStock === "true";
+
+                const matchesSearch =
+                    !keyword ||
+                    name.includes(keyword) ||
+                    location.includes(keyword);
+
+                let matchesFilter = true;
+
+                if (currentFilter === "available") {
+                    matchesFilter = availableSlots > 0;
+                }
+
+                if (currentFilter === "low") {
+                    matchesFilter = isLowStock;
+                }
+
+                card.classList.toggle("is-hidden", !(matchesSearch && matchesFilter));
+            });
+        }
+    </script>
+
+    <script src="@Url.Content("~/js/saigonride-i18n.js")"></script>
+</body>
+</html>
