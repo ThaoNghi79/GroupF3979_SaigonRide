@@ -8,7 +8,7 @@ namespace SaigonRide.Models
     public enum UserRole { LocalCommuter, ForeignTourist, Admin }
     public enum RentalStatus { Active, PendingPayment, Completed, Cancelled }
     public enum PaymentStatus { Pending, Paid, Failed, Cancelled }
-    public enum PaymentMethod { MoMo, VNPay, Cash, ApplePay, PayPal }
+    public enum PaymentMethod { Wallet, MoMo, VNPay, Cash, ApplePay, PayPal}
 
 
     public class VehicleCategory

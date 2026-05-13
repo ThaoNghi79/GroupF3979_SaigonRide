@@ -109,6 +109,9 @@
             border: 2px solid rgba(255,255,255,0.6);
             min-height: 200px;
             height: 220px;
+            width: 100%; 
+            max-width: 100%; 
+            contain: strict;
         }
 
         .map-bg {
@@ -501,7 +504,7 @@
                         <td style="font-weight:700;">
                             @if (statusText == "Completed")
                             {
-                                <span>₫ 25,000</span>
+                                <span>₫ @a.FinalFare.ToString("N0")</span>
                             }
                             else
                             {
@@ -562,11 +565,17 @@
             touchZoom: false,
             attributionControl: false
         }).setView([10.7769, 106.7009], 13);
-        setTimeout(() => dashMap.invalidateSize(), 300);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18
         }).addTo(dashMap);
+
+        window.addEventListener('load', () => {
+            dashMap.invalidateSize();
+        });
+        setTimeout(() => dashMap.invalidateSize(), 300);
+        setTimeout(() => dashMap.invalidateSize(), 800);
+        setTimeout(() => dashMap.invalidateSize(), 1500);
 
         dashStations.forEach((s, i) => {
             const color = s.type === 'overload' ? '#eb5757' : s.type === 'low' ? '#f2994a' : '#34C77B';

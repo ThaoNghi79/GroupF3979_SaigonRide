@@ -49,7 +49,7 @@ namespace SaigonRide.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "UserRental");
             }
         }
 

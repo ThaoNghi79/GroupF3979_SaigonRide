@@ -278,6 +278,8 @@ namespace SaigonRide.Services
         public int DiscountedRentals { get; set; }
         public List<RevenueByCategoryItem> ByCategory { get; set; } = new();
         public List<RevenueByDayItem> ByDay { get; set; } = new();
+        public List<TopStationRevenueItem> TopStations { get; set; } = new();
+        public List<RecentTransactionItem> RecentTransactions { get; set; } = new();
     }
 
     public class RevenueByCategoryItem
@@ -297,4 +299,22 @@ namespace SaigonRide.Services
         public decimal ScooterRevenue { get; set; }
         public int RentalCount { get; set; }
     }
+
+    public class TopStationRevenueItem
+    {
+        public string StationName { get; set; } = "";
+        public decimal TotalRevenue { get; set; }
+    }
+
+    public class RecentTransactionItem
+    {
+        public string RentalCode { get; set; } = "";
+        public string UserName { get; set; } = "";
+        public string VehicleName { get; set; } = "";
+        public DateTime? StartTime { get; set; }
+        public int DurationMinutes { get; set; }
+        public decimal Fare { get; set; }
+        public decimal DiscountAmount { get; set; }
+    }
+
 }

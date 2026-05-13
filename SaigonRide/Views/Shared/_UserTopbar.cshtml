@@ -32,10 +32,37 @@
         <span data-i18n="Station Map">Station Map</span>
     </a>
 
-    <a asp-controller="UserRental" asp-action="MyTrip" class="nav-link-user @(activePage == "MyTrip" ? "active" : "")">
-        <i class="fa-solid fa-route"></i>
-        <span data-i18n="My Trip">My Trip</span>
-    </a>
+    @{
+    var _userId = Context.Session.GetInt32("UserId");
+    bool _hasActiveRental = false;
+    int _activeRentalId = 0;
+    
+    if (_userId.HasValue)
+        {
+            var _db = Context.RequestServices.GetService<SaigonRide.Data.ApplicationDbContext>();
+            var _activeRental = _db?.Rentals
+                .FirstOrDefault(r => r.UserId == _userId.Value 
+                    && r.Status == SaigonRide.Models.RentalStatus.Active);
+            _hasActiveRental = _activeRental != null;
+            _activeRentalId = _activeRental?.RentalId ?? 0;
+        }
+    }
+
+    @if (_hasActiveRental)
+    {
+        <a asp-controller="UserRental" asp-action="MyTrip" asp-route-id="@_activeRentalId"
+           class="nav-link-user @(activePage == "MyTrip" ? "active" : "")">
+            <i class="fa-solid fa-route"></i>
+            <span data-i18n="My Trip">My Trip</span>
+        </a>
+    }
+    else
+    {
+        <span class="nav-link-user" style="opacity:0.4; cursor:not-allowed;" title="No active rental">
+            <i class="fa-solid fa-route"></i>
+            <span data-i18n="My Trip">My Trip</span>
+        </span>
+    }
 
     <div class="topbar-right">
         <div class="language-toggle" aria-label="Language switcher">
@@ -59,7 +86,15 @@
         </div>
 
         <a asp-controller="UserRental" asp-action="Profile" class="topbar-user-chip">
-            <span class="topbar-avatar">@avatarText</span>
+            @if (!string.IsNullOrEmpty(currentUser?.AvatarUrl))
+            {
+                <img src="@currentUser.AvatarUrl" 
+                     style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+            }
+            else
+            {
+                <span class="topbar-avatar">@avatarText</span>
+            }
             <span class="topbar-username">@currentUserName</span>
             <i class="fa-solid fa-chevron-down topbar-chevron"></i>
         </a>
@@ -68,4 +103,4 @@
             <i class="fa-solid fa-right-from-bracket"></i>
         </a>
     </div>
-</div>
+</div>s
