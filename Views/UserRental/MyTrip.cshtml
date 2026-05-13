@@ -1,0 +1,1393 @@
+﻿@using Microsoft.AspNetCore.Http
+@model SaigonRide.Models.Rental
+
+@{
+    Layout = null;
+    ViewData["Title"] = "My Trip";
+    ViewBag.ActivePage = "MyTrip";
+
+    var stations = ViewBag.Stations as List<SaigonRide.Models.Station>
+        ?? new List<SaigonRide.Models.Station>();
+
+    var vehicle = Model.Vehicle;
+    var category = vehicle?.Category;
+    var startStation = Model.StartStation;
+
+    var categoryName = category?.CategoryName ?? "";
+    var isScooter = categoryName.Contains("Scooter");
+
+    var imagePath = isScooter
+        ? Url.Content("~/images/scooter.png")
+        : Url.Content("~/images/bike.png");
+
+    var pricePerMinute = category?.PricePerMinute ?? 0m;
+
+    var elapsedSeconds = Math.Max(1, (decimal)(DateTime.Now - Model.StartTime).TotalSeconds);
+    var estimatedFare = elapsedSeconds / 60m * pricePerMinute;
+
+    var currentUser = ViewBag.CurrentUser as SaigonRide.Models.User ?? Model.User;
+
+    var currentUserName =
+        currentUser?.FullName
+        ?? Context.Session.GetString("UserName")
+        ?? "User";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>My Trip - SaigonRide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="@Url.Content("~/css/user-topbar.css")" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #fbf9ff;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: #342b55;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .user-topbar {
+            height: 66px;
+            background: linear-gradient(90deg, #c9aff5, #f1b3d4);
+            display: flex;
+            align-items: center;
+            padding: 0 26px;
+            box-shadow: 0 10px 26px rgba(130, 100, 180, .10);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 58px;
+            text-decoration: none;
+            color: #342b55;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 22px rgba(255,255,255,.28);
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: #342b55;
+        }
+
+        .nav-link-user {
+            height: 66px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #4a3e67;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .18s ease;
+        }
+
+        .nav-link-user:hover {
+            color: #6f45d6;
+            background: rgba(255,255,255,.22);
+        }
+
+        .nav-link-user.active {
+            background: rgba(255,255,255,.42);
+            border-radius: 16px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-toggle {
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.68);
+            background: rgba(255,255,255,.44);
+            color: #5b4b78;
+            font-size: 12px;
+            font-weight: 800;
+            user-select: none;
+        }
+
+        .language-toggle button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            opacity: .58;
+        }
+
+        .language-toggle button.active {
+            color: #7c3aed;
+            opacity: 1;
+        }
+
+        .language-toggle .flag {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .wallet-pill {
+            height: 36px;
+            background: rgba(255,255,255,.52);
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 999px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #44375f;
+            white-space: nowrap;
+        }
+
+        .topbar-bell {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #5b4b78;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-user-chip {
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.75);
+            background: rgba(255,255,255,.48);
+            padding: 0 12px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #44375f;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .topbar-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .topbar-username {
+            max-width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-chevron {
+            font-size: 10px;
+            color: #76658e;
+        }
+
+        .topbar-logout {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(255,255,255,.68);
+            color: #e25584;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .18s ease;
+        }
+
+        .topbar-logout:hover {
+            background: #fff1f5;
+            color: #d93672;
+        }
+
+        .trip-page {
+            padding: 26px 0 42px;
+        }
+
+        .trip-wrap {
+            width: calc(100% - 48px);
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 560px 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #eadfff;
+            border-radius: 22px;
+            box-shadow: 0 12px 28px rgba(130,100,180,.06);
+            height: fit-content;
+        }
+
+        .left-panel,
+        .right-panel {
+            padding: 14px;
+        }
+
+        .trip-main-card,
+        .progress-card,
+        .return-card {
+            border: 1.5px solid #eadfff;
+            border-radius: 24px;
+            background: #fff;
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .trip-status {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .trip-status-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #b7f5c3;
+            color: #10bf37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 10px 24px rgba(24,190,63,.22);
+        }
+
+        .trip-status-icon i {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #14bf39;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .trip-status-text {
+            color: #20a747;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .trip-summary {
+            border: 1px solid #f0e7ff;
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr 1.15fr;
+            align-items: center;
+        }
+
+        .summary-grid > div:not(:last-child) {
+            min-height: 74px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .summary-grid > div:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 64px;
+            width: 1px;
+            background: #eee4ff;
+        }
+
+        .summary-grid > div:last-child {
+            padding-left: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .summary-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #8b7ca5;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 11px;
+            font-weight: 800;
+            color: #2f254d;
+        }
+
+        .summary-value.pink {
+            color: #e25584;
+        }
+
+        .summary-value.purple {
+            color: #8056df;
+        }
+
+        .summary-vehicle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .summary-vehicle img {
+            width: 78px;
+            height: 78px;
+            object-fit: contain;
+        }
+
+        .summary-vehicle-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .live-row {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding-top: 12px;
+        }
+
+        .divider {
+            width: 1px;
+            height: 44px;
+            background: #eee4ff;
+        }
+
+        .live-box {
+            text-align: center;
+        }
+
+        .live-label {
+            font-size: 10px;
+            color: #7e7296;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .live-value {
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .live-value.pink {
+            color: #ff4f8b;
+        }
+
+        .live-value.purple {
+            color: #8056df;
+        }
+
+        .live-note {
+            font-size: 9px;
+            margin-top: 5px;
+            font-weight: 700;
+            color: #ff6fa0;
+        }
+
+        .live-note.purple {
+            color: #8b63f6;
+        }
+
+        .block-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #2f254d;
+            margin-bottom: 10px;
+        }
+
+        .progress-track {
+            position: relative;
+            height: 2px;
+            margin: 18px 8px 10px;
+            background-image: repeating-linear-gradient(
+                to right,
+                #d59cf2 0px,
+                #d59cf2 8px,
+                transparent 8px,
+                transparent 14px
+            );
+        }
+
+        .progress-dot {
+            position: absolute;
+            top: 50%;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: 2px solid #b79cf4;
+        }
+
+        .progress-dot.start {
+            left: -3px;
+            background: #b79cf4;
+        }
+
+        .progress-dot.end {
+            right: -3px;
+            border-color: #f1a7d1;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .progress-label {
+            font-size: 10px;
+            color: #6f6585;
+            font-weight: 700;
+            max-width: 150px;
+        }
+
+        .progress-time {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #e9ffe9;
+            color: #20a747;
+            font-size: 8.5px;
+            font-weight: 800;
+        }
+
+        .return-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #2f254d;
+            margin-bottom: 5px;
+        }
+
+        .return-sub {
+            font-size: 11px;
+            color: #8b7ca5;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .trip-select {
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid #e8dcff;
+            color: #65587e;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            box-shadow: none !important;
+        }
+
+        .discount-note {
+            display: grid;
+            grid-template-columns: 26px 1fr 1px 1fr;
+            align-items: center;
+            gap: 18px;
+            font-size: 10.5px;
+            font-weight: 600;
+            line-height: 1.45;
+            margin-bottom: 14px;
+            padding: 12px 14px;
+        }
+
+        .discount-divider {
+            width: 1px;
+            height: 32px;
+            background: #ece3ff;
+        }
+
+        .discount-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ddf8df;
+            color: #2bad50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fare-summary {
+            display: none;
+            grid-template-columns: 1fr 1fr 1fr;
+            border: 1px solid #ded0ff;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+
+        .fare-summary.show {
+            display: grid;
+        }
+
+        .fare-box {
+            padding: 9px 8px;
+            text-align: center;
+            border-right: 1px solid #eee4ff;
+        }
+
+        .fare-box:last-child {
+            border-right: none;
+        }
+
+        .fare-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #8b7ca5;
+            margin-bottom: 5px;
+        }
+
+        .fare-value {
+            font-size: 13px;
+            font-weight: 800;
+            color: #342b55;
+        }
+
+        .fare-value.discount {
+            color: #20a747;
+        }
+
+        .fare-value.pay {
+            color: #8056df;
+        }
+
+        .rebalance-banner {
+            display: none;
+            align-items: center;
+            gap: 7px;
+            background: #dff8df;
+            color: #1e9e43;
+            border-radius: 8px;
+            padding: 6px 9px;
+            font-size: 10px;
+            font-weight: 800;
+            margin-bottom: 9px;
+        }
+
+        .rebalance-banner.show {
+            display: flex;
+        }
+
+        .trip-submit {
+            width: 100%;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: #bfc0c9;
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .18s ease;
+            margin-top: 10px;
+        }
+
+        .trip-submit.ready {
+            background: linear-gradient(90deg,#b79cf4,#f1a7d1);
+        }
+
+        .return-footer {
+            text-align: center;
+            color: #8b63f6;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 14px;
+        }
+
+        .right-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2f254d;
+            margin-bottom: 4px;
+        }
+
+        .right-sub {
+            color: #8b7ca5;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .promo {
+            height: 54px;
+            border-radius: 14px;
+            background: linear-gradient(90deg,#ffd66b,#ff9a68);
+            border: 1px solid #ff9c55;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 14px;
+            margin-bottom: 12px;
+        }
+
+        .promo-icon {
+            width: 39px;
+            height: 39px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff4f69;
+            font-size: 21px;
+            flex-shrink: 0;
+        }
+
+        .promo-main {
+            color: #2f254d;
+            font-size: 11px;
+            font-weight: 800;
+            flex: 1;
+        }
+
+        .promo-badge {
+            display: inline-flex;
+            margin-left: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #fff4df;
+            color: #ff6a3d;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .station-filter {
+            height: 32px;
+            width: 160px;
+            border-radius: 10px;
+            border: 1px solid #eadfff;
+            color: #6f6585;
+            font-size: 11px;
+            font-weight: 700;
+            padding-left: 8px;
+            margin-bottom: 10px;
+        }
+
+        .station-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .station-card {
+            border: 1px solid #d9c6ff;
+            border-radius: 16px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            background: #fff;
+            transition: .18s ease;
+        }
+
+        .station-card.selected {
+            background: #faf6ff;
+            border-color: #8b63f6;
+            box-shadow: 0 12px 24px rgba(139,99,246,.10);
+        }
+
+        .station-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2f254d;
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .pin-icon {
+            width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            background: #ffe5f0;
+            color: #ff4f8b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .station-capacity-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 6px;
+        }
+
+        .capacity-text {
+            font-size: 10px;
+            color: #ff7b3d;
+            font-weight: 800;
+            min-width: 62px;
+        }
+
+        .capacity-bar {
+            width: 210px;
+            height: 6px;
+            border-radius: 999px;
+            background: #e8e5e8;
+            overflow: hidden;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: #ffac2f;
+        }
+
+        .station-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 2px;
+            font-size: 10px;
+            color: #8d84a5;
+            font-weight: 700;
+        }
+
+        .meta-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #c7bddb;
+        }
+
+        .discount-pill {
+            margin-top: 7px;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dff8df;
+            color: #1e9e43;
+            font-size: 10px;
+            font-weight: 800;
+            width: fit-content;
+        }
+
+        .discount-pill.show {
+            display: inline-flex;
+        }
+
+        .select-station-btn {
+            height: 34px;
+            min-width: 74px;
+            padding: 0 18px;
+            border-radius: 10px;
+            border: 1px solid #b79cf4;
+            background: #fff;
+            color: #8056df;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .select-station-btn.selected {
+            width: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            padding: 0;
+            background: #7047e8;
+            border-color: #7047e8;
+            color: #fff;
+        }
+
+        .select-station-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .helper-row {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .helper-card {
+            height: 54px;
+            border: 1px solid #eee4ff;
+            border-radius: 13px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 13px;
+        }
+
+        .helper-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #f5efff;
+            color: #8056df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .helper-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #6f6585;
+        }
+
+        .helper-sub {
+            font-size: 10px;
+            font-weight: 600;
+            color: #afa5bc;
+            margin-top: 2px;
+        }
+
+        @@media(max-width: 992px) {
+            .trip-wrap {
+                grid-template-columns: 1fr;
+                width: calc(100% - 24px);
+            }
+
+            .topbar-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    @await Html.PartialAsync("~/Views/Shared/_UserTopbar.cshtml", currentUser)
+
+    <main data-auto-i18n class="trip-page">
+        <div class="trip-wrap">
+            <section class="left-panel panel">
+                <div class="trip-main-card">
+                    <div class="trip-status">
+                        <div class="trip-status-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="trip-status-text">Trip In Progress</div>
+                    </div>
+
+                    <div class="trip-summary">
+                        <div class="summary-grid">
+                            <div>
+                                <div class="summary-label">Rental ID</div>
+                                <div class="summary-value pink">#RIDE-@Model.RentalId.ToString("D4")</div>
+                            </div>
+
+                            <div>
+                                <div class="summary-vehicle">
+                                    <img src="@imagePath" alt="@vehicle?.VehicleName" onerror="this.style.display='none'" />
+
+                                    <div class="summary-vehicle-info">
+                                        <div class="summary-label">Vehicle</div>
+                                        <div class="summary-value purple">@vehicle?.VehicleName</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="summary-label">Rate</div>
+                                <div class="summary-value pink">@pricePerMinute.ToString("N0") VND/min</div>
+                            </div>
+                        </div>
+
+                        <div class="live-row">
+                            <div class="live-box">
+                                <div class="live-label">
+                                    <i class="fa-regular fa-clock"></i>
+                                    Live Duration
+                                </div>
+                                <div class="live-value pink" id="durationText">00:00:00</div>
+                                <div class="live-note">● Counting up...</div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="live-box">
+                                <div class="live-label">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    Estimated Fare So Far
+                                </div>
+                                <div class="live-value purple" id="fareText">@estimatedFare.ToString("N0") VND</div>
+                                <div class="live-note purple">● Calculated by seconds</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="block-title">Trip Progress</div>
+
+                    <div class="progress-track">
+                        <span class="progress-dot start"></span>
+                        <span class="progress-dot end"></span>
+                    </div>
+
+                    <div class="progress-labels">
+                        <div class="progress-label">
+                            @startStation?.StationName
+                            <br />
+                            <span class="progress-time">Start at @Model.StartTime.ToString("HH:mm")</span>
+                        </div>
+
+                        <div class="progress-label text-end">
+                            End destination
+                            <br />
+                            <span class="progress-time" id="selectedStationText">End</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form asp-controller="UserRental" asp-action="SelectReturnStation" method="post" class="return-card">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="rentalId" value="@Model.RentalId" />
+
+                    <div class="return-title">Ready to return your vehicle?</div>
+                    <div class="return-sub">Select a return station to finish your trip.</div>
+
+                    <select name="destinationStationId" id="destinationStationId" class="form-select trip-select" required onchange="handleStationChange()">
+                        <option value="">Select return station...</option>
+
+                        @foreach (var station in stations)
+                        {
+                            var currentInventoryForOption = station.CurrentInventory;
+                            var availableSlotsForOption = Math.Max(0, station.Capacity - currentInventoryForOption);
+                            var isFullForOption = availableSlotsForOption <= 0;
+
+                            if (!isFullForOption)
+                            {
+                                <option value="@station.StationId">@station.StationName</option>
+                            }
+                        }
+                    </select>
+
+                    <div class="rebalance-banner" id="rebalanceBanner">
+                        <i class="fa-solid fa-gift"></i>
+                        <span id="rebalanceText"></span>
+                    </div>
+
+                    <div class="fare-summary" id="fareSummary">
+                        <div class="fare-box">
+                            <div class="fare-label">Fare</div>
+                            <div class="fare-value" id="baseFareText">0 VND</div>
+                        </div>
+
+                        <div class="fare-box">
+                            <div class="fare-label">Discount</div>
+                            <div class="fare-value discount" id="discountAmountText">0 VND</div>
+                        </div>
+
+                        <div class="fare-box">
+                            <div class="fare-label">Your Pay</div>
+                            <div class="fare-value pay" id="finalFareText">0 VND</div>
+                        </div>
+                    </div>
+
+                    <div class="discount-note" id="discountNote">
+                        <div class="discount-icon">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+
+                        <div id="discountTextLeft">
+                            Select a station to see capacity and discount info
+                        </div>
+
+                        <div class="discount-divider"></div>
+
+                        <div id="discountTextRight">
+                            15% discount is available only at low inventory stations
+                        </div>
+                    </div>
+
+                    <button type="submit" id="endTripButton" class="trip-submit" disabled>
+                        End Rental & Checkout
+                    </button>
+
+                    <div class="return-footer">
+                        <i class="fa-solid fa-gift"></i>
+                        Return to a low inventory station to get 15% discount!
+                    </div>
+                </form>
+            </section>
+
+            <section class="right-panel panel">
+                <div class="right-title">Find Return Station</div>
+                <div class="right-sub">Choose a low inventory station to receive 15% fare discount</div>
+
+                <div class="promo">
+                    <div class="promo-icon">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+
+                    <div class="promo-main">
+                        Return to a low-inventory station (&lt;20% capacity) to save on your fare!
+                        <span class="promo-badge">Save 15%</span>
+                    </div>
+
+                    <div style="font-size:28px;">🎁</div>
+                </div>
+
+                <select class="form-select station-filter" id="stationFilter">
+                    <option value="all">All Stations</option>
+                    <option value="low">Low Inventory</option>
+                    <option value="available">Available Slots</option>
+                </select>
+
+                <div class="station-list">
+                    @foreach (var station in stations)
+                    {
+                        var currentInventory = station.CurrentInventory;
+
+                        var capacityPercent = station.Capacity > 0
+                            ? Math.Round((double)currentInventory / station.Capacity * 100)
+                            : 0;
+
+                        var availableSlots = Math.Max(0, station.Capacity - currentInventory);
+
+                        var isLowInventory = station.Capacity > 0 &&
+                            (double)currentInventory / station.Capacity < 0.20;
+
+                        var isFull = availableSlots <= 0;
+
+                        var saveAmount = estimatedFare * 0.15m;
+
+                        var availableVehicles = station.Vehicles?
+                            .Where(v => v.Status == SaigonRide.Models.VehicleStatus.Available)
+                            .ToList() ?? new List<SaigonRide.Models.Vehicle>();
+
+                        var scooterCount = availableVehicles
+                            .Count(v => v.Category != null &&
+                                        v.Category.CategoryName.Contains("Scooter"));
+
+                        var bikeCount = availableVehicles
+                            .Count(v => v.Category != null &&
+                                        v.Category.CategoryName.Contains("Bike"));
+
+                        <div class="station-card"
+                             data-available-slots="@availableSlots"
+                             data-id="@station.StationId"
+                             data-low="@isLowInventory.ToString().ToLower()"
+                             data-full="@isFull.ToString().ToLower()"
+                             data-name="@station.StationName"
+                             data-capacity="@capacityPercent"
+                             data-save="@saveAmount.ToString("N0")">
+
+                            <div>
+                                <div class="station-title">
+                                    <span class="pin-icon">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                    @station.StationName
+                                </div>
+
+                                <div class="station-capacity-row">
+                                    <span class="capacity-text">@capacityPercent% capacity</span>
+
+                                    <div class="capacity-bar">
+                                        <div class="capacity-fill" style="width:@capacityPercent%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="station-meta">
+                                    <span>@scooterCount E-Scooter</span>
+                                    <span class="meta-dot"></span>
+                                    <span>@bikeCount Bike available</span>
+                                </div>
+
+                                <div class="discount-pill @(isLowInventory ? "show" : "")">
+                                    <i class="fa-solid fa-gift"></i>
+                                    Return here → Save 15% (~@saveAmount.ToString("N0") VND)
+                                </div>
+                            </div>
+
+                            @if (isFull)
+                            {
+                                <button type="button" class="select-station-btn" disabled>
+                                    Full
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="select-station-btn"
+                                        data-button-id="@station.StationId"
+                                        onclick="selectStation('@station.StationId', '@station.StationName')">
+                                    Select
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="helper-row">
+                    <div class="helper-card">
+                        <div class="helper-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+
+                        <div>
+                            <div class="helper-title">Need Help?</div>
+                            <div class="helper-sub">Contact our support 24/7</div>
+                        </div>
+                    </div>
+
+                    <div class="helper-card">
+                        <div class="helper-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <div>
+                            <div class="helper-title">Safe & Secure</div>
+                            <div class="helper-sub">Your vehicle is secured</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const startTime = new Date("@Model.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")");
+        const pricePerMinute = @pricePerMinute;
+        let latestBaseFare = @estimatedFare;
+
+        function formatMoney(value) {
+            return Math.round(value).toLocaleString("en-US") + " VND";
+        }
+
+        function formatDurationFromSeconds(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }
+
+        function updateTripInfo() {
+            const now = new Date();
+            const diffMs = now - startTime;
+
+            const totalSeconds = Math.max(1, Math.floor(diffMs / 1000));
+            const fare = (totalSeconds / 60) * pricePerMinute;
+
+            latestBaseFare = fare;
+
+            document.getElementById("durationText").textContent =
+                formatDurationFromSeconds(totalSeconds);
+
+            document.getElementById("fareText").textContent =
+                formatMoney(fare);
+
+            updateFareSummary();
+        }
+
+        function updateFareSummary() {
+            const select = document.getElementById("destinationStationId");
+
+            if (!select.value) {
+                return;
+            }
+
+            const card = document.querySelector(`.station-card[data-id="${select.value}"]`);
+
+            if (!card) {
+                return;
+            }
+
+            const isLow = card.dataset.low === "true";
+            const discount = isLow ? latestBaseFare * 0.15 : 0;
+            const finalFare = latestBaseFare - discount;
+
+            document.getElementById("baseFareText").textContent = formatMoney(latestBaseFare);
+            document.getElementById("discountAmountText").textContent = "- " + formatMoney(discount);
+            document.getElementById("finalFareText").textContent = formatMoney(finalFare);
+
+            card.dataset.save = Math.round(discount).toLocaleString("en-US");
+        }
+
+        function handleStationChange() {
+            const select = document.getElementById("destinationStationId");
+            const button = document.getElementById("endTripButton");
+            const selectedStationText = document.getElementById("selectedStationText");
+            const discountTextLeft = document.getElementById("discountTextLeft");
+            const discountTextRight = document.getElementById("discountTextRight");
+            const fareSummary = document.getElementById("fareSummary");
+            const rebalanceBanner = document.getElementById("rebalanceBanner");
+            const rebalanceText = document.getElementById("rebalanceText");
+
+            document.querySelectorAll(".station-card").forEach(card => {
+                card.classList.remove("selected");
+            });
+
+            document.querySelectorAll(".select-station-btn").forEach(btn => {
+                if (!btn.disabled) {
+                    btn.classList.remove("selected");
+                    btn.innerHTML = "Select";
+                }
+            });
+
+            if (!select.value) {
+                button.disabled = true;
+                button.classList.remove("ready");
+                selectedStationText.textContent = "End";
+                discountTextLeft.textContent = "Select a station to see capacity and discount info";
+                discountTextRight.textContent = "15% discount is available only at low inventory stations";
+                fareSummary.classList.remove("show");
+                rebalanceBanner.classList.remove("show");
+                return;
+            }
+
+            const card = document.querySelector(`.station-card[data-id="${select.value}"]`);
+
+            button.disabled = false;
+            button.classList.add("ready");
+            fareSummary.classList.add("show");
+
+            if (card) {
+                const selectedName = card.dataset.name;
+                const isLow = card.dataset.low === "true";
+                const capacity = card.dataset.capacity;
+
+                selectedStationText.textContent = selectedName;
+                card.classList.add("selected");
+
+                const selectedButton = document.querySelector(`.select-station-btn[data-button-id="${select.value}"]`);
+
+                if (selectedButton) {
+                    selectedButton.classList.add("selected");
+                    selectedButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+                }
+
+                const discount = isLow ? latestBaseFare * 0.15 : 0;
+                const save = Math.round(discount).toLocaleString("en-US");
+
+                discountTextLeft.textContent = `${selectedName} is currently at ${capacity}% capacity`;
+
+                if (isLow) {
+                    discountTextRight.textContent = "This station qualifies for low-inventory discount";
+                    rebalanceText.textContent = `15% rebalance discount applied. Save about ${save} VND`;
+                    rebalanceBanner.classList.add("show");
+                } else {
+                    discountTextRight.textContent = "This station does not qualify for low-inventory discount";
+                    rebalanceBanner.classList.remove("show");
+                }
+            }
+
+            updateFareSummary();
+        }
+
+        function selectStation(stationId, stationName) {
+            const select = document.getElementById("destinationStationId");
+
+            if (select.value === stationId) {
+                select.value = "";
+            } else {
+                select.value = stationId;
+            }
+
+            handleStationChange();
+
+            select.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
+        function filterStations() {
+            const filterValue = document.getElementById("stationFilter").value;
+            const stationCards = document.querySelectorAll(".station-card");
+
+            stationCards.forEach(card => {
+                const isLowInventory = card.dataset.low === "true";
+                const availableSlots = Number(card.dataset.availableSlots || "0");
+
+                let shouldShow = true;
+
+                if (filterValue === "low") {
+                    shouldShow = isLowInventory;
+                }
+
+                if (filterValue === "available") {
+                    shouldShow = availableSlots > 0;
+                }
+
+                card.style.display = shouldShow ? "grid" : "none";
+            });
+        }
+
+        document.getElementById("stationFilter").addEventListener("change", filterStations);
+
+        updateTripInfo();
+        setInterval(updateTripInfo, 1000);
+    </script>
+
+    <script src="@Url.Content("~/js/saigonride-i18n.js")"></script>
+</body>
+</html>

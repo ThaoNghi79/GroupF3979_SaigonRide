@@ -1,0 +1,71 @@
+﻿@model SaigonRide.Models.User
+@using Microsoft.AspNetCore.Http
+@{
+    var activePage = (ViewBag.ActivePage as string) ?? "Rent";
+
+    var currentUser = ViewBag.CurrentUser as SaigonRide.Models.User ?? Model;
+    var currentUserName = currentUser?.FullName
+        ?? Context.Session.GetString("UserName")
+        ?? "User";
+
+    var walletBalance = currentUser?.WalletBalance ?? 0m;
+    var isForeignTourist = currentUser?.Role == SaigonRide.Models.UserRole.ForeignTourist;
+
+    var avatarText = !string.IsNullOrWhiteSpace(currentUserName) && currentUserName.Length >= 2
+        ? currentUserName.Substring(0, 2).ToUpper()
+        : "U";
+}
+
+<div class="user-topbar">
+    <a asp-controller="UserRental" asp-action="Index" class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-bicycle"></i></div>
+        <span class="brand-text">SaigonRide</span>
+    </a>
+
+    <a asp-controller="UserRental" asp-action="Index" class="nav-link-user @(activePage == "Rent" ? "active" : "")">
+        <i class="fa-solid fa-bicycle"></i>
+        <span data-i18n="Rent a Vehicle">Rent a Vehicle</span>
+    </a>
+
+    <a asp-controller="UserRental" asp-action="StationMap" class="nav-link-user @(activePage == "StationMap" ? "active" : "")">
+        <i class="fa-solid fa-map-location-dot"></i>
+        <span data-i18n="Station Map">Station Map</span>
+    </a>
+
+    <a asp-controller="UserRental" asp-action="MyTrip" class="nav-link-user @(activePage == "MyTrip" ? "active" : "")">
+        <i class="fa-solid fa-route"></i>
+        <span data-i18n="My Trip">My Trip</span>
+    </a>
+
+    <div class="topbar-right">
+        <div class="language-toggle" aria-label="Language switcher">
+            <span class="flag">🇬🇧</span>
+            <button type="button" id="lang-en" onclick="setLang('en')">EN</button>
+            <span>/</span>
+            <button type="button" id="lang-vi" onclick="setLang('vi')">VI</button>
+            <span class="flag">🇻🇳</span>
+        </div>
+
+        @if (!isForeignTourist)
+        {
+            <div class="wallet-pill">
+                <i class="fa-solid fa-wallet"></i>
+                <span>@walletBalance.ToString("N0") VND</span>
+            </div>
+        }
+
+        <div class="topbar-bell">
+            <i class="fa-solid fa-bell"></i>
+        </div>
+
+        <a asp-controller="UserRental" asp-action="Profile" class="topbar-user-chip">
+            <span class="topbar-avatar">@avatarText</span>
+            <span class="topbar-username">@currentUserName</span>
+            <i class="fa-solid fa-chevron-down topbar-chevron"></i>
+        </a>
+
+        <a asp-controller="Auth" asp-action="Logout" class="topbar-logout" title="Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+    </div>
+</div>
