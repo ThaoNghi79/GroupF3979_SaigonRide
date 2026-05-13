@@ -79,6 +79,8 @@ namespace SaigonRide.Models
         public Station? Station { get; set; }
 
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
+
+        public string? ImageUrl { get; set; }
     }
 
     public class User
@@ -110,6 +112,7 @@ namespace SaigonRide.Models
         public bool AlertStationOverload { get; set; } = false;
         public bool AlertVehicleMaintenance { get; set; } = false;
         public bool AlertStationInventory { get; set; } = false;
+        public bool IsLocked { get; set; } = false;
     }
 
     public class Rental
