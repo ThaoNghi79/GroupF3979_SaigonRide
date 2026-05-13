@@ -539,23 +539,16 @@
 @section Scripts {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const dashRealCoords = [
-            [10.7726, 106.6980], [10.7744, 106.7030], [10.7952, 106.7220], [10.7343, 106.7100],
-            [10.7995, 106.6820], [10.8520, 106.7600], [10.7673, 106.6920], [10.7796, 106.6990]
-        ];
-
         const dashStations = [
             @{
                 var dashStations = ViewBag.StationMapData as List<SaigonRide.Models.Station>;
                 if (dashStations != null && dashStations.Any())
                 {
-                    int di = 0;
                     foreach (var s in dashStations)
                     {
                         double u = s.Capacity > 0 ? (double)s.CurrentInventory / s.Capacity * 100 : 0;
                         string t = u >= 90 ? "overload" : u < 20 ? "low" : "ok";
-                        <text>{ name: "@Html.Raw(s.StationName)", current: @s.CurrentInventory, cap: @s.Capacity, type: "@t", idx: @di }, </text>
-                        di++;
+                        <text>{ name: "@Html.Raw(s.StationName)", current: @s.CurrentInventory, cap: @s.Capacity, type: "@t", lat: @(s.Latitude ?? 10.7769), lng: @(s.Longitude ?? 106.7009) }, </text>
                     }
                 }
             }
@@ -576,14 +569,13 @@
         }).addTo(dashMap);
 
         dashStations.forEach((s, i) => {
-            const coord = dashRealCoords[s.idx % dashRealCoords.length];
             const color = s.type === 'overload' ? '#eb5757' : s.type === 'low' ? '#f2994a' : '#34C77B';
             const icon = L.divIcon({
                 className: '',
                 html: `<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.2);"></div>`,
                 iconSize: [12, 12], iconAnchor: [6, 6]
             });
-            L.marker([coord[0], coord[1]], { icon }).bindTooltip(s.name, { direction: 'top', offset: [0, -8] }).addTo(dashMap);
+            L.marker([s.lat, s.lng], { icon }).bindTooltip(s.name, { direction: 'top', offset: [0, -8] }).addTo(dashMap);
         });
 
         function filterActivity(status, btn) {
