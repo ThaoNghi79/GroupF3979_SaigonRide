@@ -1,0 +1,681 @@
+﻿@model SaigonRide.Services.RevenueReportData
+@using System.Text.Json
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Revenue Report";
+    ViewData["Page"] = "revenue";
+
+    var totalRevenue = Model?.TotalRevenue ?? 0;
+    var totalRentals = Model?.TotalRentals ?? 0;
+    var discountedRentals = Model?.DiscountedRentals ?? 0;
+
+    var bikeRevenue = Model?.ByCategory?
+        .FirstOrDefault(x => x.CategoryName.Contains("Bike"))?.TotalRevenue ?? 0;
+
+    var scooterRevenue = Model?.ByCategory?
+        .FirstOrDefault(x => x.CategoryName.Contains("Scooter"))?.TotalRevenue ?? 0;
+
+    var avgOrderValue = totalRentals > 0 ? totalRevenue / totalRentals : 0;
+
+    var totalByCategory = bikeRevenue + scooterRevenue;
+
+    var bikePercent = totalByCategory > 0
+        ? Math.Round((bikeRevenue / totalByCategory) * 100, 0)
+        : 0;
+
+    var scooterPercent = totalByCategory > 0
+        ? Math.Round((scooterRevenue / totalByCategory) * 100, 0)
+        : 0;
+
+    var chartLabels = JsonSerializer.Serialize(
+        Model?.ByDay?.Select(x => x.Date.ToString("MMM dd")).ToList()
+        ?? new List<string>()
+    );
+
+    var totalSeries = JsonSerializer.Serialize(
+        Model?.ByDay?.Select(x => x.TotalRevenue).ToList()
+        ?? new List<decimal>()
+    );
+
+    var scooterSeries = JsonSerializer.Serialize(
+        Model?.ByDay?.Select(x => x.ScooterRevenue).ToList()
+        ?? new List<decimal>()
+    );
+
+    var bikeSeries = JsonSerializer.Serialize(
+        Model?.ByDay?.Select(x => x.BikeRevenue).ToList()
+        ?? new List<decimal>()
+    );
+
+    var maxStationRevenue = Model?.TopStations?.Any() == true
+        ? Model.TopStations.Max(x => x.TotalRevenue)
+        : 0;
+}
+
+@section Styles {
+    <style>
+        .page-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title-row h2 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .page-title-row p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.03);
+        }
+
+        .kpi-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .kpi-sub {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .kpi-blue .kpi-icon {
+            background: #d9ecff;
+            color: #4b7bec;
+        }
+
+        .kpi-pink .kpi-icon {
+            background: #ffe2ec;
+            color: #d63384;
+        }
+
+        .kpi-green .kpi-icon {
+            background: #daf7e4;
+            color: #27ae60;
+        }
+
+        .kpi-orange .kpi-icon {
+            background: #fff0da;
+            color: #f2994a;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card,
+        .vtable-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.03);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            color: var(--text-main);
+        }
+
+        .section-sub {
+            margin-top: -10px;
+            margin-bottom: 18px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .revenue-table-wrap {
+            overflow-x: auto;
+        }
+
+        .revenue-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .revenue-table th {
+            padding: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .revenue-table td {
+            padding: 14px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #f3effd;
+            vertical-align: middle;
+        }
+
+        .revenue-table tr:hover td {
+            background: #faf7ff;
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 20px;
+        }
+
+        .station-row {
+            margin-bottom: 16px;
+        }
+
+        .station-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .station-top span:last-child {
+            white-space: nowrap;
+        }
+
+        .station-bar {
+            height: 8px;
+            background: #efeafd;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .station-fill {
+            background: linear-gradient(90deg,#b89df3,#e8a8c8);
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .empty-box {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .chart-box {
+            min-height: 330px;
+        }
+
+        @@media(max-width:1200px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+            .dashboard-grid,
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media(max-width:768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title-row h2 {
+                font-size: 26px;
+            }
+
+            .kpi-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+}
+
+<div class="page-title-row">
+    <div>
+        <h2 data-i18n="Revenue Analytics">Revenue Analytics</h2>
+        <p data-i18n="Overview of revenue performance and key metrics">
+            Overview of revenue performance and key metrics
+        </p>
+    </div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card kpi-blue">
+        <div class="kpi-top">
+            <div>
+                <div class="kpi-label" data-i18n="Total Revenue">Total Revenue</div>
+                <div class="kpi-value">@totalRevenue.ToString("N0") VND</div>
+            </div>
+            <div class="kpi-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+        <div class="kpi-sub" style="color:#4b7bec;">
+            @totalRentals <span data-i18n="completed rentals">completed rentals</span>
+        </div>
+    </div>
+
+    <div class="kpi-card kpi-pink">
+        <div class="kpi-top">
+            <div>
+                <div class="kpi-label" data-i18n="Standard Bike Revenue">Standard Bike Revenue</div>
+                <div class="kpi-value">@bikeRevenue.ToString("N0") VND</div>
+            </div>
+            <div class="kpi-icon">
+                <i class="fas fa-bicycle"></i>
+            </div>
+        </div>
+        <div class="kpi-sub" style="color:#d63384;">
+            @bikePercent% <span data-i18n="of total">of total</span>
+        </div>
+    </div>
+
+    <div class="kpi-card kpi-green">
+        <div class="kpi-top">
+            <div>
+                <div class="kpi-label" data-i18n="E-Scooter Revenue">E-Scooter Revenue</div>
+                <div class="kpi-value">@scooterRevenue.ToString("N0") VND</div>
+            </div>
+            <div class="kpi-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+        </div>
+        <div class="kpi-sub" style="color:#27ae60;">
+            @scooterPercent% <span data-i18n="of total">of total</span>
+        </div>
+    </div>
+
+    <div class="kpi-card kpi-orange">
+        <div class="kpi-top">
+            <div>
+                <div class="kpi-label" data-i18n="Avg. Order Value">Avg. Order Value</div>
+                <div class="kpi-value">@avgOrderValue.ToString("N0") VND</div>
+            </div>
+            <div class="kpi-icon">
+                <i class="fas fa-receipt"></i>
+            </div>
+        </div>
+        <div class="kpi-sub" style="color:#f2994a;">
+            @discountedRentals <span data-i18n="discounted trips">discounted trips</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="vtable-card">
+        <div class="section-title" data-i18n="Recent Revenue Transactions">
+            Recent Revenue Transactions
+        </div>
+
+        @if (Model?.RecentTransactions?.Any() == true)
+        {
+            <div class="revenue-table-wrap">
+                <table class="revenue-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="Rental ID">Rental ID</th>
+                            <th data-i18n="User">User</th>
+                            <th data-i18n="Vehicle">Vehicle</th>
+                            <th data-i18n="Date">Date</th>
+                            <th data-i18n="Duration">Duration</th>
+                            <th data-i18n="Fare">Fare</th>
+                            <th data-i18n="Discount">Discount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.RecentTransactions)
+                        {
+                            <tr>
+                                <td>@item.RentalCode</td>
+                                <td>@item.UserName</td>
+                                <td>@item.VehicleName</td>
+                                <td>
+                                    @(item.StartTime.HasValue
+                                        ? item.StartTime.Value.ToString("MMM dd yyyy HH:mm")
+                                        : "N/A")
+                                </td>
+                                <td>
+                                    @item.DurationMinutes <span data-i18n="min">min</span>
+                                </td>
+                                <td>@item.Fare.ToString("N0") VND</td>
+                                <td>
+                                    @if (item.DiscountAmount > 0)
+                                    {
+                                        @("-" + item.DiscountAmount.ToString("N0") + " VND")
+                                    }
+                                    else
+                                    {
+                                        <span data-i18n="None">None</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-box" data-i18n="No revenue transaction data available">
+                No revenue transaction data available
+            </div>
+        }
+    </div>
+
+    <div class="chart-card">
+        <div class="section-title" data-i18n="Revenue Split Vehicle Type">
+            Revenue Split Vehicle Type
+        </div>
+
+        <div id="donutChart" class="chart-box"></div>
+    </div>
+</div>
+
+<div class="bottom-grid">
+    <div class="chart-card">
+        <div class="section-title" data-i18n="Top 5 High-Revenue Stations">
+            Top 5 High-Revenue Stations
+        </div>
+
+        <div class="section-sub" data-i18n="Highest earning stations based on completed rentals">
+            Highest earning stations based on completed rentals
+        </div>
+
+        @if (Model?.TopStations?.Any() == true)
+        {
+            foreach (var item in Model.TopStations)
+            {
+                var width = maxStationRevenue > 0
+                    ? (item.TotalRevenue / maxStationRevenue) * 100
+                    : 0;
+
+                <div class="station-row">
+                    <div class="station-top">
+                        <span>@item.StationName</span>
+                        <span>@item.TotalRevenue.ToString("N0") VND</span>
+                    </div>
+                    <div class="station-bar">
+                        <div class="station-fill" style="width:@width%"></div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-box" data-i18n="No station revenue data available">
+                No station revenue data available
+            </div>
+        }
+    </div>
+
+    <div class="chart-card">
+        <div class="section-title" data-i18n="Daily Revenue Trend">
+            Daily Revenue Trend
+        </div>
+
+        <div class="section-sub" data-i18n="Revenue performance over time">
+            Revenue performance over time
+        </div>
+
+        <div id="trendChart" class="chart-box"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+        let donutChart = null;
+        let trendChart = null;
+        let lastRevenueLang = null;
+
+        const revenueTranslations = {
+            en: {
+                "Revenue Analytics": "Revenue Analytics",
+                "Overview of revenue performance and key metrics": "Overview of revenue performance and key metrics",
+                "Total Revenue": "Total Revenue",
+                "Standard Bike Revenue": "Standard Bike Revenue",
+                "E-Scooter Revenue": "E-Scooter Revenue",
+                "Avg. Order Value": "Avg. Order Value",
+                "completed rentals": "completed rentals",
+                "of total": "of total",
+                "discounted trips": "discounted trips",
+                "Recent Revenue Transactions": "Recent Revenue Transactions",
+                "Revenue Split Vehicle Type": "Revenue Split Vehicle Type",
+                "Top 5 High-Revenue Stations": "Top 5 High-Revenue Stations",
+                "Highest earning stations based on completed rentals": "Highest earning stations based on completed rentals",
+                "Daily Revenue Trend": "Daily Revenue Trend",
+                "Revenue performance over time": "Revenue performance over time",
+                "Rental ID": "Rental ID",
+                "User": "User",
+                "Vehicle": "Vehicle",
+                "Date": "Date",
+                "Duration": "Duration",
+                "Fare": "Fare",
+                "Discount": "Discount",
+                "No revenue transaction data available": "No revenue transaction data available",
+                "No station revenue data available": "No station revenue data available",
+                "None": "None",
+                "min": "min"
+            },
+            vi: {
+                "Revenue Analytics": "Phân tích doanh thu",
+                "Overview of revenue performance and key metrics": "Tổng quan hiệu suất doanh thu và các chỉ số chính",
+                "Total Revenue": "Tổng doanh thu",
+                "Standard Bike Revenue": "Doanh thu xe đạp thường",
+                "E-Scooter Revenue": "Doanh thu xe điện",
+                "Avg. Order Value": "Giá trị đơn trung bình",
+                "completed rentals": "lượt thuê hoàn tất",
+                "of total": "trên tổng doanh thu",
+                "discounted trips": "lượt được giảm giá",
+                "Recent Revenue Transactions": "Giao dịch doanh thu gần đây",
+                "Revenue Split Vehicle Type": "Tỷ lệ doanh thu theo loại xe",
+                "Top 5 High-Revenue Stations": "Top 5 trạm có doanh thu cao",
+                "Highest earning stations based on completed rentals": "Các trạm có doanh thu cao nhất từ lượt thuê đã hoàn tất",
+                "Daily Revenue Trend": "Xu hướng doanh thu theo ngày",
+                "Revenue performance over time": "Hiệu suất doanh thu theo thời gian",
+                "Rental ID": "Mã thuê",
+                "User": "Người dùng",
+                "Vehicle": "Phương tiện",
+                "Date": "Ngày",
+                "Duration": "Thời lượng",
+                "Fare": "Tiền thuê",
+                "Discount": "Giảm giá",
+                "No revenue transaction data available": "Chưa có dữ liệu giao dịch doanh thu",
+                "No station revenue data available": "Chưa có dữ liệu doanh thu theo trạm",
+                "None": "Không có",
+                "min": "phút"
+            }
+        };
+
+        function getRevenueLang() {
+            return localStorage.getItem("sr_lang") === "vi" ? "vi" : "en";
+        }
+
+        function revenueT(key) {
+            const lang = getRevenueLang();
+            return revenueTranslations[lang][key] || key;
+        }
+
+        function applyRevenueLanguage() {
+            document.querySelectorAll("[data-i18n]").forEach(function (el) {
+                const key = el.getAttribute("data-i18n");
+                el.textContent = revenueT(key);
+            });
+        }
+
+        function getRevenueChartLabels() {
+            if (getRevenueLang() === "vi") {
+                return {
+                    total: "Tổng doanh thu",
+                    scooter: "Xe điện",
+                    bike: "Xe đạp thường"
+                };
+            }
+
+            return {
+                total: "Total Revenue",
+                scooter: "E-Scooter",
+                bike: "Standard Bike"
+            };
+        }
+
+        function renderRevenueCharts() {
+            const chartText = getRevenueChartLabels();
+
+            if (donutChart) {
+                donutChart.destroy();
+                donutChart = null;
+            }
+
+            if (trendChart) {
+                trendChart.destroy();
+                trendChart = null;
+            }
+
+            donutChart = new ApexCharts(document.querySelector("#donutChart"), {
+                series: [@bikePercent, @scooterPercent],
+                chart: {
+                    type: "donut",
+                    height: 340
+                },
+                labels: [chartText.bike, chartText.scooter],
+                colors: ["#F5B8D0", "#6FCF97"],
+                legend: {
+                    position: "bottom",
+                    fontSize: "14px"
+                },
+                dataLabels: {
+                    enabled: true
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "58%"
+                        }
+                    }
+                }
+            });
+
+            donutChart.render();
+
+            trendChart = new ApexCharts(document.querySelector("#trendChart"), {
+                series: [
+                    {
+                        name: chartText.total,
+                        data: @Html.Raw(totalSeries)
+                    },
+                    {
+                        name: chartText.scooter,
+                        data: @Html.Raw(scooterSeries)
+                    },
+                    {
+                        name: chartText.bike,
+                        data: @Html.Raw(bikeSeries)
+                    }
+                ],
+                chart: {
+                    type: "line",
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                stroke: {
+                    curve: "smooth",
+                    width: 3
+                },
+                markers: {
+                    size: 4
+                },
+                colors: ["#7C5CBF", "#6FCF97", "#F5B8D0"],
+                xaxis: {
+                    categories: @Html.Raw(chartLabels)
+                },
+                grid: {
+                    borderColor: "#eee"
+                },
+                legend: {
+                    position: "bottom",
+                    fontSize: "14px"
+                },
+                tooltip: {
+                    theme: "light"
+                }
+            });
+
+            trendChart.render();
+        }
+
+        function refreshRevenuePage() {
+            applyRevenueLanguage();
+            renderRevenueCharts();
+            lastRevenueLang = getRevenueLang();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            refreshRevenuePage();
+
+            setInterval(function () {
+                const currentLang = getRevenueLang();
+
+                if (currentLang !== lastRevenueLang) {
+                    refreshRevenuePage();
+                }
+            }, 300);
+        });
+    </script>
+}
