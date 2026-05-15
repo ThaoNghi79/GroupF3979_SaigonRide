@@ -446,11 +446,11 @@
 
         @if (!string.IsNullOrEmpty(error))
         {
-            <div class="alert-auth">⚠️ @error</div>
+            <div class="alert-auth alert-custom">⚠️ @error</div>
         }
         @if (TempData["AuthSuccess"] != null)
         {
-            <div class="alert-auth alert-success">✅ @TempData["AuthSuccess"]</div>
+            <div class="alert-auth alert-success alert-custom">✅ @TempData["AuthSuccess"]</div>
         }
 
         <div id="login-panel" style="display:@(panel == "login" ? "block" : "none")">
@@ -601,6 +601,21 @@
         
         document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
             el.placeholder = el.getAttribute('data-placeholder-' + lang);
+        });
+        const alertMap = {
+            "Invalid email or password.": "Email hoặc mật khẩu không đúng.",
+            "Your account has been suspended. Please contact support.": "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.",
+            "Passwords do not match.": "Mật khẩu không khớp.",
+            "This email is already registered.": "Email này đã được đăng ký.",
+            "Account created! Please sign in.": "Tạo tài khoản thành công! Vui lòng đăng nhập.",
+        };
+        document.querySelectorAll('.alert-custom').forEach(el => {
+            if (!el.getAttribute('data-orig')) {
+                el.setAttribute('data-orig', el.textContent.trim());
+            }
+            const raw = el.getAttribute('data-orig');
+            const key = Object.keys(alertMap).find(k => raw.includes(k));
+            el.textContent = lang === 'vi' && key ? alertMap[key] : raw;
         });
 
         localStorage.setItem('sr_lang', lang);

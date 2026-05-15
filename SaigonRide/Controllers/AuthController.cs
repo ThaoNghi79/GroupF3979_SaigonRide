@@ -106,7 +106,7 @@ namespace SaigonRide.Controllers
             string savedCode = HttpContext.Session.GetString("ResetCode") ?? "";
             if (string.IsNullOrEmpty(savedCode) || savedCode != VerificationCode)
             {
-                TempData["AuthError"] = "Mã xác minh không chính xác hoặc đã hết hạn!";
+                TempData["AuthError"] = "Invalid or expired verification code!";
                 return RedirectToAction("ForgotPassword");
             }
             HttpContext.Session.Remove("ResetCode");
