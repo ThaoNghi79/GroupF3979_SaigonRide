@@ -61,9 +61,9 @@ The application will start at `https://localhost:7xxx` (port number shown in ter
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@saigonride.com | Admin@123 |
-| Local Commuter | user@saigonride.com | User@123 |
-| Foreign Tourist | tourist@saigonride.com | Tourist@123 |
+| Admin | admin@saigonride.vn | Admin@123 |
+| Local Commuter | local@saigonride.vn | User@123 |
+| Foreign Tourist | tourist@saigonride.vn | User@123 |
 
 ---
 
