@@ -90,6 +90,45 @@ SaigonRide/
 
 ---
 
+## Troubleshooting
+
+### ❌ Error: `Method 'Identifier' in type 'CSharpHelper' does not have an implementation`
+
+This error occurs when EF Core packages have mismatched versions.
+
+**Fix:**
+
+Open **Package Manager Console** and run:
+
+```powershell
+Uninstall-Package Microsoft.EntityFrameworkCore.Design
+Uninstall-Package Microsoft.EntityFrameworkCore.Tools
+```
+
+Then reinstall with the correct version:
+
+```powershell
+Install-Package Microsoft.EntityFrameworkCore.Design -Version 8.0.0
+Install-Package Microsoft.EntityFrameworkCore.Tools -Version 8.0.0
+```
+
+Then run again:
+
+```powershell
+Update-Database
+```
+
+Make sure all EF Core packages in your `.csproj` are the **same version**:
+
+```xml
+<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+```
+
+---
+
 ## Technology Stack
 
 | Component | Technology |
